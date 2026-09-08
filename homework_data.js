@@ -1,5 +1,12 @@
 const homeworkData = [
     {
+        "id": "328",
+        "grade": 4,
+        "subject": "אנגלית",
+        "task": "p. 10, ex. 8",
+        "date": "08/09"
+    },
+    {
         "id": "219",
         "grade": 4,
         "subject": "מדעים",
@@ -26,5 +33,12 @@ const homeworkData = [
         "subject": "מתמטיקה",
         "task": "מעגל ועיגול ",
         "date": "03/09"
+    },
+    {
+        "id": "326",
+        "grade": 6,
+        "subject": "מתמטיקה",
+        "task": "בחוברת עמודים 5-10",
+        "date": "08/09"
     }
 ];
