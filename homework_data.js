@@ -14,6 +14,20 @@ const homeworkData = [
         "date": "07/09"
     },
     {
+        "id": "400",
+        "grade": 4,
+        "subject": "מדעים",
+        "task": "עמוד 18",
+        "date": "09/09"
+    },
+    {
+        "id": "377",
+        "grade": 4,
+        "subject": "מתמטיקה",
+        "task": "לסיים עד 86-87",
+        "date": "09/09"
+    },
+    {
         "id": "29",
         "grade": 6,
         "subject": "מתמטיקה",
