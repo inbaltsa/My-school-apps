@@ -459,6 +459,7 @@ async function cleanupExpiredTasks() {
 async function renderHomework(grade, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
+    container.style.display = '';
 
     // אם המשתמש רשום לכיתה אחרת — לא מציגים שיעורי בית כאן
     if (currentUserGrade && currentUserGrade !== grade) {
@@ -595,8 +596,8 @@ window.markHomeworkDone = function(id) {
 // --- רינדור שיעורי בית לפי כיתת המשתמש ---
 
 function renderHomeworkForUser() {
-    renderHomework(3, 'hw-container-3');
-    renderHomework(5, 'hw-container-5');
+    const pageGrade = detectPageGrade();
+    if (pageGrade) renderHomework(pageGrade, 'hw-container-' + pageGrade);
 }
 
 // --- חישוב משימות פתוחות (לנוטיפיקציות) ---

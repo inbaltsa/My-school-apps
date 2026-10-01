@@ -262,7 +262,7 @@
         const badge = document.createElement('span');
         badge.className = 'subject-badge exam';
         badge.setAttribute('data-exam-generated', 'true');
-        badge.textContent = `📅 מבחן ${formattedDate.split(' ')[1]}`;
+        badge.textContent = `📅 מבחן ${formattedDate.split(' ').pop()}`;
         return badge;
     }
 
