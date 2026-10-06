@@ -28,6 +28,13 @@ const homeworkData = [
         "date": "17/09"
     },
     {
+        "id": "952",
+        "grade": 4,
+        "subject": "אנגלית",
+        "task": "p. 21",
+        "date": "06/10"
+    },
+    {
         "id": "219",
         "grade": 4,
         "subject": "מדעים",
@@ -77,6 +84,20 @@ const homeworkData = [
         "date": "14/09"
     },
     {
+        "id": "997",
+        "grade": 4,
+        "subject": "מתמטיקה",
+        "task": "עבודה בכיתה עמ' 26-29",
+        "date": "06/10"
+    },
+    {
+        "id": "998",
+        "grade": 4,
+        "subject": "מתמטיקה",
+        "task": "עבודה בכיתה עמ' 26-29",
+        "date": "06/10"
+    },
+    {
         "id": "737",
         "grade": 4,
         "subject": "תרבות ישראל",
@@ -89,6 +110,13 @@ const homeworkData = [
         "subject": "אנגלית",
         "task": "w. b.p. 4, 5",
         "date": "15/09"
+    },
+    {
+        "id": "963",
+        "grade": 6,
+        "subject": "אנגלית",
+        "task": "w. b. p. 8-9",
+        "date": "06/10"
     },
     {
         "id": "326",
@@ -145,5 +173,12 @@ const homeworkData = [
         "subject": "מתמטיקה",
         "task": "בחוברת גיאומטריה עמודים 89,91-93,95",
         "date": "17/09"
+    },
+    {
+        "id": "990",
+        "grade": 6,
+        "subject": "מתמטיקה",
+        "task": "בחוברת עמודים 30-34",
+        "date": "06/10"
     }
 ];
