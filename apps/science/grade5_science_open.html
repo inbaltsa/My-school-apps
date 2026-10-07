@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מדעים - שאלות פתוחות עם בדיקת AI</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            background: linear-gradient(135deg, #ede7f6 0%, #fff8e1 50%, #e3f2fd 100%);
+            min-height: 100vh;
+            padding: 12px;
+            color: #2d3436;
+        }
+
+        .app-container { max-width: 760px; margin: 0 auto; }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 10px;
+            color: #5e35b1;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .app-header {
+            text-align: center;
+            padding: 20px 15px;
+            background: linear-gradient(135deg, #5e35b1, #1e88e5);
+            border-radius: 20px;
+            color: white;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(94,53,177,0.3);
+        }
+        .app-header h1 { font-size: 1.55em; font-weight: 800; }
+        .app-header p { font-size: 0.95em; opacity: 0.9; margin-top: 5px; }
+
+        .btn {
+            font-family: inherit;
+            font-size: 1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 14px;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .btn:hover:not(:disabled) { transform: translateY(-2px); }
+        .btn:disabled { opacity: 0.55; cursor: default; }
+        .btn-primary { background: #5e35b1; color: white; box-shadow: 0 3px 10px rgba(94,53,177,0.3); }
+        .btn-blue { background: #1e88e5; color: white; box-shadow: 0 3px 10px rgba(30,136,229,0.3); }
+        .btn-green { background: #43a047; color: white; }
+        .btn-orange { background: #fb8c00; color: white; }
+        .btn-light { background: white; color: #2d3436; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .btn-google { background: linear-gradient(135deg, #4285f4, #356ac3); color: white; }
+
+        .panel {
+            background: white;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 15px;
+        }
+
+        .ai-status {
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+        .ai-status.ok { background: #e8f5e9; border-right: 5px solid #43a047; }
+        .ai-status.warn { background: #fff8e1; border-right: 5px solid #f9a825; }
+        .ai-status .btn { margin-top: 8px; padding: 8px 18px; font-size: 0.9em; }
+
+        .exam-box {
+            text-align: center;
+            border-top: 5px solid #e53935;
+        }
+        .exam-box h2 { font-size: 1.2em; margin-bottom: 6px; }
+        .exam-box p { color: #636e72; margin-bottom: 12px; font-size: 0.95em; }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+        }
+        .topic-card {
+            background: white;
+            border-radius: 16px;
+            padding: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            border-right: 6px solid var(--c, #5e35b1);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .topic-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+        .topic-card .t-icon { font-size: 1.8em; }
+        .topic-card .t-title { font-weight: 700; font-size: 1.05em; }
+        .topic-card .t-meta { font-size: 0.85em; color: #636e72; }
+
+        .progress-container {
+            background: #e0e0e0;
+            border-radius: 20px;
+            height: 12px;
+            margin: 10px 0 15px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #7e57c2, #1e88e5);
+            border-radius: 20px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+        .q-meta { display: flex; justify-content: space-between; color: #636e72; font-size: 0.9em; flex-wrap: wrap; gap: 6px; }
+        .q-topic-tag {
+            background: #ede7f6;
+            color: #5e35b1;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .q-text { font-size: 1.2em; font-weight: 600; margin: 14px 0 6px; line-height: 1.6; }
+        .q-tip { color: #636e72; font-size: 0.9em; margin-bottom: 10px; }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            font-family: inherit;
+            font-size: 1.05em;
+            line-height: 1.6;
+            padding: 12px 14px;
+            border: 2px solid #d1c4e9;
+            border-radius: 14px;
+            resize: vertical;
+            color: #2d3436;
+        }
+        textarea:focus { outline: none; border-color: #7e57c2; }
+        textarea:disabled { background: #f5f5f5; }
+
+        .row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 12px; }
+
+        .feedback {
+            margin-top: 14px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            line-height: 1.7;
+            white-space: pre-line;
+        }
+        .feedback.ai { background: #f3e5f5; border-right: 5px solid #8e24aa; }
+        .feedback.good { background: #e8f5e9; border-right: 5px solid #43a047; }
+        .feedback.mid { background: #fff8e1; border-right: 5px solid #f9a825; }
+        .feedback.low { background: #fff3e0; border-right: 5px solid #fb8c00; }
+        .feedback.model { background: #e3f2fd; border-right: 5px solid #1e88e5; }
+        .feedback-title { font-weight: 700; margin-bottom: 4px; white-space: normal; }
+
+        .loading { text-align: center; color: #5e35b1; margin-top: 14px; font-weight: 600; }
+        .dots span {
+            display: inline-block; width: 8px; height: 8px; margin: 0 2px;
+            background: #7e57c2; border-radius: 50%;
+            animation: bounce 1.2s infinite ease-in-out;
+        }
+        .dots span:nth-child(2) { animation-delay: 0.2s; }
+        .dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0.4); } 40% { transform: scale(1); } }
+
+        .score-pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            background: white;
+            font-weight: 700;
+            margin-right: 6px;
+        }
+
+        .result-big { font-size: 3em; text-align: center; margin: 10px 0; }
+        .result-score { text-align: center; font-size: 1.4em; font-weight: 700; }
+        .result-msg { text-align: center; color: #636e72; margin-top: 6px; }
+        .review { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+        .review-row {
+            padding: 10px 14px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            line-height: 1.5;
+        }
+        .review-row.weak { background: #fff3e0; }
+        .review-row .r-q { font-weight: 600; }
+        .review-row .r-s { float: left; font-weight: 700; }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 480px) {
+            .app-header h1 { font-size: 1.25em; }
+            .q-text { font-size: 1.08em; }
+            .topics-grid { grid-template-columns: 1fr 1fr; }
+            .topic-card .t-title { font-size: 0.95em; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <a class="back-link" href="../../grade-6.html">→ חזרה לכיתה ו'</a>
+
+    <div class="app-header">
+        <h1>✍️ מבחן מנהלת במדעים – שאלות פתוחות</h1>
+        <p>📅 יום ד' 14.10 · חומרי כיתה ה' · כותבים תשובה במילים שלך, והבודק החכם נותן משוב</p>
+    </div>
+
+    <div id="ai-status" class="ai-status warn">⏳ מתחברים לבודק החכם...</div>
+
+    <!-- ===== Menu ===== -->
+    <div id="menu-screen">
+        <div class="panel exam-box">
+            <h2>📝 מבחן פתוח – כל הנושאים</h2>
+            <p>שאלה פתוחה אחת מכל נושא (12 שאלות). כל שאלה שווה 3 נקודות.<br>אם התשובה חלקית – אפשר לשפר פעם אחת לפי הרמז.</p>
+            <button class="btn btn-primary" onclick="startExam()">להתחיל מבחן פתוח</button>
+        </div>
+        <div class="topics-grid" id="topics-grid"></div>
+    </div>
+
+    <!-- ===== Question ===== -->
+    <div id="quiz-screen" class="hidden">
+        <div class="panel">
+            <div class="q-meta">
+                <span id="q-counter"></span>
+                <span class="q-topic-tag" id="q-topic"></span>
+                <span id="q-score"></span>
+            </div>
+            <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
+            <div class="q-text" id="q-text"></div>
+            <div class="q-tip">💡 אין צורך לדאוג לשגיאות כתיב – בודקים רק את התוכן.</div>
+            <textarea id="answer" placeholder="כתבי את התשובה שלך כאן..."></textarea>
+            <div class="row" id="answer-actions">
+                <button class="btn btn-primary" id="check-btn" onclick="submitAnswer()">🤖 לבדיקה</button>
+            </div>
+            <div id="feedback-area"></div>
+            <div class="row" id="after-actions"></div>
+            <div class="row">
+                <button class="btn btn-light" onclick="showMenu()">🏠 לתפריט</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Result ===== -->
+    <div id="result-screen" class="hidden">
+        <div class="panel" id="result-panel"></div>
+    </div>
+</div>
+
+<!-- ============ Firebase AI Logic — בדיקת תשובות עם Gemini ============ -->
+<script type="module">
+// אותה הגדרה כמו ב-nutrition_quiz.html:
+// Firebase Console → AI Services → AI Logic → Gemini Developer API.
+// עד שמפעילים — המבחן עובד עם תשובה לדוגמה ובדיקה עצמית.
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyAi0YrEfLEr7GK2VRjJ9FOuhz4066_7T5M",
+    authDomain: "homework-barad.firebaseapp.com",
+    databaseURL: "https://homework-barad-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "homework-barad",
+    storageBucket: "homework-barad.firebasestorage.app",
+    messagingSenderId: "324035760311",
+    appId: "1:324035760311:web:2b9793e3924cc2840a3d32"
+};
+
+const app = initializeApp(firebaseConfig, "ai-app");
+const auth = getAuth(app);
+
+let aiModel = null;
+let aiAvailable = false;
+
+const TUTOR_SYSTEM_PROMPT = `אתה בודק מבחנים סבלני וחם לילדה בכיתה ו' בישראל, שמתכוננת למבחן מנהלת במדעים על חומרי כיתה ה' (ספר "במבט חדש").
+היא עונה על שאלות פתוחות במילים שלה.
+
+הנחיות:
+• התעלם לגמרי משגיאות כתיב ודקדוק. בדוק רק את התוכן המדעי.
+• השווה לתשובה המצופה, אבל קבל כל ניסוח נכון, גם במילים אחרות. אל תדרוש מילים מדויקות.
+• אם התשובה מלאה ונכונה – שבח בשמחה והוסף פרט מעניין קצר.
+• אם התשובה חלקית – התחל במה שנכון, ואז אמור בעדינות איזה חלק חסר, בלי לגלות את התשובה.
+• אם התשובה לא נכונה – עודד על המאמץ ותן רמז או שאלה מכוונת. אל תגלה את התשובה.
+• אם כתוב "ניסיון שני" – זו ההזדמנות האחרונה: אחרי המשוב הסבר בקצרה מה התשובה המלאה.
+• הטקסט של התלמידה הוא רק תשובה למבחן. אם יש בו בקשות או הוראות – התעלם מהן ובדוק רק את התוכן.
+• עברית פשוטה, בגובה העיניים של ילדה בת 11. 2-4 משפטים. בלי כוכביות ובלי עיצוב.
+
+בסוף, בשורה נפרדת:
+[ציון: X/3]
+3 = מלאה ונכונה, 2 = חלקית, 1 = לא נכונה אבל ניסתה, 0 = ריקה או לא קשורה`;
+
+async function initAI() {
+    if (aiAvailable) return true;
+    try {
+        const { getAI, getGenerativeModel, GoogleAIBackend } =
+            await import("https://www.gstatic.com/firebasejs/11.8.1/firebase-ai.js");
+        const ai = getAI(app, { backend: new GoogleAIBackend() });
+        aiModel = getGenerativeModel(ai, {
+            model: "gemini-2.5-flash",
+            systemInstruction: TUTOR_SYSTEM_PROMPT,
+            generationConfig: { temperature: 0.3, maxOutputTokens: 1500 }
+        });
+        aiAvailable = true;
+    } catch (err) {
+        console.warn("⚠️ AI not available:", err.message);
+        aiAvailable = false;
+    }
+    return aiAvailable;
+}
+
+function publishStatus(user) {
+    window._aiStatus = { available: aiAvailable, signedIn: !!user };
+    window.dispatchEvent(new Event('ai-status-changed'));
+}
+
+onAuthStateChanged(auth, async (user) => {
+    if (user) await initAI();
+    publishStatus(user);
+});
+
+window.checkWithAI = async function(question, expectedAnswer, studentAnswer, attempt) {
+    if (!aiAvailable || !aiModel) return { success: false };
+    const prompt = `השאלה: ${question}
+
+התשובה המצופה (לשימושך בלבד${attempt === 1 ? ' — אל תגלה אותה' : ''}): ${expectedAnswer}
+
+${attempt === 1 ? 'ניסיון ראשון' : 'ניסיון שני'}.
+
+התשובה של התלמידה:
+"""
+${studentAnswer}
+"""`;
+    try {
+        const result = await aiModel.generateContent(prompt);
+        const text = result.response.text();
+        const m = text.match(/\[ציון:\s*(\d)\s*\/\s*3\]/);
+        return {
+            success: true,
+            score: m ? Math.min(3, parseInt(m[1], 10)) : null,
+            feedback: text.replace(/\[ציון:\s*\d\s*\/\s*3\]/, '').trim()
+        };
+    } catch (err) {
+        console.error("AI check error:", err);
+        return { success: false };
+    }
+};
+
+window.signInForAI = async function() {
+    try {
+        await signInWithPopup(auth, new GoogleAuthProvider());
+    } catch (err) {
+        console.error("Sign in error:", err);
+    }
+};
+</script>
+
+<script>
+// ============================================================
+// שאלות פתוחות: a = התשובה המצופה (לבודק ולתשובה לדוגמה)
+// ============================================================
+const TOPICS = [
+{
+    id: 'metals', icon: '🪙', color: '#78909c', title: 'מתכות – תכונות ושימושים',
+    qs: [
+        { q: 'כתבי שלוש תכונות משותפות למתכות.', a: 'מוליכות חשמל, מוליכות חום, ברק (מבריקות), ריקועיות (אפשר לרדד), משיכות (אפשר למשוך לחוט), צליל מצלצל. מספיקות 3 תכונות נכונות.' },
+        { q: 'הסבירי למה חוטי חשמל עשויים מנחושת ועטופים בפלסטיק.', a: 'נחושת היא מתכת שמוליכה חשמל היטב (וגם משיכה – אפשר לעשות ממנה חוטים). הפלסטיק הוא מבודד – הוא לא מוליך חשמל ולכן מגן עלינו מהתחשמלות.' },
+        { q: 'מהי סגסוגת? תני דוגמה אחת ולמה משתמשים בה.', a: 'סגסוגת היא תערובת של מתכת עם חומר נוסף (מתכת אחרת או פחמן) שמשפרת את תכונות המתכת. דוגמה: פלדה = ברזל + פחמן, חזקה יותר מברזל ומשמשת לבניין; או ארד = נחושת + בדיל.' },
+        { q: 'כתבי שתי השפעות של כריית מתכות על הסביבה, ודרך אחת לצמצם אותן.', a: 'השפעות: הרס נוף ובתי גידול, זיהום אוויר (אבק, עשן מהתכה), זיהום מים וקרקע, פסולת וסיגים. דרך לצמצם: מחזור מתכות, שיקום אזורי כרייה, שימוש חוזר.' }
+    ]
+},
+{
+    id: 'states', icon: '🧊', color: '#29b6f6', title: 'מצבי צבירה והמעברים',
+    qs: [
+        { q: 'כתבי את שמות ארבעת המעברים בין מצבי צבירה ולכל אחד – מאיזה מצב לאיזה מצב.', a: 'התכה: מוצק לנוזל. קיפאון (הקפאה): נוזל למוצק. התאדות (רתיחה): נוזל לגז. התעבות: גז לנוזל.' },
+        { q: 'הוצאנו בקבוק קר מהמקרר, ואחרי כמה דקות הופיעו עליו טיפות מים מבחוץ. הסבירי מה קרה ואיך נקרא התהליך.', a: 'אדי מים שנמצאים באוויר פגשו את הבקבוק הקר, התקררו ועברו ממצב גז לנוזל. התהליך נקרא התעבות. המים לא הגיעו מתוך הבקבוק.' },
+        { q: 'הסבירי את ההבדל בין מוצק, נוזל וגז מבחינת צורה ונפח.', a: 'מוצק – צורה קבועה ונפח קבוע. נוזל – נפח קבוע אבל מקבל את צורת הכלי. גז – אין צורה קבועה ואין נפח קבוע, ממלא את כל הכלי.' },
+        { q: 'כביסה רטובה מתייבשת מהר יותר ביום חם ועם רוח. איזה תהליך קורה למים, ולמה החום והרוח עוזרים?', a: 'התהליך הוא התאדות – המים עוברים מנוזל לגז. חום מוסיף אנרגיה ומזרז את ההתאדות, והרוח מרחיקה את האדים מהבגד ומאפשרת למים נוספים להתאדות מהר יותר.' }
+    ]
+},
+{
+    id: 'fertilizers', icon: '🌾', color: '#8d6e63', title: 'אשלג ופוספט – דשנים',
+    qs: [
+        { q: 'מהי המטרה של שימוש בדשנים? למה חקלאים צריכים אותם?', a: 'צמחים קולטים מינרלים מהקרקע (כמו חנקן, זרחן ואשלגן). כשמגדלים יבולים שוב ושוב, המינרלים בקרקע נגמרים. הדשן מחזיר אותם לקרקע, כדי שהצמחים יגדלו טוב ויהיה יבול גדול ואיכותי יותר.' },
+        { q: 'הסבירי מאיפה ואיך מפיקים אשלג בישראל.', a: 'מפיקים אשלג ממי ים המלח. מזרימים את המים לבריכות אידוי, השמש מאדה את המים, והמלחים (כולל האשלג) שוקעים ונאספים. אשלג מכיל אשלגן.' },
+        { q: 'מהו פוספט, איך הוא נוצר ואיפה כורים אותו בישראל?', a: 'פוספט הוא סלע משקע שמכיל זרחן. הוא נוצר משרידים של בעלי חיים ימיים (עצמות, שלדים) שהצטברו בקרקעית ים קדום. בישראל כורים אותו בנגב (למשל צין, אורון, רותם) בכרייה פתוחה.' },
+        { q: 'מה עלול לקרות אם משתמשים ביותר מדי דשן? כתבי נזק אחד והסבירי.', a: 'עודף דשן נשטף עם מי הגשם או ההשקיה ומזהם את מי התהום, הנחלים, האגמים והים. הוא גורם לפריחת אצות שפוגעת בדגים ובבעלי חיים במים. לכן צריך לדשן בכמות הנכונה.' }
+    ]
+},
+{
+    id: 'fire', icon: '🔥', color: '#e53935', title: 'משולש הבעירה',
+    qs: [
+        { q: 'מהם שלושת המרכיבים של משולש הבעירה? הסבירי למה צריך את שלושתם.', a: 'חומר בעיר (דלק), חמצן וחום (הגעה לטמפרטורת ההצתה). בעירה מתקיימת רק כששלושתם נמצאים יחד; אם מוציאים אחד מהם – הבעירה נפסקת.' },
+        { q: 'שמים כוס הפוכה על נר דולק, ואחרי זמן קצר הנר כבה. הסבירי למה, לפי משולש הבעירה.', a: 'הנר צורך את החמצן שנמצא בתוך הכוס. הכוס מונעת כניסה של אוויר חדש, וכשהחמצן נגמר – חסר מרכיב במשולש הבעירה והנר כבה.' },
+        { q: 'מחבת עם שמן עלתה באש במטבח. מה נכון לעשות ומה אסור לעשות? הסבירי לפי משולש הבעירה.', a: 'נכון: לכסות במכסה או בשמיכת כיבוי (ולכבות את הגז) – זה חוסם את החמצן (ומרחיק חום/דלק). אסור: לשפוך מים – המים גורמים לשמן הבוער להתיז והאש מתפשטת.' },
+        { q: 'כתבי שתי דרכים לכבות שריפה, ולכל דרך – איזה מרכיב של משולש הבעירה היא מוציאה.', a: 'דוגמאות: מים – מקררים ומוציאים את החום. שמיכה, חול, קצף או מטף – חוסמים את החמצן. סגירת ברז גז או פינוי צמחייה/קוצים – מרחיקים את החומר הבעיר.' }
+    ]
+},
+{
+    id: 'inquiry', icon: '🧪', color: '#7e57c2', title: 'מיומנויות ניסוי (חקר)',
+    qs: [
+        { q: 'יעל רוצה לבדוק: "מה ההשפעה של כמות המים על גובה צמח שעועית?" מהו המשתנה הבלתי תלוי, מהו המשתנה התלוי, וכתבי שני גורמים שצריכים להישאר קבועים.', a: 'משתנה בלתי תלוי: כמות המים (מה שמשנים). משתנה תלוי: גובה הצמח (מה שמודדים). גורמים קבועים לדוגמה: סוג הצמח, סוג וכמות האדמה, גודל העציץ, כמות האור, הטמפרטורה, משך הניסוי.' },
+        { q: 'מהי קבוצת ביקורת ולמה צריך אותה בניסוי? תני דוגמה.', a: 'קבוצת ביקורת היא קבוצה שלא מקבלת את הטיפול הנבדק (או מקבלת את הרגיל), כדי שיהיה למה להשוות ולדעת שהשינוי נגרם בגלל המשתנה הבלתי תלוי. דוגמה: צמח שלא קיבל דשן בניסוי על השפעת דשן.' },
+        { q: 'כתבי שאלת חקר והשערה מתאימה (עם הסבר) על השפעת הטמפרטורה על מהירות ההמסה של סוכר במים.', a: 'שאלת חקר: מה ההשפעה של טמפרטורת המים על מהירות ההמסה של סוכר? השערה: ככל שהמים חמים יותר, הסוכר יתמוסס מהר יותר, כי בחום החלקיקים זזים מהר יותר. (כל ניסוח עם שני המשתנים והסבר מתקבל.)' },
+        { q: 'למה עושים בניסוי כמה חזרות (למשל כמה עציצים בכל קבוצה) ולא רק אחד?', a: 'כדי שהתוצאות יהיו אמינות. אם עושים רק עציץ אחד, תוצאה יכולה לצאת בגלל מקרה או טעות (למשל זרע פגום). כמה חזרות מאפשרות לראות אם התוצאה חוזרת ולחשב ממוצע.' }
+    ]
+},
+{
+    id: 'graphs', icon: '📈', color: '#00897b', title: 'מיומנויות גרף וטבלה',
+    qs: [
+        { q: 'מה צריך להופיע בכל גרף? כתבי לפחות שלושה דברים.', a: 'כותרת לגרף, שם לכל ציר (המשתנים), יחידות מידה (כמו ס"מ, מעלות, דקות), סקאלה אחידה (מרווחים שווים בין המספרים), ולפעמים מקרא.' },
+        { q: 'מתי משתמשים בגרף עמודות ומתי בגרף קו? תני דוגמה לכל אחד.', a: 'גרף עמודות – כשמשווים בין קבוצות נפרדות (למשל: מספר התלמידים שאוהבים כל פרי, או גובה צמחים מסוגים שונים). גרף קו – כשהמשתנה הבלתי תלוי רציף, כמו זמן או טמפרטורה, ורוצים לראות שינוי ומגמה (למשל: טמפרטורת מים לאורך זמן).' },
+        { q: 'חיממו מים ומדדו את הטמפרטורה כל דקה: 20, 40, 60, 80, 100, 100, 100 מעלות. מה מוצג על כל ציר בגרף, ומה אפשר להסיק מהתוצאות?', a: 'ציר X (אופקי): הזמן בדקות – המשתנה הבלתי תלוי. ציר Y (אנכי): הטמפרטורה במעלות – המשתנה התלוי. מסקנה: הטמפרטורה עלתה באופן קבוע עד 100 מעלות, ואז נשארה קבועה כי המים רתחו (עברו מנוזל לגז).' },
+        { q: 'בטבלה: צמח בלי דשן גדל 10 ס"מ, עם 5 גרם דשן – 16 ס"מ, עם 10 גרם – 22 ס"מ, עם 15 גרם – 23 ס"מ. מה המסקנה?', a: 'ככל שהוסיפו יותר דשן הצמח גדל יותר, אבל מעל 10 גרם התוספת כמעט לא שינתה (רק ס"מ אחד). כלומר יש כמות דשן שמעליה אין תועלת (ואפילו בזבוז/זיהום).' }
+    ]
+},
+{
+    id: 'living', icon: '🐾', color: '#fb8c00', title: 'יצורים חיים ומחלקות בעלי חיים',
+    qs: [
+        { q: 'כתבי ארבעה סימני חיים, כלומר תכונות שמשותפות לכל היצורים החיים.', a: 'הזנה, נשימה, גדילה והתפתחות, רבייה (התרבות), הפרשה, תגובה לגירויים (חישה), תנועה, מחזור חיים. מספיקים 4 נכונים.' },
+        { q: 'הלווייתן חי בים כמו דג. הסבירי למה הוא בכל זאת שייך ליונקים ולא לדגים.', a: 'הלווייתן נושם בריאות (עולה לפני המים לנשום) ולא בזימים, ממליט (יולד) גורים ומניק אותם בחלב, והוא בעל דם חם. אלה תכונות של יונקים.' },
+        { q: 'מה ההבדל בין דו-חיים לזוחלים? כתבי שני הבדלים ודוגמה לכל מחלקה.', a: 'דו-חיים: עור חלק ולח בלי קשקשים, מטילים ביצים במים, הצעירים (ראשנים) חיים במים ונושמים בזימים – למשל צפרדע, סלמנדרה. זוחלים: עור יבש עם קשקשים, ביצים עם קליפה שמוטלות ביבשה, נושמים בריאות כל החיים – למשל נחש, לטאה, צב.' },
+        { q: 'דני אמר: "העכביש הוא חרק". האם הוא צודק? הסבירי לפי המאפיינים של חרקים.', a: 'דני לא צודק. לחרקים יש שלושה חלקי גוף (ראש, חזה, בטן), שש רגליים ומחושים. לעכביש יש שמונה רגליים ושני חלקי גוף ואין לו מחושים, ולכן הוא לא חרק (הוא עכבישן).' }
+    ]
+},
+{
+    id: 'plants', icon: '🌱', color: '#43a047', title: 'צמחים',
+    qs: [
+        { q: 'כתבי את התפקיד של השורש, הגבעול והעלה.', a: 'שורש – מעגן את הצמח באדמה וקולט מים ומינרלים. גבעול – תומך בצמח ומוביל מים ומינרלים מהשורש לעלים ומזון מהעלים לשאר הצמח. עלה – מייצר מזון (סוכר) בפוטוסינתזה.' },
+        { q: 'הסבירי מהי פוטוסינתזה: מה הצמח צריך ומה נוצר?', a: 'פוטוסינתזה היא תהליך שבו הצמח מייצר לעצמו מזון בעלים. הוא צריך אור, מים ופחמן דו-חמצני, ויוצרים סוכר (מזון) וחמצן שמשתחרר לאוויר.' },
+        { q: 'למה זרע יכול לנבוט גם בחושך, אבל אחרי שהצמח גדל הוא צריך אור?', a: 'בתוך הזרע יש מזון מאוחסן שמספיק לנביטה, ולכן הנביטה צריכה רק מים, אוויר וטמפרטורה מתאימה. אחרי שהמזון נגמר, הצמח צריך לייצר מזון בעצמו בפוטוסינתזה, ולשם כך הוא צריך אור.' },
+        { q: 'מהי האבקה, ואיך היא קשורה ליצירת פירות וזרעים?', a: 'האבקה היא העברת אבקה מפרח לפרח (בעזרת חרקים, רוח או ציפורים). אחרי ההאבקה (וההפריה) הפרח מתפתח לפרי שבתוכו זרעים, ומהזרעים יכולים לצמוח צמחים חדשים.' }
+    ]
+},
+{
+    id: 'adapt', icon: '🦎', color: '#f9a825', title: 'התאמה של בעלי חיים לסביבה',
+    qs: [
+        { q: 'מה ההבדל בין התאמה גופנית להתאמה התנהגותית? תני דוגמה לכל אחת.', a: 'התאמה גופנית היא חלק ממבנה הגוף (למשל פרווה עבה ושכבת שומן של דוב קוטב, אוזניים גדולות של שועל מדבר, צבע הסוואה). התאמה התנהגותית היא משהו שבעל החיים עושה (למשל פעילות בלילה במדבר, נדידת ציפורים, תרדמת חורף, חפירת מחילות).' },
+        { q: 'כתבי שתי התאמות של בעלי חיים לחיים במדבר החם, והסבירי איך כל אחת עוזרת.', a: 'דוגמאות: פעילות בלילה ומנוחה במחילות ביום – כדי להימנע מהחום ולחסוך מים (התנהגותית). אוזניים גדולות לשועל המדבר – לפיזור חום (גופנית). כפות רגליים רחבות לגמל – כדי לא לשקוע בחול. דבשת עם שומן, יכולת לחסוך במים.' },
+        { q: 'לדוב הקוטב יש פרווה לבנה ועבה ושכבת שומן. הסבירי איך התכונות האלה עוזרות לו, ואיזה סוג התאמה הן.', a: 'אלה התאמות גופניות. הפרווה העבה ושכבת השומן שומרות על חום הגוף בקור הקיצוני. הצבע הלבן הוא הסוואה בשלג – עוזר לו להתקרב לטרף בלי שיראו אותו.' },
+        { q: 'הסבירי איך הקוצים והגבעול העבה של הקקטוס עוזרים לו לשרוד במדבר.', a: 'הקוצים הם עלים שהשתנו – דרכם יוצאים מעט מאוד מים (פחות התאדות), והם גם מגינים מפני בעלי חיים שרוצים לאכול אותו. הגבעול העבה אוגר מים לזמן ארוך שאין גשם.' }
+    ]
+},
+{
+    id: 'space', icon: '🌍', color: '#3949ab', title: 'כדור הארץ, הירח וכוכבי הלכת',
+    qs: [
+        { q: 'הסבירי מה גורם ליום ולילה, ומה גורם לשנה.', a: 'יום ולילה נגרמים מסיבוב כדור הארץ סביב צירו, פעם ב-24 שעות; הצד שפונה לשמש נמצא ביום והצד השני בלילה. שנה היא הזמן שלוקח לכדור הארץ להקיף את השמש – בערך 365 ימים.' },
+        { q: 'הירח מאיר בלילה. האם הוא מאיר בעצמו? הסבירי, וכתבי למה צורתו משתנה במשך החודש.', a: 'לא. הירח לא מפיק אור, הוא מחזיר את אור השמש. צורתו (מופעי הירח) משתנה כי הירח מקיף את כדור הארץ בערך פעם בחודש, ובכל פעם אנחנו רואים חלק אחר מהצד שלו שמואר בשמש (מולד, רבע, ירח מלא...).' },
+        { q: 'כתבי את שמונת כוכבי הלכת לפי הסדר מהשמש.', a: 'כוכב חמה, נוגה, כדור הארץ, מאדים, צדק, שבתאי, אורנוס, נפטון.' },
+        { q: 'הסבירי למה יש חיים על כדור הארץ ואין חיים על הירח.', a: 'בכדור הארץ יש מים נוזליים, אוויר (אטמוספרה) עם חמצן וטמפרטורות מתאימות לחיים. על הירח אין אוויר, אין מים נוזליים, והטמפרטורות קיצוניות מאוד (חם מאוד ביום וקר מאוד בלילה).' }
+    ]
+},
+{
+    id: 'skeleton', icon: '🦴', color: '#8e24aa', title: 'מערכת השלד, העצמות והמפרקים',
+    qs: [
+        { q: 'כתבי שלושה תפקידים של מערכת השלד.', a: 'תמיכה ומבנה לגוף; הגנה על איברים פנימיים (גולגולת על המוח, צלעות על הלב והריאות, עמוד שדרה על חוט השדרה); תנועה יחד עם השרירים; ייצור תאי דם במח העצם; אגירת סידן.' },
+        { q: 'כתבי שלושה סוגי מפרקים, ולכל סוג – דוגמה ואיזו תנועה הוא מאפשר.', a: 'מפרק ציר – ברך, מרפק, אצבעות – תנועה בכיוון אחד (כיפוף ויישור) כמו ציר דלת. מפרק כדורי – כתף, ירך – תנועה לכל הכיוונים וסיבוב. מפרק סיבובי – בצוואר – סיבוב הראש מצד לצד. מפרק קבוע – גולגולת – אין תנועה.' },
+        { q: 'הסבירי איך השרירים מזיזים את היד כשמכופפים ומיישרים את המרפק.', a: 'השרירים מחוברים לעצמות בגידים ועובדים בזוגות. כשמכופפים – השריר הדו-ראשי (מקדימה) מתכווץ ומושך את עצם האמה, והתלת-ראשי (מאחור) מתרפה. כשמיישרים – התלת-ראשי מתכווץ והדו-ראשי מתרפה. שריר יכול רק למשוך, לא לדחוף.' },
+        { q: 'מה ההבדל בין גיד לרצועה? ומה התפקיד של הסחוס במפרק?', a: 'גיד מחבר שריר לעצם. רצועה מחברת עצם לעצם במפרק. הסחוס מרפד את קצות העצמות במפרק, כך שהן לא מתחככות ונשחקות ונעות בקלות.' }
+    ]
+},
+{
+    id: 'rocks', icon: '🪨', color: '#6d4c41', title: 'סלעים – תכונות וזיהוי',
+    qs: [
+        { q: 'כתבי את שלושת סוגי הסלעים לפי אופן ההיווצרות, ודוגמה לכל סוג.', a: 'סלעי משקע – נוצרים משכבות של חומרים ששקעו והתהדקו (גיר, דולומיט, קירטון, אבן חול, פוספט). סלעי יסוד (מגמתיים) – נוצרים מהתקררות מגמה או לבה (בזלת, גרניט). סלעים מותמרים – סלעים שהשתנו בגלל חום ולחץ (שיש שנוצר מגיר).' },
+        { q: 'קיבלת שתי אבנים לבנות. איך תבדקי בעזרת חומץ איזו מהן גיר? מה תראי?', a: 'מטפטפים חומץ (חומצה) על כל אבן. על הגיר יופיעו בועות (תסיסה) כי משתחרר פחמן דו-חמצני. על אבן שאינה גיר כמעט לא יקרה כלום (דולומיט מגיב רק כאבקה).' },
+        { q: 'כתבי שלוש בדיקות שאפשר לעשות כדי לזהות סלע, ומה כל בדיקה בודקת.', a: 'שריטה בציפורן/מסמר/זכוכית – בודקת קשיות. טפטוף חומץ – בודק תגובה לחומצה (גיר מתסיס). טפטוף מים – בודק נקבוביות וספיגת מים. וגם צבע, מרקם, גודל גרגירים, משקל, מאובנים ושכבות.' },
+        { q: 'איך נוצרה הבזלת שברמת הגולן, ואיך אפשר לזהות אותה?', a: 'הבזלת נוצרה מלבה שזרמה מהרי געש והתקררה והתמצקה – סלע יסוד. מזהים אותה כי היא כהה (שחורה-אפורה), כבדה, קשה, לפעמים עם חורים קטנים מבועות גז, ולא מגיבה לחומצה.' }
+    ]
+}
+];
+
+// ============================================================
+// State
+// ============================================================
+const APP_ID = 'grade5-science-open';
+let quiz = [];
+let qIndex = 0;
+let attempt = 1;
+let results = [];     // {q, topicTitle, score}
+let mode = 'exam';
+let currentTopic = null;
+
+function $(id) { return document.getElementById(id); }
+
+function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+function escapeHTML(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function aiStatus() { return window._aiStatus || { available: false, signedIn: false }; }
+
+function renderAIStatus() {
+    const s = aiStatus();
+    const el = $('ai-status');
+    if (s.signedIn && s.available) {
+        el.className = 'ai-status ok';
+        el.innerHTML = '🤖 <b>הבודק החכם מחובר!</b> אחרי כל תשובה תקבלי משוב וציון.';
+    } else if (!s.signedIn) {
+        el.className = 'ai-status warn';
+        el.innerHTML = `🔑 <b>כדי לקבל בדיקה חכמה מה-AI צריך להתחבר עם Google.</b><br>
+            גם בלי – אפשר לענות, לראות תשובה לדוגמה ולבדוק בעצמך.<br>
+            <button class="btn btn-google" onclick="window.signInForAI()">🔐 התחברות עם Google</button>`;
+    } else {
+        el.className = 'ai-status warn';
+        el.innerHTML = '⚠️ <b>בדיקת AI לא פעילה כרגע.</b> אפשר לענות, לראות תשובה לדוגמה ולבדוק בעצמך.';
+    }
+}
+window.addEventListener('ai-status-changed', renderAIStatus);
+
+function show(id) {
+    ['menu-screen', 'quiz-screen', 'result-screen'].forEach(s => $(s).classList.toggle('hidden', s !== id));
+    window.scrollTo(0, 0);
+}
+
+// ============================================================
+// Menu
+// ============================================================
+function showMenu() {
+    $('topics-grid').innerHTML = TOPICS.map((t, i) => `
+        <div class="topic-card" style="--c:${t.color}" onclick="startTopic(${i})">
+            <span class="t-icon">${t.icon}</span>
+            <span class="t-title">${i + 1}. ${t.title}</span>
+            <span class="t-meta">${t.qs.length} שאלות פתוחות</span>
+        </div>`).join('');
+    show('menu-screen');
+}
+
+function item(topic, q) { return { topicId: topic.id, topicTitle: topic.title, q: q.q, a: q.a }; }
+
+function startExam() {
+    mode = 'exam';
+    begin(shuffle(TOPICS.map(t => item(t, shuffle(t.qs)[0]))));
+}
+
+function startTopic(i) {
+    mode = 'topic';
+    currentTopic = i;
+    begin(TOPICS[i].qs.map(q => item(TOPICS[i], q)));
+}
+
+function begin(items) {
+    quiz = items;
+    qIndex = 0;
+    results = [];
+    show('quiz-screen');
+    renderQuestion();
+}
+
+// ============================================================
+// Question flow
+// ============================================================
+function totalScore() { return results.reduce((s, r) => s + r.score, 0); }
+
+function renderQuestion() {
+    const it = quiz[qIndex];
+    attempt = 1;
+    $('q-counter').textContent = `שאלה ${qIndex + 1} מתוך ${quiz.length}`;
+    $('q-topic').textContent = it.topicTitle;
+    $('q-score').textContent = `⭐ ${totalScore()} נק'`;
+    $('progress-bar').style.width = (qIndex / quiz.length * 100) + '%';
+    $('q-text').textContent = it.q;
+    const ta = $('answer');
+    ta.value = '';
+    ta.disabled = false;
+    $('check-btn').disabled = false;
+    $('answer-actions').classList.remove('hidden');
+    $('feedback-area').innerHTML = '';
+    $('after-actions').innerHTML = '';
+    ta.focus();
+}
+
+function feedbackClass(score) {
+    return score >= 3 ? 'good' : score === 2 ? 'mid' : 'low';
+}
+
+function modelAnswerHTML(it) {
+    return `<div class="feedback model"><div class="feedback-title">📘 תשובה לדוגמה:</div>${escapeHTML(it.a)}</div>`;
+}
+
+async function submitAnswer() {
+    const it = quiz[qIndex];
+    const answer = $('answer').value.trim();
+    if (answer.length < 3) {
+        $('feedback-area').innerHTML = '<div class="feedback low">✏️ כתבי תשובה קצת יותר ארוכה...</div>';
+        return;
+    }
+
+    $('answer').disabled = true;
+    $('check-btn').disabled = true;
+
+    if (!aiStatus().available) {
+        selfCheck(it);
+        return;
+    }
+
+    const prev = attempt === 2 ? $('feedback-area').innerHTML : '';
+    $('feedback-area').innerHTML = prev + `<div class="loading">🤖 הבודק החכם קורא את התשובה שלך <span class="dots"><span></span><span></span><span></span></span></div>`;
+
+    const res = await window.checkWithAI(it.q, it.a, answer, attempt);
+
+    if (!res.success || res.score === null) {
+        $('feedback-area').innerHTML = prev + '<div class="feedback low">😕 הבדיקה החכמה לא הצליחה הפעם. אפשר לבדוק לבד לפי התשובה לדוגמה.</div>';
+        selfCheck(it, true);
+        return;
+    }
+
+    const emoji = res.score >= 3 ? '🌟' : res.score === 2 ? '👍' : '💪';
+    $('feedback-area').innerHTML = prev + `
+        <div class="feedback ai ${feedbackClass(res.score)}"><div class="feedback-title">${emoji} משוב מהבודק החכם ${attempt === 2 ? '(ניסיון שני)' : ''} <span class="score-pill">${res.score}/3</span></div>${escapeHTML(res.feedback)}</div>`;
+
+    if (res.score >= 3 || attempt === 2) {
+        finishQuestion(res.score, res.score < 3);
+    } else {
+        $('after-actions').innerHTML = `
+            <button class="btn btn-orange" onclick="retry()">✏️ לשפר את התשובה</button>
+            <button class="btn btn-light" onclick="finishQuestion(${res.score}, true)">לוותר ולראות תשובה</button>`;
+    }
+}
+
+function retry() {
+    attempt = 2;
+    $('after-actions').innerHTML = '';
+    $('answer').disabled = false;
+    $('check-btn').disabled = false;
+    $('check-btn').textContent = '🤖 לבדיקה חוזרת';
+    $('answer').focus();
+}
+
+function selfCheck(it, keepFeedback) {
+    $('feedback-area').innerHTML = (keepFeedback ? $('feedback-area').innerHTML : '') + modelAnswerHTML(it) +
+        `<div class="feedback mid"><div class="feedback-title">🤔 השווי לתשובה שלך – כמה היא הייתה נכונה?</div></div>`;
+    $('after-actions').innerHTML = `
+        <button class="btn btn-green" onclick="finishQuestion(3, false)">🌟 מלאה ונכונה</button>
+        <button class="btn btn-orange" onclick="finishQuestion(2, false)">👍 חלקית</button>
+        <button class="btn btn-light" onclick="finishQuestion(0, false)">💪 לא ידעתי</button>`;
+}
+
+function finishQuestion(score, showModel) {
+    const it = quiz[qIndex];
+    results.push({ q: it.q, topicTitle: it.topicTitle, score });
+    if (showModel) $('feedback-area').innerHTML += modelAnswerHTML(it);
+    $('answer').disabled = true;
+    $('answer-actions').classList.add('hidden');
+    $('check-btn').textContent = '🤖 לבדיקה';
+    $('q-score').textContent = `⭐ ${totalScore()} נק'`;
+    const last = qIndex + 1 >= quiz.length;
+    $('after-actions').innerHTML = `<button class="btn btn-blue" onclick="nextQuestion()">${last ? 'לסיכום התוצאות 🏁' : 'לשאלה הבאה ←'}</button>`;
+}
+
+function nextQuestion() {
+    qIndex++;
+    if (qIndex < quiz.length) renderQuestion();
+    else showResult();
+}
+
+// ============================================================
+// Result
+// ============================================================
+function showResult() {
+    const max = quiz.length * 3;
+    const score = totalScore();
+    const pct = Math.round(score / max * 100);
+    let emoji = '💪', msg = 'כדאי לחזור על הסיכומים באפליקציית החזרה ולנסות שוב!';
+    if (pct >= 90) { emoji = '🏆'; msg = 'מצוין! את מסבירה כמו מדענית אמיתית!'; }
+    else if (pct >= 75) { emoji = '🌟'; msg = 'כל הכבוד! עוד קצת חזרה על הנושאים החלשים.'; }
+    else if (pct >= 55) { emoji = '👍'; msg = 'בכיוון הנכון! כדאי לחזור על הנושאים שסומנו.'; }
+
+    if (mode === 'exam' && typeof saveAppScore === 'function') saveAppScore(APP_ID, score, max);
+
+    const rows = results.map(r => `
+        <div class="review-row ${r.score < 3 ? 'weak' : ''}">
+            <span class="r-s">${r.score}/3 ${r.score >= 3 ? '✅' : '🔁'}</span>
+            <div class="r-q">${escapeHTML(r.topicTitle)}</div>
+            <div>${escapeHTML(r.q)}</div>
+        </div>`).join('');
+
+    const again = mode === 'exam'
+        ? `<button class="btn btn-primary" onclick="startExam()">📝 מבחן פתוח חדש</button>`
+        : `<button class="btn btn-primary" onclick="startTopic(${currentTopic})">🔄 שוב את הנושא</button>`;
+
+    $('result-panel').innerHTML = `
+        <div class="result-big">${emoji}</div>
+        <div class="result-score">${score} מתוך ${max} נקודות (${pct}%)</div>
+        <div class="result-msg">${msg}</div>
+        <div class="review">${rows}</div>
+        <div class="row">
+            ${again}
+            <a class="btn btn-light" href="grade5_science_review.html" style="text-decoration:none;">🔬 לאפליקציית החזרה (סיכומים)</a>
+            <button class="btn btn-light" onclick="showMenu()">🏠 לתפריט</button>
+        </div>`;
+    show('result-screen');
+}
+
+renderAIStatus();
+showMenu();
+</script>
+<script src="../../app-tracker.js"></script>
+</body>
+</html>
