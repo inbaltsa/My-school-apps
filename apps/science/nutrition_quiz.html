@@ -586,6 +586,7 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app-check.js";
 
 let aiService = null;
 let aiModel = null;
@@ -602,6 +603,16 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig, "ai-app");
+
+// Firebase AI Logic דורש אכיפת App Check — אותו מפתח reCAPTCHA כמו ב-firebase-homework.js
+try {
+    initializeAppCheck(app, {
+        provider: new ReCaptchaV3Provider('6Lc3ybEsAAAAAJpdWESSOGNXCqW764S9qIpsbc0k'),
+        isTokenAutoRefreshEnabled: true
+    });
+} catch (err) {
+    console.warn("⚠️ App Check not initialized:", err.message);
+}
 const auth = getAuth(app);
 
 // ==============================
