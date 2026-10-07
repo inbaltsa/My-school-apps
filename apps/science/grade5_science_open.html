@@ -278,6 +278,7 @@ const app = initializeApp(firebaseConfig, "ai-app");
 const auth = getAuth(app);
 
 let aiModel = null;
+let aiModelFallback = null;
 let aiAvailable = false;
 
 const TUTOR_SYSTEM_PROMPT = `אתה בודק מבחנים סבלני וחם לילדה בכיתה ו' בישראל, שמתכוננת למבחן מנהלת במדעים על חומרי כיתה ה' (ספר "במבט חדש").
@@ -303,10 +304,18 @@ async function initAI() {
         const { getAI, getGenerativeModel, GoogleAIBackend } =
             await import("https://www.gstatic.com/firebasejs/11.8.1/firebase-ai.js");
         const ai = getAI(app, { backend: new GoogleAIBackend() });
+        // gemini-2.5-flash "חושב" לפני התשובה, והחשיבה נספרת ב-maxOutputTokens.
+        // בלי לכבות אותה התשובה נקטעת לפני שורת הציון.
         aiModel = getGenerativeModel(ai, {
             model: "gemini-2.5-flash",
             systemInstruction: TUTOR_SYSTEM_PROMPT,
-            generationConfig: { temperature: 0.3, maxOutputTokens: 1500 }
+            generationConfig: { temperature: 0.3, maxOutputTokens: 2048, thinkingConfig: { thinkingBudget: 0 } }
+        });
+        // גיבוי: בלי thinkingConfig ועם מקום גדול, למקרה שהבקשה הראשונה נכשלת
+        aiModelFallback = getGenerativeModel(ai, {
+            model: "gemini-2.5-flash",
+            systemInstruction: TUTOR_SYSTEM_PROMPT,
+            generationConfig: { temperature: 0.3, maxOutputTokens: 8192 }
         });
         aiAvailable = true;
     } catch (err) {
@@ -338,20 +347,37 @@ ${attempt === 1 ? 'ניסיון ראשון' : 'ניסיון שני'}.
 """
 ${studentAnswer}
 """`;
-    try {
-        const result = await aiModel.generateContent(prompt);
-        const text = result.response.text();
-        const m = text.match(/\[ציון:\s*(\d)\s*\/\s*3\]/);
-        return {
-            success: true,
-            score: m ? Math.min(3, parseInt(m[1], 10)) : null,
-            feedback: text.replace(/\[ציון:\s*\d\s*\/\s*3\]/, '').trim()
-        };
-    } catch (err) {
-        console.error("AI check error:", err);
-        return { success: false };
+    let lastError = '';
+    let lastText = '';
+    for (const model of [aiModel, aiModelFallback]) {
+        try {
+            const result = await model.generateContent(prompt);
+            const text = (result.response.text() || '').trim();
+            const finish = result.response.candidates?.[0]?.finishReason;
+            const parsed = parseScore(text);
+            if (parsed.score !== null) return { success: true, ...parsed };
+            lastText = parsed.feedback;
+            lastError = 'אין ציון בתשובה' + (finish ? ` (${finish})` : '');
+            console.warn("AI answer without score:", finish, text);
+        } catch (err) {
+            lastError = err.message || String(err);
+            console.error("AI check error:", err);
+        }
     }
+    return { success: false, error: lastError, feedback: lastText };
 };
+
+function parseScore(text) {
+    let m = text.match(/\[\s*ציון\s*:?\s*(\d)\s*\/\s*3\s*\]/);
+    if (!m) {
+        const all = [...text.matchAll(/(\d)\s*\/\s*3/g)];
+        m = all.length ? all[all.length - 1] : null;
+    }
+    return {
+        score: m ? Math.min(3, parseInt(m[1], 10)) : null,
+        feedback: text.replace(/\[\s*ציון\s*:?\s*\d\s*\/\s*3\s*\]/, '').trim()
+    };
+}
 
 window.signInForAI = async function() {
     try {
@@ -614,9 +640,14 @@ async function submitAnswer() {
 
     const res = await window.checkWithAI(it.q, it.a, answer, attempt);
 
-    if (!res.success || res.score === null) {
-        $('feedback-area').innerHTML = prev + '<div class="feedback low">😕 הבדיקה החכמה לא הצליחה הפעם. אפשר לבדוק לבד לפי התשובה לדוגמה.</div>';
+    if (!res.success) {
+        const partial = res.feedback
+            ? `<div class="feedback ai"><div class="feedback-title">🤖 משוב מהבודק החכם (בלי ציון):</div>${escapeHTML(res.feedback)}</div>`
+            : '';
+        $('feedback-area').innerHTML = prev + partial +
+            `<div class="feedback low">😕 הבדיקה החכמה לא הצליחה הפעם. אפשר לנסות שוב, או לבדוק לבד לפי התשובה לדוגמה.<div style="font-size:0.8em;color:#888;margin-top:4px;">${escapeHTML(res.error || '')}</div></div>`;
         selfCheck(it, true);
+        $('after-actions').insertAdjacentHTML('afterbegin', '<button class="btn btn-primary" onclick="recheck()">🔄 לנסות בדיקה חכמה שוב</button>');
         return;
     }
 
@@ -631,6 +662,12 @@ async function submitAnswer() {
             <button class="btn btn-orange" onclick="retry()">✏️ לשפר את התשובה</button>
             <button class="btn btn-light" onclick="finishQuestion(${res.score}, true)">לוותר ולראות תשובה</button>`;
     }
+}
+
+function recheck() {
+    $('after-actions').innerHTML = '';
+    $('feedback-area').innerHTML = '';
+    submitAnswer();
 }
 
 function retry() {
