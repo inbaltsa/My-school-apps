@@ -1,12 +1,5 @@
 const homeworkData = [
     {
-        "id": "328",
-        "grade": 4,
-        "subject": "אנגלית",
-        "task": "p. 10, ex. 8",
-        "date": "08/09"
-    },
-    {
         "id": "480",
         "grade": 4,
         "subject": "אנגלית",
@@ -84,6 +77,13 @@ const homeworkData = [
         "date": "08/10"
     },
     {
+        "id": "custom-tree-20261009",
+        "grade": 4,
+        "subject": "משימה ביתית",
+        "task": "🪴 להשקות את העץ במרפסת",
+        "date": "09/10"
+    },
+    {
         "id": "377",
         "grade": 4,
         "subject": "מתמטיקה",
@@ -131,13 +131,6 @@ const homeworkData = [
         "subject": "אנגלית",
         "task": "w. b. p. 8-9",
         "date": "06/10"
-    },
-    {
-        "id": "326",
-        "grade": 6,
-        "subject": "מתמטיקה",
-        "task": "בחוברת עמודים 5-10",
-        "date": "08/09"
     },
     {
         "id": "453",
