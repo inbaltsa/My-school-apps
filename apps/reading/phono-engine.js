@@ -16,6 +16,13 @@ const PG = (function () {
     return window.getPhonoStationById ? window.getPhonoStationById(id) : null;
   }
 
+  // יעד כפתור הבית / "חזרה למפה": אם לתחנה יש back משלה (למשל מסלול
+  // כיתה א') — חוזרים לשם; אחרת, ברירת המחדל — מפת המודעות הפונולוגית.
+  function backHref() {
+    try { const st = currentStation(); if (st && st.back) return st.back; } catch (e) {}
+    return '../phono.html';
+  }
+
   // השמעת מקור אודיו ישיר (dataURL של הקלטה מהאולפן), עם עצירת אודיו קודם
   function playVoice(src) {
     if (!RG.soundOn || !src) return false;
@@ -44,7 +51,7 @@ const PG = (function () {
   function mountTopBar(title) {
     RG.mountTopBar(title || '');
     const home = document.querySelector('.rg-topbar .rg-home');
-    if (home) { home.setAttribute('href', '../phono.html'); home.setAttribute('title', 'חזרה למפה'); }
+    if (home) { home.setAttribute('href', backHref()); home.setAttribute('title', 'חזרה למפה'); }
   }
 
   function mountBackground(theme) { RG.mountBackground(theme); }
@@ -92,7 +99,7 @@ const PG = (function () {
          <div class="rg-sub">${opts.correct} מתוך ${opts.total} 🎉</div>
          <div class="rg-btns">
            <button class="rg-btn primary" id="pg-again">🔁 עוד פעם</button>
-           <a class="rg-btn ghost" href="../phono.html">🗺️ חזרה למפה</a>
+           <a class="rg-btn ghost" href="${backHref()}">🗺️ חזרה למפה</a>
          </div>
        </div>`;
     document.body.appendChild(overlay);

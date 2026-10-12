@@ -260,7 +260,29 @@ function buildPhonoStations() {
 }
 
 const PHONO_STATIONS = buildPhonoStations();
-function getPhonoStationById(id) { return PHONO_STATIONS.find(s => s.id === id) || null; }
+
+// ============================================================
+//  כיתה א' — כמה משחקי צלילים קצרים על צלילי א–ה בלבד
+// ------------------------------------------------------------
+//  אותם משחקים (מיון צליל פותח + בלש הצלילים), מוגבלים לצלילים
+//  של האותיות א ב ג ד ה. תחנות נפרדות מ-PHONO_STATIONS (המסע
+//  הפונולוגי המלא ומונה הכוכבים שלו אינם מושפעים). back מחזיר
+//  למפת כיתה א'.
+// ============================================================
+const GRADE1_PHONO_SOUNDS = ['א', 'ב', 'ג', 'ד', 'ה'];
+const GRADE1_PHONO_STATIONS = [
+  { id: 'g1p_catch', type: 'catch', sounds: GRADE1_PHONO_SOUNDS.slice(),
+    title: PHONO_TYPE_META.catch.title, emoji: PHONO_TYPE_META.catch.emoji,
+    short: 'מיון צלילים', back: '../grade1.html' },
+  { id: 'g1p_odd', type: 'odd', sounds: GRADE1_PHONO_SOUNDS.slice(),
+    title: PHONO_TYPE_META.odd.title, emoji: PHONO_TYPE_META.odd.emoji,
+    short: PHONO_TYPE_META.odd.short, back: '../grade1.html' },
+];
+
+function getPhonoStationById(id) {
+  return PHONO_STATIONS.find(s => s.id === id) ||
+         GRADE1_PHONO_STATIONS.find(s => s.id === id) || null;
+}
 
 // ============================================================
 //  בנק "קסם החיבור" — מילים מחולקות לחלקים (הברות) שאפשר לבטא בבירור.
@@ -300,6 +322,8 @@ window.PHONO_WORDS = PHONO_WORDS;
 window.PHONO_GROUPS = PHONO_GROUPS;
 window.PHONO_TYPE_META = PHONO_TYPE_META;
 window.PHONO_STATIONS = PHONO_STATIONS;
+window.GRADE1_PHONO_SOUNDS = GRADE1_PHONO_SOUNDS;
+window.GRADE1_PHONO_STATIONS = GRADE1_PHONO_STATIONS;
 window.PHONO_BLEND = PHONO_BLEND;
 window.phonoBlendParts = phonoBlendParts;
 window.getPhonoStationById = getPhonoStationById;
