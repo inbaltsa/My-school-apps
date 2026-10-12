@@ -49,18 +49,14 @@
   <div class="hud" id="hud"></div>
   <div class="sea" id="sea"></div>
 
-  <script src="../reading-data.js?v=19"></script>
+  <script src="../reading-data.js?v=20"></script>
   <script src="../reading-progress.js?v=16"></script>
   <script src="../reading-profile.js?v=16"></script>
   <script src="../reading-voices.js?v=18"></script>
   <script src="../reading-engine.js?v=16"></script>
   <script>
     RG.audioBase = '../../../letters/';
-    let station = RG.currentStation();
-    // מצב מוגבל: ?letters=אבגדה — בונה תחנה אד-הוק עם האותיות שנבחרו (לכיתה א')
-    (function(){ const lp = new URLSearchParams(location.search).get('letters');
-      if (lp) { const ls = lp.split('').filter(c => (window.READING_LETTERS || {})[c]);
-        if (ls.length) station = { id: 'g1-hear-' + ls.join(''), type: 'hear', letters: ls }; } })();
+    const station = RG.currentStation();
 
     if (!station || station.type !== 'hear') {
       document.getElementById('sea').innerHTML =
