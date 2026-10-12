@@ -251,6 +251,52 @@ function lettersUpToStation(stationId) {
   return seen;
 }
 
+// ============================================================
+// כיתה א' — אותיות א–ה (לפי הסדר של המורה)  ·  מסלולים קצרים
+// ------------------------------------------------------------
+// עובדים רק על חמש האותיות הראשונות, בכמה מסלולים קצרים שמשתמשים
+// באותו סט משחקים של המסע הגדול — בלי לגעת במשחקים עצמם.
+// התחנות כאן נפרדות מ-READING_STATIONS (המסע הגדול לא מושפע),
+// והמשחקים מזהים אותן דרך ?station= ו-getStationById.
+// ============================================================
+const GRADE1_LETTERS = ['א', 'ב', 'ג', 'ד', 'ה'];
+
+const GRADE1_TRACKS = [
+  { id: 't1', name: 'מכירים את האותיות', emoji: '🌱', types: ['meet', 'hunt', 'hear'] },
+  { id: 't2', name: 'משחקים ומתרגלים',   emoji: '🎨', types: ['sound', 'memory', 'write'] },
+  { id: 't3', name: 'אלופי האותיות',     emoji: '🏆', types: ['quiz'] },
+];
+
+function buildGrade1Stations() {
+  const META = {
+    meet:   { title: 'מכירים את האותיות', emoji: '👋', short: 'האותיות' },
+    hunt:   { title: 'ציד האותיות',       emoji: '🔍', short: 'ציד' },
+    hear:   { title: 'איזו אות שמעת?',     emoji: '👂', short: 'מה שמעת?' },
+    sound:  { title: 'צליל פותח',          emoji: '🔤', short: 'צליל פותח' },
+    memory: { title: 'זיכרון אותיות',      emoji: '🧩', short: 'זיכרון' },
+    write:  { title: 'כותבים את האות',     emoji: '✍️', short: 'כתיבה' },
+    quiz:   { title: 'מסע האוצרות',        emoji: '💎', short: 'אוצרות' },
+  };
+  const L = GRADE1_LETTERS.slice();
+  const stations = [];
+  GRADE1_TRACKS.forEach(track => {
+    track.types.forEach(type => {
+      const m = META[type];
+      stations.push({
+        id: 'g1a_' + track.id + '_' + type,
+        type, letters: L.slice(),
+        title: m.title, emoji: m.emoji, short: m.short,
+        trackId: track.id, trackName: track.name, trackEmoji: track.emoji,
+        groupName: 'אותיות א–ה',
+        isBoss: type === 'quiz',
+      });
+    });
+  });
+  return stations;
+}
+
+const GRADE1_STATIONS = buildGrade1Stations();
+
 // חשיפה גלובלית
 window.READING_LETTERS = READING_LETTERS;
 window.READING_PHRASES = READING_PHRASES;
@@ -260,4 +306,10 @@ window.letterWords = letterWords;
 window.primaryWord = primaryWord;
 window.pickWord = pickWord;
 window.lettersUpToStation = lettersUpToStation;
-window.getStationById = id => READING_STATIONS.find(s => s.id === id) || null;
+window.GRADE1_LETTERS = GRADE1_LETTERS;
+window.GRADE1_TRACKS = GRADE1_TRACKS;
+window.GRADE1_STATIONS = GRADE1_STATIONS;
+window.getStationById = id =>
+  READING_STATIONS.find(s => s.id === id) ||
+  GRADE1_STATIONS.find(s => s.id === id) ||
+  null;
