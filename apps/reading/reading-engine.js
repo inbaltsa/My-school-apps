@@ -294,7 +294,7 @@ const RG = (function () {
     const bar = document.createElement('div');
     bar.className = 'rg-topbar';
     bar.innerHTML =
-      `<a class="rg-home" href="../journey.html" title="חזרה למפה">🏠</a>` +
+      `<a class="rg-home" href="${backHref()}" title="חזרה למפה">🏠</a>` +
       `<span class="rg-title"><span class="rg-logo">${unicorn(30)}</span>${title || ''}</span>` +
       `<button class="rg-sound" title="סאונד">🔊</button>`;
     document.body.appendChild(bar);
@@ -358,7 +358,7 @@ const RG = (function () {
          <div class="rg-sub">ענית נכון על ${opts.correct} מתוך ${opts.total}</div>
          <div class="rg-btns">
            <button class="rg-btn primary" id="rg-again">🔁 עוד פעם</button>
-           <a class="rg-btn ghost" href="../journey.html">🗺️ חזרה למפה</a>
+           <a class="rg-btn ghost" href="${backHref()}">🗺️ חזרה למפה</a>
          </div>
        </div>`;
     document.body.appendChild(overlay);
@@ -377,6 +377,13 @@ const RG = (function () {
     const id = new URLSearchParams(location.search).get('station');
     const st = window.getStationById ? window.getStationById(id) : null;
     return st;
+  }
+
+  // יעד כפתור הבית / "חזרה למפה": אם לתחנה יש back משלה (למשל מסלול
+  // כיתה א') — חוזרים לשם; אחרת, ברירת המחדל — המסע הגדול.
+  function backHref() {
+    try { const st = currentStation(); if (st && st.back) return st.back; } catch (e) {}
+    return '../journey.html';
   }
 
   // ערבוב מערך
