@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <!-- Google Analytics (מזהה האתר הגדול) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W58S98V8J0"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-W58S98V8J0');
+    </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>זיכרון זוגות אותיות</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;800&display=swap">
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{font-family:'Heebo',system-ui,sans-serif;color:#124b42;min-height:100vh;
+       display:flex;flex-direction:column;background:linear-gradient(180deg,#e2f7f2,#c3eee6);}
+  .hud{text-align:center;font-weight:800;font-size:1.2em;color:#0d8c77;padding:8px;background:rgba(255,255,255,.8);}
+  .dots{display:flex;gap:7px;justify-content:center;margin-top:4px;}
+  .dot{width:12px;height:12px;border-radius:50%;background:#bfe6df;}
+  .dot.on{background:#0d8c77;}
+  .stage{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+         padding:12px;overflow:hidden;}
+  .grid{display:grid;gap:10px;width:100%;max-width:360px;margin:0 auto;}
+  .card{aspect-ratio:1;perspective:700px;cursor:pointer;}
+  .inner{position:relative;width:100%;height:100%;transition:transform .4s;transform-style:preserve-3d;}
+  .card.flip .inner,.card.matched .inner{transform:rotateY(180deg);}
+  .face{position:absolute;inset:0;border-radius:16px;display:flex;align-items:center;justify-content:center;
+        backface-visibility:hidden;box-shadow:0 5px 12px rgba(0,0,0,.15);}
+  .front{background:linear-gradient(160deg,#5fcabb,#0d8c77);color:#fff;font-size:2rem;}
+  .back{background:#fff;transform:rotateY(180deg);border:3px solid #8fded1;}
+  .back .big{font-size:3rem;font-weight:800;color:#0d8c77;line-height:1;}
+  .card.matched{animation:pop .4s;}
+  .card.matched .inner{box-shadow:0 0 0 4px #66bb6a;border-radius:18px;}
+  @keyframes pop{40%{transform:scale(1.08)}}
+  .card.bad .inner{animation:shake .4s;}
+  @keyframes shake{25%{transform:rotateY(180deg) translateX(-5px)}75%{transform:rotateY(180deg) translateX(5px)}}
+  .mascot{position:absolute;bottom:4px;left:6px;z-index:3;pointer-events:none;animation:cheer 1.2s ease-in-out infinite;}
+  @keyframes cheer{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-7px) rotate(4deg)}}
+</style>
+</head>
+<body>
+  <div class="hud" id="hud"></div>
+  <div class="stage" id="stage">
+    <div class="grid" id="grid"></div>
+    <div class="mascot" id="mascot"></div>
+  </div>
+
+  <script src="../reading-data.js?v=21"></script>
+  <script src="../reading-progress.js?v=16"></script>
+  <script src="../reading-profile.js?v=16"></script>
+  <script src="../reading-voices.js?v=18"></script>
+  <script src="../reading-engine.js?v=17"></script>
+  <script>
+    RG.audioBase = '../../../letters/';
+    const station = RG.currentStation();
+    const stage = document.getElementById('stage');
+
+    if (!station || station.type !== 'letterpair') {
+      stage.innerHTML = '<p style="padding:20px">לא נמצאה תחנה. <a href="../grade1.html">חזרה למפה</a></p>';
+    } else {
+      RG.mountTopBar('זיכרון זוגות אותיות', { bg: false });
+      document.getElementById('mascot').innerHTML = RG.unicorn(54);
+      const pool = station.letters;
+      const full = !!station.full;
+      const chunk = (a, n) => { const r = []; for (let i = 0; i < a.length; i += n) r.push(a.slice(i, i + n)); return r; };
+      // בקבוצה: לוח אחד. באתגר גדול (full): כמה לוחות שמכסים את כל האותיות.
+      const boards = full ? chunk(RG.shuffle(pool), 4) : [pool.slice()];
+      const totalPairs = boards.reduce((a, b) => a + b.length, 0);
+      let boardIdx = 0, matched = 0, mismatches = 0;
+      let first = null, locked = false, boardMatched = 0;
+
+      const grid = document.getElementById('grid');
+      setupBoard();
+
+      function setupBoard() {
+        const letters = boards[boardIdx];
+        boardMatched = 0; first = null; locked = false;
+        // שני קלפים זהים לכל אות — מוצאים זוגות של אותה אות
+        const cards = [];
+        letters.forEach(l => { cards.push({ letter: l }); cards.push({ letter: l }); });
+        RG.shuffle(cards);
+        const cols = cards.length <= 6 ? 3 : 4;
+        grid.style.gridTemplateColumns = `repeat(${cols},1fr)`;
+        grid.innerHTML = '';
+        cards.forEach(c => {
+          const el = document.createElement('div');
+          el.className = 'card';
+          el.innerHTML = `<div class="inner"><div class="face front">❓</div>
+                          <div class="face back"><div class="big">${c.letter}</div></div></div>`;
+          el.onclick = () => flip(el, c);
+          grid.appendChild(el);
+        });
+        updateHud();
+      }
+
+      function flip(el, c) {
+        if (locked || el.classList.contains('flip') || el.classList.contains('matched')) return;
+        el.classList.add('flip');
+        RG.playLetter(c.letter);
+        if (!first) { first = { el, c }; return; }
+        locked = true;
+        if (first.el !== el && first.c.letter === c.letter) {
+          // התאמה!
+          const a = first, b = { el, c };
+          setTimeout(() => {
+            a.el.classList.add('matched'); b.el.classList.add('matched');
+            RG.ding();
+            boardMatched++; matched++; first = null; locked = false;
+            updateHud();
+            if (boardMatched >= boards[boardIdx].length) {
+              boardIdx++;
+              if (boardIdx >= boards.length) return win();
+              setTimeout(setupBoard, 700);
+            }
+          }, 500);
+        } else {
+          mismatches++;
+          RG.buzz();
+          const a = first, b = { el, c };
+          a.el.classList.add('bad'); b.el.classList.add('bad');
+          setTimeout(() => {
+            a.el.classList.remove('flip', 'bad'); b.el.classList.remove('flip', 'bad');
+            first = null; locked = false;
+          }, 950);
+        }
+      }
+
+      function updateHud() {
+        let extra = '';
+        if (full) {
+          let dots = '';
+          for (let i = 0; i < boards.length; i++) dots += `<span class="dot ${i < boardIdx ? 'on' : ''}"></span>`;
+          extra = `<div class="dots">${dots}</div>`;
+        }
+        document.getElementById('hud').innerHTML = `מצאו את הזוגות! 🔤 (אות ↔ אות זהה)${extra}`;
+      }
+
+      function win() {
+        RG.finish({ stationId: station.id, correct: totalPairs, total: totalPairs + mismatches,
+                    replay: () => { boardIdx = 0; matched = 0; mismatches = 0; setupBoard(); } });
+      }
+    }
+  </script>
+</body>
+</html>

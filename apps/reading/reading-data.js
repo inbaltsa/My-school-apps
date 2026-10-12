@@ -263,7 +263,7 @@ const GRADE1_LETTERS = ['א', 'ב', 'ג', 'ד', 'ה'];
 
 const GRADE1_TRACKS = [
   { id: 't1', name: 'מכירים את האותיות', emoji: '🌱', types: ['meet', 'hunt', 'hear'] },
-  { id: 't2', name: 'משחקים ומתרגלים',   emoji: '🎨', types: ['sound', 'memory', 'write'] },
+  { id: 't2', name: 'משחקים ומתרגלים',   emoji: '🎨', types: ['sound', 'memory', 'letterpair', 'write'] },
   { id: 't3', name: 'אלופי האותיות',     emoji: '🏆', types: ['quiz'] },
 ];
 
@@ -273,7 +273,8 @@ function buildGrade1Stations() {
     hunt:   { title: 'ציד האותיות',       emoji: '🔍', short: 'ציד' },
     hear:   { title: 'איזו אות שמעת?',     emoji: '👂', short: 'מה שמעת?' },
     sound:  { title: 'צליל פותח',          emoji: '🔤', short: 'צליל פותח' },
-    memory: { title: 'זיכרון אותיות',      emoji: '🧩', short: 'זיכרון' },
+    memory: { title: 'זיכרון אות ותמונה',  emoji: '🧩', short: 'אות ותמונה' },
+    letterpair: { title: 'זיכרון זוגות אותיות', emoji: '🎴', short: 'זוגות אותיות' },
     write:  { title: 'כותבים את האות',     emoji: '✍️', short: 'כתיבה' },
     quiz:   { title: 'מסע האוצרות',        emoji: '💎', short: 'אוצרות' },
   };
