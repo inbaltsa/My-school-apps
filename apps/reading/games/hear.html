@@ -56,7 +56,11 @@
   <script src="../reading-engine.js?v=16"></script>
   <script>
     RG.audioBase = '../../../letters/';
-    const station = RG.currentStation();
+    let station = RG.currentStation();
+    // מצב מוגבל: ?letters=אבגדה — בונה תחנה אד-הוק עם האותיות שנבחרו (לכיתה א')
+    (function(){ const lp = new URLSearchParams(location.search).get('letters');
+      if (lp) { const ls = lp.split('').filter(c => (window.READING_LETTERS || {})[c]);
+        if (ls.length) station = { id: 'g1-hear-' + ls.join(''), type: 'hear', letters: ls }; } })();
 
     if (!station || station.type !== 'hear') {
       document.getElementById('sea').innerHTML =
