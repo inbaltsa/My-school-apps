@@ -289,6 +289,7 @@ function buildGrade1Stations() {
         trackId: track.id, trackName: track.name, trackEmoji: track.emoji,
         groupName: 'אותיות א–ה',
         isBoss: type === 'quiz',
+        back: '../grade1.html',   // כפתור הבית/המפה חוזר למסלול כיתה א', לא למסע הגדול
       });
     });
   });
