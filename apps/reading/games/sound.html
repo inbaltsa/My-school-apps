@@ -69,7 +69,6 @@
   <div class="stage" id="stage">
     <div class="pic" id="pic" onclick="playWordAgain()">
       <span class="emo" id="emo">❓</span>
-      <span class="word" id="word"></span>
       <span class="say">לחצי לשמוע שוב 🔊</span>
     </div>
     <div class="instruction">לאיזה בית שייכת המילה? 🏠 (לפי הצליל הראשון)</div>
@@ -143,7 +142,6 @@
         const pic = document.getElementById('pic');
         pic.className = 'pic';
         document.getElementById('emo').textContent = curWord.emoji;
-        document.getElementById('word').textContent = curWord.word;
         updateHud();
         setTimeout(() => RG.playWord(target, curWord), 400);
       }
