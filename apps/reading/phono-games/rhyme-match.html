@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W58S98V8J0"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+      gtag('js',new Date());gtag('config','G-W58S98V8J0');</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>זוגות שמתחרזים 🎵</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;800&display=swap">
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Heebo',system-ui,sans-serif;color:#2a2350;text-align:center;
+       background:linear-gradient(180deg,#e6f0ff 0%,#efe3ff 100%);min-height:100vh;
+       -webkit-user-select:none;user-select:none;touch-action:manipulation;}
+  .stage{padding:14px 12px 40px;max-width:560px;margin:0 auto;}
+  .instr{font-weight:800;color:#4a2f9e;font-size:1.1rem;margin:4px 0 2px;}
+  .instr .sub{display:block;font-weight:700;color:#8a7fb8;font-size:.82em;margin-top:2px;}
+  .progress{color:#8a7fb8;font-weight:700;font-size:.95rem;margin:4px 0 8px;}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:440px;margin:10px auto 0;}
+  @media(max-width:420px){ .grid{grid-template-columns:repeat(2,1fr);} }
+  .card{background:#fff;border-radius:20px;box-shadow:0 6px 16px rgba(0,0,0,.12);
+        aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;
+        font-size:min(16vw,58px);cursor:pointer;border:4px solid #d1c4e9;transition:transform .12s,border-color .12s;}
+  .card:active{transform:scale(.95);}
+  .card.sel{border-color:#ffd54f;box-shadow:0 0 0 4px #ffe9a8,0 8px 18px rgba(0,0,0,.18);}
+  .card.matched{border-color:#66bb6a;background:#eaffea;cursor:default;animation:pop .5s;}
+  .card.bad{animation:shake .4s;border-color:#e53935;}
+  @keyframes pop{40%{transform:scale(1.1)}}
+  @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .mascot{margin-top:14px;}
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="instr">התאימו מילים שמתחרזות! 🎵
+      <span class="sub">געו בשתי מילים שנשמעות דומה בסוף</span></div>
+    <div class="progress" id="prog"></div>
+    <div class="grid" id="grid"></div>
+    <div class="mascot" id="mascot"></div>
+  </div>
+
+  <script src="../phono-data.js?v=20"></script>
+  <script src="../reading-progress.js?v=16"></script>
+  <script src="../reading-engine.js?v=17"></script>
+  <script src="../reading-voices.js?v=18"></script>
+  <script src="../phono-engine.js?v=18"></script>
+  <script>
+    const station = PG.currentStation() || { id:'g1p_rhyme' };
+    PG.mountTopBar('זוגות שמתחרזים 🎵');
+    document.getElementById('mascot').innerHTML = PG.unicorn(52);
+
+    const PAIRS = 4;                       // כמה זוגות על הלוח
+    const grid = document.getElementById('grid'), progEl = document.getElementById('prog');
+    let cards = [], first = null, locked = false, matched = 0, mismatches = 0;
+
+    function buildBoard() {
+      const groups = phonoShuffle(phonoRimeGroups());
+      const used = new Set();
+      cards = [];
+      let pid = 0;
+      for (const g of groups) {
+        if (pid >= PAIRS) break;
+        const pick = phonoShuffle(g).filter(w => !used.has(w.emoji));
+        if (pick.length < 2) continue;
+        const a = pick[0], b = pick[1];
+        used.add(a.emoji); used.add(b.emoji);
+        cards.push({ w: a, pid }, { w: b, pid });
+        pid++;
+      }
+      return phonoShuffle(cards);
+    }
+
+    function render() {
+      const deck = buildBoard();
+      matched = 0; first = null; locked = false;
+      grid.innerHTML = '';
+      deck.forEach(c => {
+        const el = document.createElement('div');
+        el.className = 'card';
+        el.textContent = c.w.emoji;
+        el.onclick = () => tap(el, c);
+        c.el = el;
+        grid.appendChild(el);
+      });
+      updateProg();
+    }
+
+    function tap(el, c) {
+      if (locked || el.classList.contains('matched') || el === (first && first.el)) {
+        if (!el.classList.contains('matched')) PG.playWord(c.w);   // לחיצה חוזרת — שומעים שוב
+        return;
+      }
+      PG.playWord(c.w);
+      el.classList.add('sel');
+      if (!first) { first = { el, c }; return; }
+      locked = true;
+      if (first.c.pid === c.pid) {               // מתחרזים!
+        setTimeout(() => {
+          first.el.classList.remove('sel'); el.classList.remove('sel');
+          first.el.classList.add('matched'); el.classList.add('matched');
+          PG.ding();
+          matched++; first = null; locked = false;
+          updateProg();
+          if (matched >= cards.length / 2) setTimeout(win, 650);
+        }, 450);
+      } else {                                    // לא מתחרזים
+        mismatches++;
+        PG.buzz();
+        const a = first;
+        a.el.classList.add('bad'); el.classList.add('bad');
+        setTimeout(() => {
+          a.el.classList.remove('sel', 'bad'); el.classList.remove('sel', 'bad');
+          first = null; locked = false;
+        }, 750);
+      }
+    }
+
+    function updateProg() {
+      progEl.textContent = `מצאתם ${matched} מתוך ${cards.length / 2} זוגות`;
+    }
+
+    function win() {
+      const pairs = cards.length / 2;
+      PG.finish({ stationId: station.id, correct: pairs, total: pairs + mismatches,
+        replay() { mismatches = 0; render(); } });
+    }
+
+    render();
+  </script>
+</body>
+</html>
