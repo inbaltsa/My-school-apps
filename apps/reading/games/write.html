@@ -75,7 +75,8 @@
       RG.mountTopBar('כתיבת האות', { bg: false });
       document.getElementById('mascot').innerHTML = RG.unicorn(56);
       const letters = station.letters;
-      const THRESH = 0.55;
+      const COV_THRESH = 0.75;   // כמה מהאות צריך למלא כדי לסיים
+      const PREC_THRESH = 0.45;  // כמה מהציור צריך להיות *בתוך* האות (מונע קשקוש)
       let idx = 0, done = 0, locked = false;
 
       // גודל לוח מרובע שמתאים למסך
@@ -88,7 +89,7 @@
       const mask = document.createElement('canvas'); mask.width = mask.height = side;
       const mc = mask.getContext('2d');
 
-      let letterIdx = [], letterCount = 1;
+      let inLetter = new Uint8Array(side * side), letterCount = 1;
 
       function letterPath(ctx, color) {
         ctx.clearRect(0, 0, side, side);
@@ -104,16 +105,19 @@
         letterPath(bgc, '#d7e6f5');                 // אות רפאים לעקוב אחריה
         letterPath(mc, '#000');                      // מסכה למדידת כיסוי
         const md = mc.getImageData(0, 0, side, side).data;
-        letterIdx = [];
-        for (let i = 0; i < md.length; i += 4) if (md[i + 3] > 20) letterIdx.push(i + 3);
-        letterCount = Math.max(1, letterIdx.length);
+        inLetter = new Uint8Array(side * side);
+        let n = 0;
+        for (let p = 0; p < inLetter.length; p++) {
+          if (md[(p << 2) + 3] > 20) { inLetter[p] = 1; n++; }
+        }
+        letterCount = Math.max(1, n);
         updateHud(0);
         setTimeout(() => RG.playLetter(letters[idx]), 350);
       }
 
       // ציור באצבע/עכבר
       let drawing = false, last = null;
-      dc.lineWidth = Math.round(side * 0.1);
+      dc.lineWidth = Math.round(side * 0.075);
       dc.lineCap = dc.lineJoin = 'round';
       dc.strokeStyle = '#ff6d00';
       function pt(e) { const r = draw.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
@@ -137,11 +141,14 @@
 
       function checkCoverage() {
         const dd = dc.getImageData(0, 0, side, side).data;
-        let covered = 0;
-        for (const a of letterIdx) if (dd[a] > 20) covered++;
-        const cov = covered / letterCount;
+        let inside = 0, total = 0;
+        for (let p = 0; p < inLetter.length; p++) {
+          if (dd[(p << 2) + 3] > 40) { total++; if (inLetter[p]) inside++; }
+        }
+        const cov = inside / letterCount;            // כמה מהאות מולא
+        const prec = total ? inside / total : 0;      // כמה מהציור נפל בתוך האות
         updateHud(cov);
-        if (cov >= THRESH && !locked) success();
+        if (cov >= COV_THRESH && prec >= PREC_THRESH && !locked) success();
       }
 
       function success() {
@@ -172,7 +179,7 @@
           `עקבי עם האצבע על האות <b style="color:#ef6c00">${letters[idx]}</b>
            <span class="sfx" id="sfx">🔊</span>
            <div class="dots">${dots}</div>
-           <div class="cover"><i style="width:${Math.min(100, Math.round(cov / THRESH * 100))}%"></i></div>`;
+           <div class="cover"><i style="width:${Math.min(100, Math.round(cov / COV_THRESH * 100))}%"></i></div>`;
         document.getElementById('sfx').onclick = () => RG.playLetter(letters[idx]);
       }
 

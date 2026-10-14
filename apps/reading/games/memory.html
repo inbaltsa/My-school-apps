@@ -88,7 +88,11 @@
           cards.push({ letter: l, kind: 'L' });
           cards.push({ letter: l, kind: 'P', word: pickWord(l) });
         });
-        RG.shuffle(cards);
+        // ערבוב במקום (RG.shuffle מחזיר עותק — צריך לערבב את המערך עצמו)
+        for (let i = cards.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [cards[i], cards[j]] = [cards[j], cards[i]];
+        }
         const cols = cards.length <= 6 ? 3 : 4;
         grid.style.gridTemplateColumns = `repeat(${cols},1fr)`;
         grid.innerHTML = '';
