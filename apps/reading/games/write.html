@@ -75,8 +75,8 @@
       RG.mountTopBar('כתיבת האות', { bg: false });
       document.getElementById('mascot').innerHTML = RG.unicorn(56);
       const letters = station.letters;
-      const COV_THRESH = 0.75;   // כמה מהאות צריך למלא כדי לסיים
-      const PREC_THRESH = 0.45;  // כמה מהציור צריך להיות *בתוך* האות (מונע קשקוש)
+      const COV_THRESH = 0.5;    // כמה מהאות צריך לכסות כדי לסיים (מספיק לעקוב עליה)
+      const PREC_THRESH = 0.55;  // כמה מהציור צריך ליפול על/ליד האות (מונע קשקוש על כל הלוח)
       let idx = 0, done = 0, locked = false;
 
       // גודל לוח מרובע שמתאים למסך
@@ -89,7 +89,10 @@
       const mask = document.createElement('canvas'); mask.width = mask.height = side;
       const mc = mask.getContext('2d');
 
-      let inLetter = new Uint8Array(side * side), letterCount = 1;
+      let inLetter = new Uint8Array(side * side);   // פיקסלים בתוך האות (לכיסוי)
+      let inNear = new Uint8Array(side * side);      // האות + שוליים (לדיוק — לא מענישים גלישה קטנה)
+      let letterCount = 1;
+      const BRUSH = Math.round(side * 0.11);
 
       function letterPath(ctx, color) {
         ctx.clearRect(0, 0, side, side);
@@ -103,7 +106,8 @@
         locked = false;
         dc.clearRect(0, 0, side, side);
         letterPath(bgc, '#d7e6f5');                 // אות רפאים לעקוב אחריה
-        letterPath(mc, '#000');                      // מסכה למדידת כיסוי
+        // מסכת האות עצמה (לכיסוי)
+        letterPath(mc, '#000');
         const md = mc.getImageData(0, 0, side, side).data;
         inLetter = new Uint8Array(side * side);
         let n = 0;
@@ -111,13 +115,26 @@
           if (md[(p << 2) + 3] > 20) { inLetter[p] = 1; n++; }
         }
         letterCount = Math.max(1, n);
+        // מסכת "האות + שוליים" (לדיוק) — מעבים את האות בכיווץ של רוחב המכחול
+        mc.clearRect(0, 0, side, side);
+        mc.fillStyle = '#000'; mc.strokeStyle = '#000';
+        mc.lineWidth = BRUSH; mc.lineJoin = mc.lineCap = 'round';
+        mc.textAlign = 'center'; mc.textBaseline = 'middle';
+        mc.font = '800 ' + Math.round(side * 0.74) + 'px Heebo, sans-serif';
+        mc.fillText(letters[idx], side / 2, side / 2 + side * 0.03);
+        mc.strokeText(letters[idx], side / 2, side / 2 + side * 0.03);
+        const nd = mc.getImageData(0, 0, side, side).data;
+        inNear = new Uint8Array(side * side);
+        for (let p = 0; p < inNear.length; p++) {
+          if (nd[(p << 2) + 3] > 20) inNear[p] = 1;
+        }
         updateHud(0);
         setTimeout(() => RG.playLetter(letters[idx]), 350);
       }
 
       // ציור באצבע/עכבר
       let drawing = false, last = null;
-      dc.lineWidth = Math.round(side * 0.075);
+      dc.lineWidth = BRUSH;
       dc.lineCap = dc.lineJoin = 'round';
       dc.strokeStyle = '#ff6d00';
       function pt(e) { const r = draw.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
@@ -141,12 +158,16 @@
 
       function checkCoverage() {
         const dd = dc.getImageData(0, 0, side, side).data;
-        let inside = 0, total = 0;
+        let inside = 0, near = 0, total = 0;
         for (let p = 0; p < inLetter.length; p++) {
-          if (dd[(p << 2) + 3] > 40) { total++; if (inLetter[p]) inside++; }
+          if (dd[(p << 2) + 3] > 40) {
+            total++;
+            if (inLetter[p]) inside++;
+            if (inNear[p]) near++;
+          }
         }
-        const cov = inside / letterCount;            // כמה מהאות מולא
-        const prec = total ? inside / total : 0;      // כמה מהציור נפל בתוך האות
+        const cov = inside / letterCount;            // כמה מהאות כוסתה
+        const prec = total ? near / total : 0;        // כמה מהציור נפל על/ליד האות (מונע קשקוש)
         updateHud(cov);
         if (cov >= COV_THRESH && prec >= PREC_THRESH && !locked) success();
       }
