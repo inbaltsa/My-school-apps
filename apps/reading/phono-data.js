@@ -282,9 +282,11 @@ const GRADE1_PHONO_STATIONS = [
   { id: 'g1p_odd', type: 'odd', sounds: GRADE1_PHONO_SOUNDS.slice(),
     title: PHONO_TYPE_META.odd.title, emoji: PHONO_TYPE_META.odd.emoji,
     short: PHONO_TYPE_META.odd.short, back: '../grade1.html' },
-  // חרוזים אינם תלויי אות ספציפית — משחק התאמת מילים שמתחרזות
+  // חרוזים אינם תלויי אות ספציפית — שני משחקי חרוזים
   { id: 'g1p_rhyme', type: 'rhymematch',
-    title: 'זוגות שמתחרזים', emoji: '🎵', short: 'חרוזים', back: '../grade1.html' },
+    title: 'זוגות שמתחרזים', emoji: '🎵', short: 'זוגות חורזים', back: '../grade1.html' },
+  { id: 'g1p_rhyme2', type: 'rhyme',
+    title: 'שומרי החרוזים', emoji: '🚪', short: 'שומרי החרוזים', back: '../grade1.html' },
 ];
 
 function getPhonoStationById(id) {
