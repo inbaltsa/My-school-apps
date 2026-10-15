@@ -72,7 +72,6 @@ const PHONO_WORDS = [
   { word: 'לִימוֹן',  emoji: '🍋', audio: '', syl: 2, init: 'ל', rime: '' },
   { word: 'לֵב',      emoji: '❤️', audio: '', syl: 1, init: 'ל', rime: '' },
   { word: 'לְטָאָה',  emoji: '🦎', audio: '', syl: 3, init: 'ל', rime: '' },
-  { word: 'לַיְלָה',   emoji: '🌙', audio: '', syl: 2, init: 'ל', rime: '' },
   { word: 'לֶחֶם',    emoji: '🥖', audio: '', syl: 2, init: 'ל', rime: '' },
 
   // ---- ס ----
@@ -164,7 +163,7 @@ const PHONO_WORDS = [
 
   // ---- ו ----
   { word: 'וֶרֶד',   emoji: '🌹', audio: 'vered.mp3', syl: 2, init: 'ו', rime: '' },
-  { word: 'וִילוֹן', emoji: '🪟', audio: '', syl: 2, init: 'ו', rime: '' },
+  { word: 'וָפֶל',   emoji: '🧇', audio: '', syl: 2, init: 'ו', rime: '' },
 
   // ---- נ ----
   { word: 'נָחָשׁ',  emoji: '🐍', audio: 'nachash.mp3', syl: 2, init: 'נ', rime: '' },
@@ -179,7 +178,7 @@ const PHONO_WORDS = [
   { word: 'אוֹטוֹבּוּס', emoji: '🚌', audio: '', syl: 3, init: 'א', rime: '' },
   { word: 'פָּרָה',      emoji: '🐄', audio: '', syl: 2, init: 'פ', rime: 'ra' },
   // --- מילים נוספות לחרוזים מלאים (אותו צליל אחרון) ---
-  { word: 'מֶלוֹן',    emoji: '🍈', audio: '', syl: 2, init: 'מ', rime: 'lon' },
+  { word: 'חַלּוֹן',   emoji: '🪟', audio: '', syl: 2, init: 'ח', rime: 'lon' },
   { word: 'מַיִם',     emoji: '💧', audio: '', syl: 2, init: 'מ', rime: 'ayim' },
   { word: 'עֵינַיִם',  emoji: '👀', audio: '', syl: 3, init: 'א', rime: 'ayim' },
   { word: 'שִׁנַּיִם',  emoji: '🦷', audio: '', syl: 3, init: 'ש', rime: 'ayim' },
