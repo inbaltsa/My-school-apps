@@ -57,7 +57,7 @@ const PHONO_WORDS = [
   // ---- ש ----
   { word: 'שֶׁמֶשׁ',    emoji: '☀️', audio: 'shemesh.mp3', syl: 2, init: 'ש', rime: '' },
   { word: 'שָׁעוֹן',    emoji: '⏰', audio: '', syl: 2, init: 'ש', rime: '' },
-  { word: 'שֻׁלְחָן',   emoji: '🍽️', audio: '', syl: 2, init: 'ש', rime: '' },
+  { word: 'שֶׁלֶג',    emoji: '❄️', audio: '', syl: 2, init: 'ש', rime: '' },
   { word: 'שׁוֹקוֹלָד', emoji: '🍫', audio: '', syl: 3, init: 'ש', rime: '' },
   { word: 'שׁוּעָל',    emoji: '🦊', audio: '', syl: 2, init: 'ש', rime: '' },
 
@@ -303,7 +303,7 @@ const PHONO_BLEND = [
   { word:'מְכוֹנִית', emoji:'🚗', audio:'mechonit.mp3', init:'מ', parts:['מְכוֹ','נִית'] },
   { word:'מְנוֹרָה',  emoji:'💡', audio:'', init:'מ', parts:['מְנוֹ','רָה'] },
   { word:'שָׁעוֹן',   emoji:'⏰', audio:'', init:'ש', parts:['שָׁ','עוֹן'] },
-  { word:'שֻׁלְחָן',  emoji:'🍽️', audio:'', init:'ש', parts:['שֻׁל','חָן'] },
+  { word:'שֶׁלֶג',   emoji:'❄️', audio:'', init:'ש', parts:['שֶׁ','לֶג'] },
   { word:'רַכֶּבֶת',  emoji:'🚂', audio:'rakevet.mp3', init:'ר', parts:['רַ','כֶּ','בֶת'] },
   { word:'לִימוֹן',   emoji:'🍋', audio:'', init:'ל', parts:['לִי','מוֹן'] },
   { word:'סִירָה',    emoji:'⛵', audio:'', init:'ס', parts:['סִי','רָה'] },
