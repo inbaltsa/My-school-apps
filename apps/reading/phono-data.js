@@ -47,16 +47,16 @@ const PHONO_SOUNDS = {
 // --- בנק המילים ---
 const PHONO_WORDS = [
   // ---- מ ----
-  { word: 'מְכוֹנִית', emoji: '🚗', audio: 'mechonit.mp3', syl: 3, init: 'מ', rime: 'it', parts: ['מ','כו','נית'] },
+  { word: 'מְכוֹנִית', emoji: '🚗', audio: 'mechonit.mp3', syl: 3, init: 'מ', rime: '', parts: ['מ','כו','נית'] },
   { word: 'מָטוֹס',    emoji: '✈️', audio: '', syl: 2, init: 'מ', rime: '' },
-  { word: 'מִטְרִיָּה', emoji: '☂️', audio: '', syl: 3, init: 'מ', rime: '' },
+  { word: 'מִטְרִיָּה', emoji: '☂️', audio: '', syl: 3, init: 'מ', rime: 'iya' },
   { word: 'מֶלֶךְ',    emoji: '🤴', audio: '', syl: 2, init: 'מ', rime: '' },
   { word: 'מְנוֹרָה',  emoji: '💡', audio: '', syl: 3, init: 'מ', rime: 'ra' },
   { word: 'מַפְתֵּחַ',  emoji: '🔑', audio: '', syl: 2, init: 'מ', rime: '' },
 
   // ---- ש ----
   { word: 'שֶׁמֶשׁ',    emoji: '☀️', audio: 'shemesh.mp3', syl: 2, init: 'ש', rime: '' },
-  { word: 'שָׁעוֹן',    emoji: '⏰', audio: '', syl: 2, init: 'ש', rime: 'on' },
+  { word: 'שָׁעוֹן',    emoji: '⏰', audio: '', syl: 2, init: 'ש', rime: '' },
   { word: 'שֻׁלְחָן',   emoji: '🍽️', audio: '', syl: 2, init: 'ש', rime: '' },
   { word: 'שׁוֹקוֹלָד', emoji: '🍫', audio: '', syl: 3, init: 'ש', rime: '' },
   { word: 'שׁוּעָל',    emoji: '🦊', audio: '', syl: 2, init: 'ש', rime: '' },
@@ -64,27 +64,27 @@ const PHONO_WORDS = [
   // ---- ר ----
   { word: 'רַכֶּבֶת',  emoji: '🚂', audio: 'rakevet.mp3', syl: 3, init: 'ר', rime: '' },
   { word: 'רוֹבּוֹט',  emoji: '🤖', audio: '', syl: 2, init: 'ר', rime: '' },
-  { word: 'רַגְלַיִם', emoji: '🦵', audio: '', syl: 3, init: 'ר', rime: '' },
+  { word: 'רַגְלַיִם', emoji: '🦵', audio: '', syl: 3, init: 'ר', rime: 'ayim' },
   { word: 'רוּחַ',    emoji: '🌬️', audio: '', syl: 2, init: 'ר', rime: '' },
 
   // ---- ל ----
   { word: 'לֵיצָן',   emoji: '🤡', audio: 'leitzan.mp3', syl: 2, init: 'ל', rime: '' },
-  { word: 'לִימוֹן',  emoji: '🍋', audio: '', syl: 2, init: 'ל', rime: 'on' },
+  { word: 'לִימוֹן',  emoji: '🍋', audio: '', syl: 2, init: 'ל', rime: '' },
   { word: 'לֵב',      emoji: '❤️', audio: '', syl: 1, init: 'ל', rime: '' },
   { word: 'לְטָאָה',  emoji: '🦎', audio: '', syl: 3, init: 'ל', rime: '' },
   { word: 'לַיְלָה',   emoji: '🌙', audio: '', syl: 2, init: 'ל', rime: '' },
   { word: 'לֶחֶם',    emoji: '🥖', audio: '', syl: 2, init: 'ל', rime: '' },
 
   // ---- ס ----
-  { word: 'סוּס',       emoji: '🐴', audio: 'sus.mp3', syl: 1, init: 'ס', rime: 'us', parts: ['ס','ו','ס'] },
-  { word: 'סֵפֶר',      emoji: '📖', audio: '', syl: 2, init: 'ס', rime: 'er' },
-  { word: 'סֻכָּרִיָּה', emoji: '🍬', audio: '', syl: 4, init: 'ס', rime: '' },
+  { word: 'סוּס',       emoji: '🐴', audio: 'sus.mp3', syl: 1, init: 'ס', rime: '', parts: ['ס','ו','ס'] },
+  { word: 'סֵפֶר',      emoji: '📖', audio: '', syl: 2, init: 'ס', rime: '' },
+  { word: 'סֻכָּרִיָּה', emoji: '🍬', audio: '', syl: 4, init: 'ס', rime: 'iya' },
   { word: 'סִירָה',     emoji: '⛵', audio: '', syl: 2, init: 'ס', rime: 'ra' },
   { word: 'סַבָּא',     emoji: '👴', audio: '', syl: 2, init: 'ס', rime: '' },
 
   // ---- ב ----
   { word: 'בַּיִת',   emoji: '🏠', audio: '', syl: 2, init: 'ב', rime: '' },
-  { word: 'בַּלּוֹן', emoji: '🎈', audio: '', syl: 2, init: 'ב', rime: 'on' },
+  { word: 'בַּלּוֹן', emoji: '🎈', audio: '', syl: 2, init: 'ב', rime: 'lon' },
   { word: 'בַּרְוָז', emoji: '🦆', audio: 'barvaz.mp3', syl: 2, init: 'ב', rime: '' },
   { word: 'בָּנָנָה', emoji: '🍌', audio: '', syl: 3, init: 'ב', rime: '' },
   { word: 'בֻּבָּה',  emoji: '🪆', audio: '', syl: 2, init: 'ב', rime: '' },
@@ -109,14 +109,14 @@ const PHONO_WORDS = [
   { word: 'תַּרְנְגוֹל', emoji: '🐓', audio: '', syl: 3, init: 'ט', rime: '' },
   { word: 'טְרַקְטוֹר', emoji: '🚜', audio: 'traktor.mp3', syl: 3, init: 'ט', rime: '' },
   { word: 'טַוָּס',    emoji: '🦚', audio: '', syl: 2, init: 'ט', rime: '' },
-  { word: 'טֶלֶפוֹן',  emoji: '📞', audio: '', syl: 3, init: 'ט', rime: 'on' },
+  { word: 'טֶלֶפוֹן',  emoji: '📞', audio: '', syl: 3, init: 'ט', rime: '' },
 
   // ---- ק (ק+כּ) ----
   { word: 'קוֹף',    emoji: '🐒', audio: 'kof.mp3', syl: 1, init: 'ק', rime: '' },
   { word: 'קֶשֶׁת',   emoji: '🌈', audio: '', syl: 2, init: 'ק', rime: '' },
-  { word: 'קֻבִּיָּה', emoji: '🎲', audio: '', syl: 3, init: 'ק', rime: '' },
+  { word: 'קֻבִּיָּה', emoji: '🎲', audio: '', syl: 3, init: 'ק', rime: 'iya' },
   { word: 'כֶּלֶב',   emoji: '🐶', audio: 'kelev.mp3', syl: 2, init: 'ק', rime: '' },
-  { word: 'כֶּתֶר',   emoji: '👑', audio: '', syl: 2, init: 'ק', rime: 'er' },
+  { word: 'כֶּתֶר',   emoji: '👑', audio: '', syl: 2, init: 'ק', rime: '' },
   { word: 'כּוֹבַע',  emoji: '🧢', audio: '', syl: 2, init: 'ק', rime: '' },
 
   // ---- ג ----
@@ -164,7 +164,7 @@ const PHONO_WORDS = [
 
   // ---- ו ----
   { word: 'וֶרֶד',   emoji: '🌹', audio: 'vered.mp3', syl: 2, init: 'ו', rime: '' },
-  { word: 'וִילוֹן', emoji: '🪟', audio: '', syl: 2, init: 'ו', rime: 'on' },
+  { word: 'וִילוֹן', emoji: '🪟', audio: '', syl: 2, init: 'ו', rime: '' },
 
   // ---- נ ----
   { word: 'נָחָשׁ',  emoji: '🐍', audio: 'nachash.mp3', syl: 2, init: 'נ', rime: '' },
@@ -174,9 +174,14 @@ const PHONO_WORDS = [
   { word: 'נְמָלָה', emoji: '🐜', audio: '', syl: 3, init: 'נ', rime: '' },
 
   // ---- מילים נוספות לחריזה בלבד ----
-  { word: 'חִפּוּשִׁית', emoji: '🐞', audio: '', syl: 3, init: 'ח', rime: 'it' },
-  { word: 'אוֹטוֹבּוּס', emoji: '🚌', audio: '', syl: 3, init: 'א', rime: 'us' },
+  { word: 'חִפּוּשִׁית', emoji: '🐞', audio: '', syl: 3, init: 'ח', rime: '' },
+  { word: 'אוֹטוֹבּוּס', emoji: '🚌', audio: '', syl: 3, init: 'א', rime: '' },
   { word: 'פָּרָה',      emoji: '🐄', audio: '', syl: 2, init: 'פ', rime: 'ra' },
+  // --- מילים נוספות לחרוזים מלאים (אותו צליל אחרון) ---
+  { word: 'חַלּוֹן',   emoji: '🪟', audio: '', syl: 2, init: 'ח', rime: 'lon' },
+  { word: 'מַיִם',     emoji: '💧', audio: '', syl: 2, init: 'מ', rime: 'ayim' },
+  { word: 'עֵינַיִם',  emoji: '👀', audio: '', syl: 3, init: 'א', rime: 'ayim' },
+  { word: 'שִׁנַּיִם',  emoji: '🦷', audio: '', syl: 3, init: 'ש', rime: 'ayim' },
 ];
 
 // --- 4 מקבצי הצלילים (מהקל שמיעתית לקשה) ---
