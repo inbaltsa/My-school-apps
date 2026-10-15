@@ -72,7 +72,7 @@ const PHONO_WORDS = [
   { word: 'לִימוֹן',  emoji: '🍋', audio: '', syl: 2, init: 'ל', rime: '' },
   { word: 'לֵב',      emoji: '❤️', audio: '', syl: 1, init: 'ל', rime: '' },
   { word: 'לְטָאָה',  emoji: '🦎', audio: '', syl: 3, init: 'ל', rime: '' },
-  { word: 'לַיְלָה',   emoji: '🌙', audio: '', syl: 2, init: 'ל', rime: '' },
+  { word: 'לַיְלָה',   emoji: '🌙', audio: '', syl: 2, init: 'ל', rime: 'la' },
   { word: 'לֶחֶם',    emoji: '🥖', audio: '', syl: 2, init: 'ל', rime: '' },
 
   // ---- ס ----
@@ -80,14 +80,14 @@ const PHONO_WORDS = [
   { word: 'סֵפֶר',      emoji: '📖', audio: '', syl: 2, init: 'ס', rime: '' },
   { word: 'סֻכָּרִיָּה', emoji: '🍬', audio: '', syl: 4, init: 'ס', rime: 'iya' },
   { word: 'סִירָה',     emoji: '⛵', audio: '', syl: 2, init: 'ס', rime: 'ra' },
-  { word: 'סַבָּא',     emoji: '👴', audio: '', syl: 2, init: 'ס', rime: '' },
+  { word: 'סַבָּא',     emoji: '👴', audio: '', syl: 2, init: 'ס', rime: 'ba' },
 
   // ---- ב ----
   { word: 'בַּיִת',   emoji: '🏠', audio: '', syl: 2, init: 'ב', rime: '' },
   { word: 'בַּלּוֹן', emoji: '🎈', audio: '', syl: 2, init: 'ב', rime: 'lon' },
   { word: 'בַּרְוָז', emoji: '🦆', audio: 'barvaz.mp3', syl: 2, init: 'ב', rime: '' },
   { word: 'בָּנָנָה', emoji: '🍌', audio: '', syl: 3, init: 'ב', rime: '' },
-  { word: 'בֻּבָּה',  emoji: '🪆', audio: '', syl: 2, init: 'ב', rime: '' },
+  { word: 'בֻּבָּה',  emoji: '🪆', audio: '', syl: 2, init: 'ב', rime: 'ba' },
 
   // ---- פ ----
   { word: 'פִּיל',    emoji: '🐘', audio: 'pil.mp3', syl: 1, init: 'פ', rime: '', parts: ['פ','י','ל'] },
@@ -171,7 +171,7 @@ const PHONO_WORDS = [
   { word: 'נֵר',    emoji: '🕯️', audio: '', syl: 1, init: 'נ', rime: '' },
   { word: 'נַעַל',   emoji: '👟', audio: '', syl: 2, init: 'נ', rime: '' },
   { word: 'נָמֵר',   emoji: '🐆', audio: '', syl: 2, init: 'נ', rime: '' },
-  { word: 'נְמָלָה', emoji: '🐜', audio: '', syl: 3, init: 'נ', rime: '' },
+  { word: 'נְמָלָה', emoji: '🐜', audio: '', syl: 3, init: 'נ', rime: 'la' },
 
   // ---- מילים נוספות לחריזה בלבד ----
   { word: 'חִפּוּשִׁית', emoji: '🐞', audio: '', syl: 3, init: 'ח', rime: '' },
