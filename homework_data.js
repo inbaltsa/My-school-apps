@@ -1,12 +1,5 @@
 const homeworkData = [
     {
-        "id": "559",
-        "grade": 4,
-        "subject": "אנגלית",
-        "task": "p. 16, 12, 13",
-        "date": "15/09"
-    },
-    {
         "id": "718",
         "grade": 4,
         "subject": "אנגלית",
@@ -33,13 +26,6 @@ const homeworkData = [
         "subject": "אנגלית",
         "task": "p. 32-33",
         "date": "15/10"
-    },
-    {
-        "id": "588",
-        "grade": 4,
-        "subject": "מדעים",
-        "task": "עמוד 20",
-        "date": "15/09"
     },
     {
         "id": "659",
@@ -77,6 +63,13 @@ const homeworkData = [
         "date": "08/10"
     },
     {
+        "id": "custom-tree-20261016",
+        "grade": 4,
+        "subject": "משימה ביתית",
+        "task": "🪴 להשקות את העץ במרפסת",
+        "date": "16/10"
+    },
+    {
         "id": "997",
         "grade": 4,
         "subject": "מתמטיקה",
@@ -98,13 +91,6 @@ const homeworkData = [
         "date": "17/09"
     },
     {
-        "id": "570",
-        "grade": 6,
-        "subject": "אנגלית",
-        "task": "w. b.p. 4, 5",
-        "date": "15/09"
-    },
-    {
         "id": "963",
         "grade": 6,
         "subject": "אנגלית",
@@ -119,18 +105,11 @@ const homeworkData = [
         "date": "13/10"
     },
     {
-        "id": "581",
+        "id": "1607",
         "grade": 6,
-        "subject": "מתמטיקה",
-        "task": "בחוברת עמודים 21-24",
-        "date": "15/09"
-    },
-    {
-        "id": "589",
-        "grade": 6,
-        "subject": "מתמטיקה",
-        "task": "משימה במחברת",
-        "date": "15/09"
+        "subject": "אנגלית",
+        "task": "משימות בגלים",
+        "date": "16/10"
     },
     {
         "id": "661",
