@@ -52,7 +52,9 @@
         display:flex;align-items:center;justify-content:center;font-size:2.8rem;font-weight:800;
         color:#fff;text-shadow:0 2px 3px rgba(0,0,0,.25);box-shadow:0 6px 0 rgba(0,0,0,.12);}
   .house.correct .body{animation:hop .6s;}
-  .house.wrong .body{animation:shake .4s;}
+  .house.wrong .body{animation:shake .4s;opacity:.55;}
+  .house.reveal .body{animation:hop .6s;box-shadow:0 0 0 4px #4caf50,0 6px 0 rgba(0,0,0,.12);}
+  .house.reveal .roof{filter:drop-shadow(0 0 7px #66bb6a);}
   @keyframes hop{40%{transform:translateY(-16px)}}
   @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
@@ -93,8 +95,9 @@
       const mixed = !!station.mixed;                 // אתגר גדול: אותיות מוגרלות בכל סיבוב
       const ROOFS = { wall: ['#ef9a9a','#90caf9','#a5d6a7','#ffcc80','#ce93d8','#80deea'],
                       roof: ['#c62828','#1565c0','#2e7d32','#e65100','#6a1b9a','#00838f'] };
-      const ROUNDS = 6;
-      let round = 0, correct = 0, target = null, curWord = null, locked = false, currentActive = null;
+      const NEED = 5;   // צריך 5 תשובות נכונות (בניסיון הראשון) כדי לסיים
+      let successes = 0, asked = 0, target = null, curWord = null, locked = false, currentActive = null;
+      let houseEls = {};
 
       buildScene();
       nextRound();
@@ -116,6 +119,7 @@
       function buildHouses(set) {
         const wrap = document.getElementById('houses');
         wrap.innerHTML = '';
+        houseEls = {};
         set.forEach((l, i) => {
           const h = document.createElement('div');
           h.className = 'house';
@@ -124,19 +128,21 @@
                          <div class="body">${l}</div>`;
           h.onclick = () => choose(l, h);
           wrap.appendChild(h);
+          houseEls[l] = h;
         });
       }
 
       function nextRound() {
         RG.stopAudio();
         locked = false;
-        if (round >= ROUNDS) {
-          RG.finish({ stationId: station.id, correct, total: ROUNDS, replay: () => location.reload() });
+        if (successes >= NEED) {
+          RG.finish({ stationId: station.id, correct: successes, total: asked, replay: () => location.reload() });
           return;
         }
         const active = mixed ? RG.shuffle(letters).slice(0, 4) : letters;
         const k = active.slice().sort().join('');
         if (k !== currentActive) { currentActive = k; buildHouses(active); }
+        Object.values(houseEls).forEach(h => h.classList.remove('correct', 'wrong', 'reveal'));
         target = active[Math.floor(Math.random() * active.length)];
         curWord = pickWord(target);
         const pic = document.getElementById('pic');
@@ -148,21 +154,27 @@
 
       window.playWordAgain = () => { if (curWord) RG.playWord(target, curWord); };
 
+      // רק הניסיון הראשון נחשב. נכון → מתקדמים; טעות → מראים את התשובה ועוברים לשאלה אחרת.
       function choose(letter, houseEl) {
         if (locked) return;
+        locked = true;
+        asked++;
         if (letter === target) {
-          locked = true;
-          correct++; round++;
+          successes++;
           RG.ding();
           houseEl.classList.add('correct');
           sparkle(houseEl);
           document.getElementById('pic').classList.add('won');
+          updateHud();
           setTimeout(() => RG.playLetter(target), 250); // חיזוק: הצליל של האות
-          setTimeout(() => { houseEl.classList.remove('correct'); nextRound(); }, 1250);
+          setTimeout(nextRound, 1250);
         } else {
           RG.buzz();
           houseEl.classList.add('wrong');
-          setTimeout(() => houseEl.classList.remove('wrong'), 400);
+          const right = houseEls[target];
+          if (right) right.classList.add('reveal');      // מראים איפה הצליל הנכון
+          setTimeout(() => RG.playLetter(target), 450);   // ומשמיעים אותו
+          setTimeout(nextRound, 1900);
         }
       }
 
@@ -178,7 +190,7 @@
 
       function updateHud() {
         let dots = '';
-        for (let i = 0; i < ROUNDS; i++) dots += `<span class="dot ${i < round ? 'on' : ''}"></span>`;
+        for (let i = 0; i < NEED; i++) dots += `<span class="dot ${i < successes ? 'on' : ''}"></span>`;
         document.getElementById('hud').innerHTML =
           `באיזה צליל מתחילה המילה?<div class="dots">${dots}</div>`;
       }
