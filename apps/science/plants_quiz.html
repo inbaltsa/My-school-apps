@@ -760,8 +760,9 @@ document.addEventListener('click', (ev)=>{
 // עד שמפעילים — השאלות עדיין עובדות, פשוט בלי בדיקת AI.
 // ==============================================
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app-check.js";
 
 let aiService = null;
 let aiModel = null;
@@ -778,6 +779,16 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig, "ai-plants");
+
+// Firebase AI Logic דורש אכיפת App Check — אותו מפתח reCAPTCHA כמו ב-firebase-homework.js
+try {
+    initializeAppCheck(app, {
+        provider: new ReCaptchaV3Provider('6Lc3ybEsAAAAAJpdWESSOGNXCqW764S9qIpsbc0k'),
+        isTokenAutoRefreshEnabled: true
+    });
+} catch (err) {
+    console.warn("⚠️ App Check not initialized:", err.message);
+}
 const auth = getAuth(app);
 
 // ==============================
@@ -814,7 +825,7 @@ async function initAI() {
     try {
         // ניסיון 1: Firebase AI Logic API חדש (firebase/ai)
         const aiModule = await import(
-            "https://www.gstatic.com/firebasejs/11.8.1/firebase-ai.js"
+            "https://www.gstatic.com/firebasejs/12.19.0/firebase-ai.js"
         );
         const { getAI, getGenerativeModel, GoogleAIBackend } = aiModule;
         
@@ -822,9 +833,11 @@ async function initAI() {
         aiModel = getGenerativeModel(aiService, { 
             model: "gemini-2.5-flash",
             systemInstruction: TUTOR_SYSTEM_PROMPT,
+            // בלי thinkingBudget:0 החשיבה נספרת ב-maxOutputTokens והתשובה נקטעת לפני הציון
             generationConfig: {
                 temperature: 0.3,
                 maxOutputTokens: 3000,
+                thinkingConfig: { thinkingBudget: 0 },
             }
         });
         aiAvailable = true;
@@ -836,7 +849,7 @@ async function initAI() {
         try {
             // ניסיון 2: Vertex AI API ישן (fallback)
             const vtxModule = await import(
-                "https://www.gstatic.com/firebasejs/11.8.1/firebase-vertexai.js"
+                "https://www.gstatic.com/firebasejs/12.19.0/firebase-vertexai.js"
             );
             const { getVertexAI, getGenerativeModel } = vtxModule;
             
