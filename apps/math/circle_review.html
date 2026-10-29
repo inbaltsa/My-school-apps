@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מעגל ועיגול - חזרה למבחן</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #fff8e1 50%, #fce4ec 100%);
+            min-height: 100vh;
+            padding: 12px;
+            color: #2d3436;
+        }
+
+        .app-container { max-width: 760px; margin: 0 auto; }
+
+        .app-header {
+            text-align: center;
+            padding: 20px 15px;
+            background: linear-gradient(135deg, #1e88e5, #e53935);
+            border-radius: 20px;
+            color: white;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(30,136,229,0.3);
+        }
+        .app-header h1 { font-size: 1.6em; font-weight: 800; }
+        .app-header p { font-size: 0.95em; opacity: 0.9; margin-top: 5px; }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 10px;
+            color: #1565c0;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .btn {
+            font-family: inherit;
+            font-size: 1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 14px;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary { background: #1e88e5; color: white; box-shadow: 0 3px 10px rgba(30,136,229,0.3); }
+        .btn-green { background: #43a047; color: white; box-shadow: 0 3px 10px rgba(67,160,71,0.3); }
+        .btn-orange { background: #fb8c00; color: white; box-shadow: 0 3px 10px rgba(251,140,0,0.3); }
+        .btn-light { background: white; color: #2d3436; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+        .exam-box {
+            background: white;
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            text-align: center;
+            border-top: 5px solid #e53935;
+        }
+        .exam-box h2 { font-size: 1.2em; margin-bottom: 6px; }
+        .exam-box p { color: #636e72; margin-bottom: 12px; font-size: 0.95em; }
+
+        .formula-box {
+            background: #fffde7;
+            border: 2px dashed #f9a825;
+            border-radius: 18px;
+            padding: 14px 18px;
+            margin-bottom: 15px;
+            text-align: center;
+            line-height: 1.8;
+        }
+        .formula-box h3 { color: #e65100; margin-bottom: 4px; }
+        .formula { font-weight: 700; font-size: 1.1em; direction: rtl; }
+        .formula-box .small { color: #636e72; font-size: 0.9em; }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+        }
+        .topic-card {
+            background: white;
+            border-radius: 16px;
+            padding: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            border-right: 6px solid var(--c, #1e88e5);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .topic-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+        .topic-card .t-icon { font-size: 1.8em; }
+        .topic-card .t-title { font-weight: 700; font-size: 1.05em; }
+        .topic-card .t-meta { font-size: 0.85em; color: #636e72; }
+        .topic-card .t-best { font-size: 0.85em; font-weight: 600; color: #43a047; }
+
+        .panel {
+            background: white;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 15px;
+        }
+        .panel h2 { margin-bottom: 12px; font-size: 1.35em; }
+        .summary-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .summary-list li {
+            background: #f5f9ff;
+            border-radius: 12px;
+            padding: 10px 14px;
+            line-height: 1.6;
+            border-right: 4px solid var(--c, #1e88e5);
+        }
+        .summary-list b { color: #1565c0; }
+        .summary-figs { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 12px; }
+        .summary-figs figure { text-align: center; font-size: 0.9em; font-weight: 600; color: #455a64; }
+        .summary-figs svg { width: 130px; height: 130px; }
+        .actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 18px; }
+
+        .progress-container {
+            background: #e0e0e0;
+            border-radius: 20px;
+            height: 12px;
+            margin: 10px 0 15px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #42a5f5, #e53935);
+            border-radius: 20px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+        .q-meta { display: flex; justify-content: space-between; color: #636e72; font-size: 0.9em; flex-wrap: wrap; gap: 6px; }
+        .q-topic-tag {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .q-text { font-size: 1.2em; font-weight: 600; margin: 14px 0; line-height: 1.6; }
+        .q-figure { margin: 6px auto 14px; text-align: center; }
+        .q-figure svg { width: 220px; max-width: 100%; height: auto; }
+
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option {
+            font-family: inherit;
+            font-size: 1.05em;
+            text-align: right;
+            background: #f8f9fa;
+            border: 2px solid #dfe6e9;
+            border-radius: 14px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+            color: #2d3436;
+            line-height: 1.5;
+        }
+        .option:hover:not(:disabled) { background: #e3f2fd; border-color: #90caf9; }
+        .option.correct { background: #e8f5e9; border-color: #43a047; font-weight: 600; }
+        .option.wrong { background: #ffebee; border-color: #e53935; }
+        .option:disabled { cursor: default; }
+
+        .feedback {
+            margin-top: 14px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            line-height: 1.6;
+            display: none;
+        }
+        .feedback.show { display: block; }
+        .feedback.good { background: #e8f5e9; border-right: 5px solid #43a047; }
+        .feedback.bad { background: #fff3e0; border-right: 5px solid #fb8c00; }
+
+        .result-big { font-size: 3em; text-align: center; margin: 10px 0; }
+        .result-score { text-align: center; font-size: 1.4em; font-weight: 700; }
+        .result-msg { text-align: center; color: #636e72; margin-top: 6px; }
+        .breakdown { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        .breakdown-row.weak { background: #fff3e0; }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 480px) {
+            .app-header h1 { font-size: 1.3em; }
+            .q-text { font-size: 1.08em; }
+            .topics-grid { grid-template-columns: 1fr 1fr; }
+            .topic-card .t-title { font-size: 0.95em; }
+            .summary-figs svg { width: 110px; height: 110px; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <a class="back-link" href="../../grade-6.html">→ חזרה לכיתה ו'</a>
+
+    <div class="app-header">
+        <h1>⭕ מעגל ועיגול – חזרה למבחן</h1>
+        <p>📅 יום ג' 10.11 · 6 נושאים · סיכום קצר + תרגול לכל נושא · מבחן מסכם מעורב · 🧮 מותר מחשבון</p>
+    </div>
+
+    <!-- ===== Menu ===== -->
+    <div id="menu-screen">
+        <div class="formula-box">
+            <h3>🧠 לזכור בעל פה! (π ≈ 3.14)</h3>
+            <div class="formula">היקף = קוטר × 3.14</div>
+            <div class="formula">היקף = 2 × רדיוס × 3.14</div>
+            <div class="small">ובכיוון ההפוך: קוטר = היקף ÷ 3.14 · רדיוס = קוטר ÷ 2</div>
+        </div>
+        <div class="exam-box">
+            <h2>📝 מבחן מסכם – כל הנושאים</h2>
+            <p>3 שאלות אקראיות מכל נושא (18 שאלות). כל פעם שאלות אחרות!</p>
+            <button class="btn btn-primary" onclick="startExam()">להתחיל מבחן מסכם</button>
+        </div>
+        <div class="topics-grid" id="topics-grid"></div>
+    </div>
+
+    <!-- ===== Summary ===== -->
+    <div id="summary-screen" class="hidden">
+        <div class="panel" id="summary-panel"></div>
+    </div>
+
+    <!-- ===== Quiz ===== -->
+    <div id="quiz-screen" class="hidden">
+        <div class="panel">
+            <div class="q-meta">
+                <span id="q-counter"></span>
+                <span class="q-topic-tag" id="q-topic"></span>
+                <span id="q-score"></span>
+            </div>
+            <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
+            <div class="q-text" id="q-text"></div>
+            <div class="q-figure" id="q-figure"></div>
+            <div class="options" id="options"></div>
+            <div class="feedback" id="feedback"></div>
+            <div class="actions">
+                <button class="btn btn-light" onclick="showMenu()">🏠 לתפריט</button>
+                <button class="btn btn-primary hidden" id="next-btn" onclick="nextQuestion()">לשאלה הבאה ←</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Result ===== -->
+    <div id="result-screen" class="hidden">
+        <div class="panel" id="result-panel"></div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// ציורי מעגל (SVG). זוויות במעלות: 0 = ימין, 90 = למעלה
+// ============================================================
+const CX = 120, CY = 120, R = 90;
+const RED = '#e53935', BLUE = '#1e88e5', GREEN = '#43a047';
+
+function pt(deg, r = R) {
+    const a = deg * Math.PI / 180;
+    return [CX + r * Math.cos(a), CY - r * Math.sin(a)];
+}
+function f(n) { return n.toFixed(1); }
+function seg(a, b, color = RED, w = 4) {
+    return `<line x1="${f(a[0])}" y1="${f(a[1])}" x2="${f(b[0])}" y2="${f(b[1])}" stroke="${color}" stroke-width="${w}" stroke-linecap="round"/>`;
+}
+function dot(p, label = '', color = '#263238') {
+    // התווית נדחפת החוצה מהמרכז
+    const dx = p[0] - CX, dy = p[1] - CY, len = Math.hypot(dx, dy) || 1;
+    const lx = len < 5 ? p[0] - 12 : p[0] + dx / len * 15, ly = len < 5 ? p[1] + 16 : p[1] + dy / len * 15 + 5;
+    return `<circle cx="${f(p[0])}" cy="${f(p[1])}" r="4" fill="${color}"/>` +
+        (label ? `<text x="${f(lx)}" y="${f(ly)}" text-anchor="middle" font-weight="700" font-size="15">${label}</text>` : '');
+}
+function arc(d1, d2, color = RED, w = 7) {
+    const a = pt(d1), b = pt(d2), large = (d2 - d1) > 180 ? 1 : 0;
+    return `<path d="M ${f(a[0])} ${f(a[1])} A ${R} ${R} 0 ${large} 0 ${f(b[0])} ${f(b[1])}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linecap="round"/>`;
+}
+function sector(d1, d2, color = '#ffcdd2') {
+    const a = pt(d1), b = pt(d2), large = (d2 - d1) > 180 ? 1 : 0;
+    return `<path d="M ${CX} ${CY} L ${f(a[0])} ${f(a[1])} A ${R} ${R} 0 ${large} 0 ${f(b[0])} ${f(b[1])} Z" fill="${color}" stroke="${RED}" stroke-width="3"/>`;
+}
+// ריבוע קטן של זווית ישרה בנקודה p, בכיוונים u ו-v (וקטורים במסך)
+function rightAngle(p, u, v, s = 11) {
+    const a = [p[0] + u[0] * s, p[1] + u[1] * s], c = [p[0] + v[0] * s, p[1] + v[1] * s];
+    const b = [a[0] + v[0] * s, a[1] + v[1] * s];
+    return `<polyline points="${f(a[0])},${f(a[1])} ${f(b[0])},${f(b[1])} ${f(c[0])},${f(c[1])}" fill="none" stroke="#263238" stroke-width="2"/>`;
+}
+function svg(parts, fill = 'none') {
+    return `<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" font-family="Rubik, sans-serif">
+        <circle cx="${CX}" cy="${CY}" r="${R}" fill="${fill}" stroke="#455a64" stroke-width="2.5"/>
+        ${parts.join('')}</svg>`;
+}
+const O = [CX, CY];
+
+const FIG = {
+    circle: svg([dot(O, 'O')]),
+    disc: svg([dot(O, 'O')], '#bbdefb'),
+    radius: svg([seg(O, pt(35)), dot(O, 'O'), dot(pt(35), 'A')]),
+    diameter: svg([seg(pt(155), pt(335)), dot(O, 'O'), dot(pt(155), 'A'), dot(pt(335), 'B')]),
+    chord: svg([seg(pt(200), pt(320)), dot(O, 'O'), dot(pt(200), 'C'), dot(pt(320), 'D')]),
+    arc: svg([arc(25, 105), dot(O, 'O'), dot(pt(25), 'A'), dot(pt(105), 'B')]),
+    sector: svg([sector(30, 115), dot(O, 'O'), dot(pt(30), 'A'), dot(pt(115), 'B')]),
+    perpDiams: svg([seg(pt(180), pt(0), BLUE), seg(pt(90), pt(270)), rightAngle(O, [1, 0], [0, -1]),
+        dot(O, 'O'), dot(pt(180), 'A'), dot(pt(0), 'B'), dot(pt(90), 'C'), dot(pt(270), 'D')]),
+    chordParDiam: svg([seg(pt(180), pt(0), BLUE), seg(pt(140), pt(40)),
+        dot(O, 'O'), dot(pt(180), 'A'), dot(pt(0), 'B'), dot(pt(140), 'C'), dot(pt(40), 'D')]),
+    twoParChords: svg([seg(pt(150), pt(30)), seg(pt(215), pt(325)), dot(O, 'O'),
+        dot(pt(150), 'A'), dot(pt(30), 'B'), dot(pt(215), 'C'), dot(pt(325), 'D')]),
+    radiusPerpDiam: svg([seg(pt(180), pt(0), BLUE), seg(O, pt(90)), rightAngle(O, [1, 0], [0, -1]),
+        dot(O, 'O'), dot(pt(180), 'A'), dot(pt(0), 'B'), dot(pt(90), 'C')]),
+    twoChords: svg([seg(pt(160), pt(20), BLUE), seg(pt(240), pt(300)), dot(O, 'O'),
+        `<text x="120" y="70" text-anchor="middle" font-weight="700" fill="${BLUE}" font-size="15">א</text>`,
+        `<text x="120" y="188" text-anchor="middle" font-weight="700" fill="${RED}" font-size="15">ב</text>`]),
+    quarters: svg([sector(0, 90, '#c8e6c9'), seg(pt(180), pt(0), BLUE), seg(pt(90), pt(270), BLUE),
+        rightAngle(O, [1, 0], [0, -1]), dot(O, 'O')])
+};
+
+// ============================================================
+// נושאים: סיכום + שאלות
+// o[0] היא תמיד התשובה הנכונה (התשובות מעורבבות בהצגה)
+// ============================================================
+const TOPICS = [
+{
+    id: 'concepts', icon: '🔤', color: '#1e88e5', title: 'מושגים במעגל ובעיגול',
+    figs: [['מרכז ורדיוס', FIG.radius], ['קוטר', FIG.diameter], ['מיתר', FIG.chord], ['קשת', FIG.arc], ['גזרה', FIG.sector], ['עיגול', FIG.disc]],
+    summary: [
+        '<b>מעגל</b> – קו סגור ועגול. כל הנקודות עליו נמצאות באותו מרחק מהמרכז. (כמו צמיד או חישוק – רק ה"קו")',
+        '<b>עיגול</b> – המעגל <b>וכל השטח שבתוכו</b>. (כמו מטבע או פיצה – כולל הפנים)',
+        '<b>מרכז המעגל</b> – הנקודה שבאמצע, באותו מרחק מכל נקודות המעגל. מסמנים בנקודה ובאות, בדרך כלל O.',
+        '<b>רדיוס</b> – קטע שמחבר את <b>המרכז</b> עם נקודה <b>על המעגל</b>.',
+        '<b>קוטר</b> – קטע שמחבר שתי נקודות על המעגל <b>ועובר דרך המרכז</b>.',
+        '<b>מיתר</b> – קטע שמחבר <b>שתי נקודות על המעגל</b> (לא חייב לעבור במרכז).',
+        '<b>קשת</b> – <b>חלק מהמעגל</b> (מהקו העגול) שבין שתי נקודות על המעגל.',
+        '<b>גזרה</b> – <b>חלק מהעיגול</b> שתחום בין <b>שני רדיוסים</b> והקשת שביניהם. (כמו משולש פיצה)'
+    ],
+    qs: [
+        { q: 'מה הקטע המסומן באדום?', fig: FIG.radius, o: ['רדיוס', 'קוטר', 'מיתר', 'קשת'], e: 'הקטע OA יוצא מהמרכז O ומגיע לנקודה על המעגל – זה רדיוס.' },
+        { q: 'מה הקטע המסומן באדום?', fig: FIG.diameter, o: ['קוטר', 'רדיוס', 'קשת', 'גזרה'], e: 'הקטע AB מחבר שתי נקודות על המעגל ועובר דרך המרכז – זה קוטר.' },
+        { q: 'מה הקטע המסומן באדום?', fig: FIG.chord, o: ['מיתר', 'קוטר', 'רדיוס', 'קשת'], e: 'CD מחבר שתי נקודות על המעגל, אבל לא עובר דרך המרכז – זה מיתר.' },
+        { q: 'מה מסומן באדום?', fig: FIG.arc, o: ['קשת', 'מיתר', 'גזרה', 'רדיוס'], e: 'סומן חלק מהקו העגול של המעגל בין A ל-B – זו קשת.' },
+        { q: 'מה החלק הצבוע?', fig: FIG.sector, o: ['גזרה', 'קשת', 'מיתר', 'קוטר'], e: 'חלק מהעיגול שתחום בין שני רדיוסים (OA ו-OB) וקשת – זו גזרה.' },
+        { q: 'מה ההבדל בין מעגל לעיגול?', o: ['מעגל הוא רק הקו הסגור, ועיגול הוא הקו וכל השטח שבתוכו', 'מעגל גדול יותר מעיגול', 'עיגול הוא רק הקו, ומעגל כולל את השטח', 'אין הבדל, אלה שני שמות לאותו דבר'], e: 'מעגל = הקו (צמיד). עיגול = הקו + השטח שבפנים (מטבע).' },
+        { q: 'צמיד עגול הוא דוגמה ל...', o: ['מעגל', 'עיגול', 'גזרה', 'מיתר'], e: 'לצמיד יש רק "קו" עגול בלי שטח באמצע – לכן הוא מעגל.' },
+        { q: 'מטבע הוא דוגמה ל...', o: ['עיגול', 'מעגל', 'קשת', 'קוטר'], e: 'למטבע יש גם את הקו העגול וגם את השטח שבתוכו – לכן הוא עיגול.' },
+        { q: 'קטע שמחבר את מרכז המעגל עם נקודה על המעגל נקרא:', o: ['רדיוס', 'קוטר', 'מיתר', 'קשת'], e: 'רדיוס: מהמרכז אל המעגל.' },
+        { q: 'קטע שמחבר שתי נקודות על המעגל נקרא:', o: ['מיתר', 'רדיוס', 'קשת', 'גזרה'], e: 'כל קטע בין שתי נקודות על המעגל הוא מיתר. אם הוא עובר גם דרך המרכז – הוא קוטר.' },
+        { q: 'קשת היא חלק מ...', o: ['המעגל (הקו העגול)', 'העיגול (השטח)', 'הרדיוס', 'הקוטר'], e: 'קשת היא חלק מהקו של המעגל. חלק מהשטח (בין שני רדיוסים) הוא גזרה.' },
+        { q: 'גזרה תחומה על ידי:', o: ['שני רדיוסים וקשת', 'שני מיתרים', 'קוטר ומיתר', 'שתי קשתות'], e: 'גזרה = "משולש פיצה": שני רדיוסים מהמרכז, והקשת שביניהם.' },
+        { q: 'משולש פיצה דומה ל...', o: ['גזרה', 'קשת', 'מיתר', 'קוטר'], e: 'משולש פיצה יוצא מהמרכז ותחום בשני "רדיוסים" וקשת – גזרה.' },
+        { q: 'מה החלק הצבוע בתכלת?', fig: FIG.disc, o: ['עיגול', 'מעגל', 'גזרה', 'קשת'], e: 'צבוע כל השטח שבתוך המעגל, יחד עם המעגל – זה עיגול.' }
+    ]
+},
+{
+    id: 'properties', icon: '📏', color: '#8e24aa', title: 'תכונות הרדיוס, הקוטר והמיתר',
+    figs: [['שני מיתרים', FIG.twoChords], ['שני קטרים מאונכים', FIG.quarters]],
+    summary: [
+        'בכל מעגל יש <b>אינסוף רדיוסים</b>, ו<b>כולם שווים</b> באורכם.',
+        'בכל מעגל יש <b>אינסוף קטרים</b>, ו<b>כולם שווים</b> באורכם. כל הקטרים עוברים דרך המרכז ונפגשים בו.',
+        '<b>קוטר = 2 × רדיוס</b> &nbsp;·&nbsp; <b>רדיוס = קוטר ÷ 2</b>',
+        '<b>כל קוטר הוא מיתר</b> (מיתר שעובר דרך המרכז), אבל <b>לא כל מיתר הוא קוטר</b>.',
+        'רדיוס <b>אינו</b> מיתר – רק קצה אחד שלו נמצא על המעגל (הקצה השני במרכז).',
+        '<b>הקוטר הוא המיתר הארוך ביותר</b> במעגל. לכן אין מיתר שארוך מהקוטר.',
+        'ככל שמיתר <b>קרוב יותר למרכז – הוא ארוך יותר</b>. מיתר שרחוק מהמרכז קצר יותר.',
+        'קוטר מחלק את העיגול ל<b>שני חצאים שווים</b>. שני קטרים מאונכים מחלקים אותו ל-<b>4 גזרות שוות</b> (רבעי עיגול).'
+    ],
+    qs: [
+        { q: 'רדיוס המעגל הוא 7 ס"מ. מה אורך הקוטר?', o: ['14 ס"מ', '3.5 ס"מ', '7 ס"מ', '21.98 ס"מ'], e: 'קוטר = 2 × רדיוס = 2 × 7 = 14 ס"מ.' },
+        { q: 'קוטר המעגל הוא 18 ס"מ. מה אורך הרדיוס?', o: ['9 ס"מ', '36 ס"מ', '18 ס"מ', '6 ס"מ'], e: 'רדיוס = קוטר ÷ 2 = 18 ÷ 2 = 9 ס"מ.' },
+        { q: 'קוטר המעגל הוא 7.4 ס"מ. מה אורך הרדיוס?', o: ['3.7 ס"מ', '14.8 ס"מ', '3.2 ס"מ', '7.4 ס"מ'], e: 'רדיוס = 7.4 ÷ 2 = 3.7 ס"מ.' },
+        { q: 'מהו המיתר הארוך ביותר במעגל?', o: ['הקוטר', 'הרדיוס', 'כל המיתרים שווים', 'המיתר הכי רחוק מהמרכז'], e: 'הקוטר עובר דרך המרכז ולכן הוא המיתר הארוך ביותר.' },
+        { q: 'כמה רדיוסים אפשר לסרטט במעגל אחד?', o: ['אינסוף', '2', '4', '360'], e: 'מהמרכז אפשר להגיע לכל נקודה על המעגל – יש אינסוף נקודות, ולכן אינסוף רדיוסים. כולם שווים!' },
+        { q: 'האם כל קוטר הוא מיתר?', o: ['כן, קוטר הוא מיתר שעובר דרך המרכז', 'לא, קוטר ומיתר הם דברים שונים לגמרי', 'רק בעיגול גדול', 'רק אם הוא מאונך לרדיוס'], e: 'קוטר מחבר שתי נקודות על המעגל – לכן הוא מיתר. מיתר מיוחד: עובר במרכז.' },
+        { q: 'האם כל מיתר הוא קוטר?', o: ['לא, רק מיתר שעובר דרך המרכז הוא קוטר', 'כן, תמיד', 'כן, אם הוא ארוך', 'לא, מיתר אף פעם לא יכול להיות קוטר'], e: 'מיתר שלא עובר דרך המרכז אינו קוטר.' },
+        { q: 'האם רדיוס הוא מיתר?', o: ['לא, כי רק קצה אחד שלו נמצא על המעגל', 'כן, תמיד', 'כן, אם הוא ארוך מספיק', 'רק כשמסרטטים אותו אופקי'], e: 'מיתר צריך ששני הקצוות יהיו על המעגל. לרדיוס קצה אחד במרכז.' },
+        { q: 'רדיוס המעגל הוא 5 ס"מ. איזה מהאורכים יכול להיות אורך של מיתר במעגל?', o: ['8 ס"מ', '11 ס"מ', '12 ס"מ', '15 ס"מ'], e: 'הקוטר הוא 10 ס"מ, והוא המיתר הארוך ביותר. לכן מיתר לא יכול להיות ארוך מ-10 ס"מ.' },
+        { q: 'במעגל שקוטרו 12 ס"מ סרטטו מיתר שאורכו 12 ס"מ. מה אפשר לדעת עליו?', o: ['הוא קוטר – הוא עובר דרך המרכז', 'הוא רדיוס', 'הוא קשת', 'אי אפשר לסרטט מיתר כזה'], e: 'המיתר היחיד שאורכו כמו הקוטר הוא הקוטר עצמו – ולכן הוא עובר דרך המרכז.' },
+        { q: 'OA ו-OB הם רדיוסים באותו מעגל. OA = 6 ס"מ. מה אורך OB?', o: ['6 ס"מ', '12 ס"מ', '3 ס"מ', 'אי אפשר לדעת'], e: 'כל הרדיוסים באותו מעגל שווים, לכן OB = 6 ס"מ.' },
+        { q: 'בציור שני מיתרים: א (כחול) ו-ב (אדום). איזה מהם ארוך יותר?', fig: FIG.twoChords, o: ['מיתר א – כי הוא קרוב יותר למרכז', 'מיתר ב – כי הוא רחוק מהמרכז', 'הם שווים, כי שניהם מיתרים', 'אי אפשר לדעת בלי סרגל'], e: 'ככל שמיתר קרוב יותר למרכז, הוא ארוך יותר.' },
+        { q: 'הרדיוס הוא ... מהקוטר.', o: ['חצי', 'פי 2', 'פי 3.14', 'רבע'], e: 'הקוטר בנוי משני רדיוסים, לכן הרדיוס הוא חצי מהקוטר.' },
+        { q: 'שני קטרים מאונכים זה לזה מחלקים את העיגול ל...', fig: FIG.quarters, o: ['4 גזרות שוות (רבעי עיגול)', '2 חצאים', '4 קשתות לא שוות', '8 גזרות'], e: 'כל קוטר מחלק לשני חצאים, וקוטר מאונך מחלק כל חצי לשניים: 4 רבעי עיגול שווים.' }
+    ]
+},
+{
+    id: 'circumference', icon: '🧮', color: '#e53935', title: 'חישוב היקף המעגל',
+    summary: [
+        '<b>היקף המעגל</b> – אורך הקו העגול. ("כמה חוט צריך כדי להקיף את העיגול")',
+        '<b>π (פאי) ≈ 3.14</b>: בכל מעגל, ההיקף גדול <b>פי 3.14 בערך</b> מהקוטר.',
+        '🧠 <b>נוסחה 1: היקף = קוטר × 3.14</b>',
+        '🧠 <b>נוסחה 2: היקף = 2 × רדיוס × 3.14</b> (כי 2 × רדיוס = קוטר)',
+        '<b>חישוב הפוך:</b> קוטר = היקף ÷ 3.14 &nbsp;·&nbsp; רדיוס = קוטר ÷ 2 (או: היקף ÷ 6.28)',
+        '⚠️ <b>קודם בודקים: נתון רדיוס או קוטר?</b> הטעות הכי נפוצה היא להכפיל רדיוס ב-3.14 בלי להכפיל ב-2.',
+        'דוגמה: רדיוס 5 ס"מ → קוטר 10 ס"מ → היקף = 10 × 3.14 = <b>31.4 ס"מ</b>.',
+        'דוגמה הפוכה: היקף 47.1 ס"מ → קוטר = 47.1 ÷ 3.14 = <b>15 ס"מ</b> → רדיוס = <b>7.5 ס"מ</b>.',
+        'תמיד כותבים <b>תרגיל + תשובה + יחידות</b> (ס"מ, מ\').'
+    ],
+    qs: [
+        { q: 'מה ההיקף של מעגל שקוטרו 10 ס"מ?', o: ['31.4 ס"מ', '62.8 ס"מ', '15.7 ס"מ', '13.14 ס"מ'], e: 'היקף = קוטר × 3.14 = 10 × 3.14 = 31.4 ס"מ.' },
+        { q: 'מה ההיקף של מעגל שרדיוסו 3 ס"מ?', o: ['18.84 ס"מ', '9.42 ס"מ', '28.26 ס"מ', '6.28 ס"מ'], e: 'היקף = 2 × 3 × 3.14 = 6 × 3.14 = 18.84 ס"מ.' },
+        { q: 'מה ההיקף של מעגל שקוטרו 7 ס"מ?', o: ['21.98 ס"מ', '43.96 ס"מ', '10.99 ס"מ', '24.5 ס"מ'], e: 'היקף = 7 × 3.14 = 21.98 ס"מ.' },
+        { q: 'מה ההיקף של מעגל שרדיוסו 10 ס"מ?', o: ['62.8 ס"מ', '31.4 ס"מ', '314 ס"מ', '20 ס"מ'], e: 'היקף = 2 × 10 × 3.14 = 20 × 3.14 = 62.8 ס"מ.' },
+        { q: 'מה ההיקף של מעגל שקוטרו 25 ס"מ?', o: ['78.5 ס"מ', '157 ס"מ', '39.25 ס"מ', '28.14 ס"מ'], e: 'היקף = 25 × 3.14 = 78.5 ס"מ.' },
+        { q: 'מה ההיקף של מעגל שרדיוסו 4.5 ס"מ?', o: ['28.26 ס"מ', '14.13 ס"מ', '9 ס"מ', '56.52 ס"מ'], e: 'קוטר = 9 ס"מ. היקף = 9 × 3.14 = 28.26 ס"מ.' },
+        { q: 'היקף מעגל הוא 31.4 ס"מ. מה הקוטר?', o: ['10 ס"מ', '5 ס"מ', '20 ס"מ', '98.6 ס"מ'], e: 'קוטר = היקף ÷ 3.14 = 31.4 ÷ 3.14 = 10 ס"מ.' },
+        { q: 'היקף מעגל הוא 62.8 ס"מ. מה הרדיוס?', o: ['10 ס"מ', '20 ס"מ', '5 ס"מ', '197.2 ס"מ'], e: 'קוטר = 62.8 ÷ 3.14 = 20 ס"מ. רדיוס = 20 ÷ 2 = 10 ס"מ.' },
+        { q: 'היקף מעגל הוא 47.1 ס"מ. מה הקוטר?', o: ['15 ס"מ', '7.5 ס"מ', '30 ס"מ', '147.9 ס"מ'], e: 'קוטר = 47.1 ÷ 3.14 = 15 ס"מ.' },
+        { q: 'היקף מעגל הוא 18.84 ס"מ. מה הרדיוס?', o: ['3 ס"מ', '6 ס"מ', '1.5 ס"מ', '9.42 ס"מ'], e: 'קוטר = 18.84 ÷ 3.14 = 6 ס"מ. רדיוס = 6 ÷ 2 = 3 ס"מ.' },
+        { q: 'היקף מעגל הוא 94.2 ס"מ. מה הרדיוס?', o: ['15 ס"מ', '30 ס"מ', '7.5 ס"מ', '47.1 ס"מ'], e: 'קוטר = 94.2 ÷ 3.14 = 30 ס"מ. רדיוס = 30 ÷ 2 = 15 ס"מ.' },
+        { q: 'איזו נוסחה נכונה לחישוב היקף מעגל לפי רדיוס?', o: ['היקף = 2 × רדיוס × 3.14', 'היקף = רדיוס × 3.14', 'היקף = רדיוס × 2', 'היקף = רדיוס ÷ 3.14'], e: 'צריך קודם להכפיל ב-2 (כדי לקבל קוטר) ואז ב-3.14.' },
+        { q: 'איך מוצאים את הקוטר אם יודעים את ההיקף?', o: ['מחלקים את ההיקף ב-3.14', 'מכפילים את ההיקף ב-3.14', 'מחלקים את ההיקף ב-2', 'מכפילים את ההיקף ב-2'], e: 'היקף = קוטר × 3.14, ולכן קוטר = היקף ÷ 3.14.' },
+        { q: 'מה הערך המקורב של π (פאי)?', o: ['3.14', '2', '3.41', '6.28'], e: 'π ≈ 3.14 – פי כמה ההיקף גדול מהקוטר. (6.28 = 2 × 3.14)' }
+    ]
+},
+{
+    id: 'word', icon: '🚲', color: '#fb8c00', title: 'בעיות מילוליות – היקף',
+    summary: [
+        '<b>שלב 1:</b> קוראים לאט ומסמנים: מה נתון? מה שואלים?',
+        '<b>שלב 2:</b> מחליטים – מחפשים <b>היקף</b> (מסביב), <b>קוטר</b> (לרוחב, דרך המרכז) או <b>רדיוס</b> (מהמרכז לקצה)?',
+        '<b>שלב 3:</b> בודקים אם נתון רדיוס או קוטר, ובוחרים נוסחה.',
+        '<b>גלגל:</b> בסיבוב אחד הגלגל מתקדם מרחק של <b>היקף אחד</b>. כמה סיבובים? → היקף × מספר הסיבובים.',
+        'מילים שמרמזות על <b>היקף</b>: גדר מסביב, סרט סביב עוגה, מסלול ריצה, מסגרת, חבל סביב גזע, שפה של שולחן.',
+        '<b>יחידות:</b> 1 מטר = 100 ס"מ. כדאי לעבוד באותה יחידה בכל התרגיל.',
+        '<b>שלב 4:</b> בודקים שהתשובה הגיונית, וכותבים משפט תשובה עם יחידות.'
+    ],
+    qs: [
+        { q: 'קוטר גלגל של אופניים הוא 60 ס"מ. כמה ס"מ מתקדמים האופניים בסיבוב אחד של הגלגל?', o: ['188.4 ס"מ', '376.8 ס"מ', '94.2 ס"מ', '120 ס"מ'], e: 'בסיבוב אחד מתקדמים היקף אחד: 60 × 3.14 = 188.4 ס"מ.' },
+        { q: 'קוטר גלגל הוא 60 ס"מ. כמה ס"מ יתקדם הגלגל ב-10 סיבובים?', o: ['1,884 ס"מ', '188.4 ס"מ', '3,768 ס"מ', '600 ס"מ'], e: 'היקף = 188.4 ס"מ. 10 סיבובים: 188.4 × 10 = 1,884 ס"מ (בערך 18.84 מטר).' },
+        { q: 'לבריכה עגולה יש רדיוס של 4 מטר. כמה מטרים של גדר צריך כדי להקיף אותה?', o: ['25.12 מ\'', '12.56 מ\'', '50.24 מ\'', '8 מ\''], e: 'היקף = 2 × 4 × 3.14 = 8 × 3.14 = 25.12 מ\'.' },
+        { q: 'קוטר עוגה עגולה הוא 20 ס"מ. רוצים לקשור סביבה סרט, ועוד 3 ס"מ לקשר. כמה סרט צריך?', o: ['65.8 ס"מ', '62.8 ס"מ', '128.6 ס"מ', '23 ס"מ'], e: 'היקף העוגה = 20 × 3.14 = 62.8 ס"מ. ועוד 3 ס"מ לקשר: 65.8 ס"מ.' },
+        { q: 'מדדו בחבל את ההיקף של גזע עץ: 157 ס"מ. מה קוטר הגזע?', o: ['50 ס"מ', '25 ס"מ', '100 ס"מ', '493 ס"מ'], e: 'קוטר = היקף ÷ 3.14 = 157 ÷ 3.14 = 50 ס"מ.' },
+        { q: 'קוטר מסלול ריצה עגול הוא 50 מטר. נועה רצה 4 סיבובים. כמה מטרים רצה?', o: ['628 מ\'', '157 מ\'', '1,256 מ\'', '200 מ\''], e: 'סיבוב אחד = 50 × 3.14 = 157 מ\'. 4 סיבובים: 157 × 4 = 628 מ\'.' },
+        { q: 'מחוג הדקות בשעון קיר ארוך 15 ס"מ. איזה מרחק עובר קצה המחוג בשעה אחת (סיבוב שלם)?', o: ['94.2 ס"מ', '47.1 ס"מ', '30 ס"מ', '188.4 ס"מ'], e: 'המחוג הוא רדיוס של 15 ס"מ. היקף = 2 × 15 × 3.14 = 94.2 ס"מ.' },
+        { q: 'גלגל עשה 5 סיבובים והתקדם 942 ס"מ. מה קוטר הגלגל?', o: ['60 ס"מ', '30 ס"מ', '188.4 ס"מ', '120 ס"מ'], e: 'סיבוב אחד = 942 ÷ 5 = 188.4 ס"מ (היקף). קוטר = 188.4 ÷ 3.14 = 60 ס"מ.' },
+        { q: 'דני הלך סיבוב שלם סביב מזרקה עגולה: 31.4 מטר. מה רדיוס המזרקה?', o: ['5 מ\'', '10 מ\'', '15.7 מ\'', '2.5 מ\''], e: 'קוטר = 31.4 ÷ 3.14 = 10 מ\'. רדיוס = 10 ÷ 2 = 5 מ\'.' },
+        { q: 'יש חוט באורך 1 מטר. כמה עיגולים שלמים שקוטרם 10 ס"מ אפשר להקיף בו (כל עיגול בנפרד)?', o: ['3', '10', '4', '31'], e: 'היקף עיגול אחד = 10 × 3.14 = 31.4 ס"מ. 100 ÷ 31.4 ≈ 3.18 – כלומר 3 עיגולים שלמים.' },
+        { q: 'לשולחן עגול יש רדיוס של 50 ס"מ. כמה מטרים של פס קישוט צריך לשפת השולחן?', o: ['3.14 מ\'', '1.57 מ\'', '314 מ\'', '1 מ\''], e: 'היקף = 2 × 50 × 3.14 = 314 ס"מ = 3.14 מ\'.' },
+        { q: 'קוטר גלגל של מכונית צעצוע הוא 5 ס"מ. כמה סיבובים יעשה הגלגל כדי לעבור 157 ס"מ?', o: ['10', '5', '31.4', '20'], e: 'היקף = 5 × 3.14 = 15.7 ס"מ. 157 ÷ 15.7 = 10 סיבובים.' }
+    ]
+},
+{
+    id: 'reasoning', icon: '🤔', color: '#00897b', title: 'הבנה והסקת מסקנות',
+    summary: [
+        'אם <b>הרדיוס גדל פי 2</b> – גם <b>הקוטר וגם ההיקף גדלים פי 2</b>. (וכך גם פי 3, פי 10...)',
+        'אם הרדיוס <b>קטן לחצי</b> – גם ההיקף <b>קטן לחצי</b>.',
+        'כדי <b>להשוות</b> בין מעגלים – הופכים קודם לאותו דבר (רדיוס מול רדיוס, או קוטר מול קוטר). מעגל עם רדיוס 6 = מעגל עם קוטר 12.',
+        'ככל שהרדיוס (או הקוטר) גדול יותר – ההיקף גדול יותר.',
+        '<b>אומדן מהיר:</b> ההיקף הוא <b>קצת יותר מפי 3</b> מהקוטר. היקף 60 → קוטר קצת פחות מ-20. ככה בודקים אם התשובה הגיונית!',
+        'אם ההפרש בין הקטרים של שני מעגלים הוא 5 ס"מ – ההפרש בין ההיקפים הוא 5 × 3.14 = 15.7 ס"מ.',
+        'קשת של <b>חצי מעגל</b> = חצי מההיקף. קשת של רבע מעגל = רבע מההיקף.'
+    ],
+    qs: [
+        { q: 'למעגל א רדיוס 6 ס"מ. למעגל ב קוטר 12 ס"מ. מה נכון?', o: ['ההיקפים שווים', 'למעגל א היקף גדול יותר', 'למעגל ב היקף גדול יותר', 'אי אפשר לדעת'], e: 'רדיוס 6 = קוטר 12. לשני המעגלים אותו קוטר – ולכן אותו היקף.' },
+        { q: 'למעגל א רדיוס 5 ס"מ. למעגל ב קוטר 8 ס"מ. למי היקף גדול יותר?', o: ['למעגל א', 'למעגל ב', 'ההיקפים שווים', 'אי אפשר לדעת בלי לחשב'], e: 'קוטר מעגל א = 10 ס"מ, גדול מ-8. לכן ההיקף שלו גדול יותר.' },
+        { q: 'הרדיוס של מעגל גדל פי 2. מה קורה להיקף?', o: ['ההיקף גדל פי 2', 'ההיקף גדל פי 4', 'ההיקף לא משתנה', 'ההיקף גדל ב-2 ס"מ'], e: 'ההיקף = 2 × רדיוס × 3.14. אם הרדיוס פי 2 – גם ההיקף פי 2.' },
+        { q: 'הקוטר של מעגל קטן לחצי. מה קורה להיקף?', o: ['ההיקף קטן לחצי', 'ההיקף קטן לרבע', 'ההיקף לא משתנה', 'ההיקף גדל פי 2'], e: 'ההיקף = קוטר × 3.14, ולכן הוא משתנה בדיוק כמו הקוטר.' },
+        { q: 'ההיקף של מעגל הוא 60 ס"מ. בערך מה הקוטר שלו (בלי לחשב בדיוק)?', o: ['קצת פחות מ-20 ס"מ', 'בערך 60 ס"מ', 'בערך 30 ס"מ', 'בערך 180 ס"מ'], e: 'ההיקף קצת יותר מפי 3 מהקוטר. 60 ÷ 3 = 20, ולכן הקוטר קצת פחות מ-20 (בדיוק: 19.1).' },
+        { q: 'מחלקים את ההיקף של מעגל בקוטר שלו. מה מקבלים?', o: ['בערך 3.14 – בכל מעגל אותו מספר', 'מספר שתלוי בגודל המעגל', 'תמיד 2', 'את הרדיוס'], e: 'היחס בין ההיקף לקוטר הוא תמיד π ≈ 3.14, בכל מעגל – קטן או ענק.' },
+        { q: 'הרדיוס של מעגל ב גדול פי 3 מהרדיוס של מעגל א. היקף מעגל א הוא 12.56 ס"מ. מה היקף מעגל ב?', o: ['37.68 ס"מ', '12.56 ס"מ', '4.19 ס"מ', '113.04 ס"מ'], e: 'רדיוס פי 3 → היקף פי 3: 12.56 × 3 = 37.68 ס"מ.' },
+        { q: 'יואב חישב היקף של מעגל שרדיוסו 4 ס"מ: 4 × 3.14 = 12.56 ס"מ. מה הטעות שלו?', o: ['הוא הכפיל את הרדיוס ב-3.14 במקום את הקוטר; התשובה הנכונה 25.12 ס"מ', 'אין טעות', 'היה צריך לחלק ב-3.14', 'היה צריך להכפיל ב-4'], e: 'היקף = 2 × רדיוס × 3.14 = 8 × 3.14 = 25.12 ס"מ.' },
+        { q: 'מה אורך הקשת של חצי מעגל, אם קוטר המעגל 10 ס"מ?', o: ['15.7 ס"מ', '31.4 ס"מ', '5 ס"מ', '10 ס"מ'], e: 'היקף שלם = 31.4 ס"מ. חצי מעגל = 31.4 ÷ 2 = 15.7 ס"מ.' },
+        { q: 'הקוטר של מעגל א גדול ב-5 ס"מ מהקוטר של מעגל ב. בכמה גדול ההיקף של א?', o: ['ב-15.7 ס"מ', 'ב-5 ס"מ', 'ב-31.4 ס"מ', 'אי אפשר לדעת בלי הקטרים'], e: 'כל ס"מ בקוטר מוסיף 3.14 ס"מ להיקף. 5 × 3.14 = 15.7 ס"מ.' },
+        { q: 'דנה אמרה: "ההיקף של מעגל שקוטרו 20 ס"מ הוא 628 ס"מ". מה נכון?', o: ['היא טעתה – ההיקף 62.8 ס"מ, קצת יותר מפי 3 מהקוטר', 'היא צודקת', 'ההיקף 6.28 ס"מ', 'ההיקף 125.6 ס"מ'], e: 'אומדן: פי 3 מ-20 זה 60. לכן 628 גדול מדי. 20 × 3.14 = 62.8 ס"מ.' },
+        { q: 'שני מעגלים עם אותו היקף. מה נכון לגבי הרדיוסים שלהם?', o: ['הרדיוסים שווים', 'הרדיוסים יכולים להיות שונים', 'לאחד רדיוס כפול', 'אי אפשר לדעת'], e: 'אותו היקף → אותו קוטר → אותו רדיוס. המעגלים זהים בגודלם.' }
+    ]
+},
+{
+    id: 'drawing', icon: '✏️', color: '#6d4c41', title: 'סרטוט במעגל',
+    figs: [['קטרים מאונכים', FIG.perpDiams], ['מיתר מקביל לקוטר', FIG.chordParDiam], ['מיתרים מקבילים', FIG.twoParChords]],
+    summary: [
+        '<b>מחוגה:</b> פותחים את המחוגה <b>לאורך הרדיוס</b> (לא הקוטר!). רוצים קוטר 8 ס"מ? פותחים 4 ס"מ.',
+        'מסמנים את <b>המרכז</b> בנקודה ובאות (O), ואת הנקודות על המעגל באותיות (A, B...).',
+        '<b>קוטר:</b> מסרגלים קו שעובר <b>דרך המרכז</b> מצד לצד של המעגל.',
+        '<b>ישרים מקבילים (∥):</b> לא נפגשים אף פעם, המרחק ביניהם תמיד שווה. (כמו פסי רכבת)',
+        '<b>ישרים מאונכים (⊥):</b> נפגשים ויוצרים <b>זווית ישרה (90°)</b>. מסמנים ריבוע קטן בפינה. בודקים עם משולש או פינה של דף.',
+        '<b>שני קטרים מאונכים</b> – נחתכים במרכז בזווית ישרה ומחלקים את העיגול ל-4 רבעים שווים.',
+        '<b>מיתר מקביל לקוטר</b> – קו ישר בין שתי נקודות על המעגל, באותו כיוון של הקוטר, אבל לא עובר במרכז.',
+        'אי אפשר לסרטט <b>שני קטרים מקבילים</b> – כל הקטרים עוברים במרכז ולכן נפגשים בו.',
+        '<b>קשת</b> מסמנים בצבע או בקו עבה על חלק מהמעגל. <b>גזרה</b> – צובעים את השטח בין שני רדיוסים.'
+    ],
+    qs: [
+        { q: 'רוצים לסרטט מעגל שקוטרו 8 ס"מ. לכמה ס"מ פותחים את המחוגה?', o: ['4 ס"מ', '8 ס"מ', '16 ס"מ', '25.12 ס"מ'], e: 'פתיחת המחוגה = הרדיוס = 8 ÷ 2 = 4 ס"מ.' },
+        { q: 'רוצים לסרטט מעגל שרדיוסו 3.5 ס"מ. לכמה ס"מ פותחים את המחוגה?', o: ['3.5 ס"מ', '7 ס"מ', '1.75 ס"מ', '10.99 ס"מ'], e: 'פותחים את המחוגה בדיוק לאורך הרדיוס – 3.5 ס"מ.' },
+        { q: 'מה מסורטט בציור?', fig: FIG.perpDiams, o: ['שני קטרים מאונכים זה לזה', 'שני מיתרים מקבילים', 'רדיוס ומיתר', 'שני קטרים מקבילים'], e: 'AB ו-CD עוברים דרך המרכז (קטרים) ונפגשים בזווית ישרה – מאונכים.' },
+        { q: 'מה מסורטט בציור? (AB בכחול, CD באדום)', fig: FIG.chordParDiam, o: ['מיתר CD מקביל לקוטר AB', 'מיתר CD מאונך לקוטר AB', 'שני קטרים', 'רדיוס מקביל לקוטר'], e: 'CD לא עובר במרכז – הוא מיתר. הוא באותו כיוון כמו AB ולא נפגש איתו – מקביל.' },
+        { q: 'מה מסורטט בציור?', fig: FIG.twoParChords, o: ['שני מיתרים מקבילים', 'שני קטרים מאונכים', 'שני רדיוסים', 'קוטר ומיתר מאונכים'], e: 'AB ו-CD מחברים נקודות על המעגל ולא עוברים במרכז – מיתרים. הם לא נפגשים – מקבילים.' },
+        { q: 'מה מסורטט בציור? (AB בכחול, OC באדום)', fig: FIG.radiusPerpDiam, o: ['רדיוס OC מאונך לקוטר AB', 'מיתר OC מקביל לקוטר AB', 'שני קטרים מאונכים', 'קוטר OC'], e: 'OC יוצא מהמרכז אל המעגל – רדיוס. הוא יוצר זווית ישרה עם AB – מאונך.' },
+        { q: 'מה הם ישרים מקבילים?', o: ['ישרים שלא נפגשים אף פעם, והמרחק ביניהם תמיד שווה', 'ישרים שנפגשים בזווית ישרה', 'ישרים שעוברים דרך המרכז', 'ישרים שאורכם שווה'], e: 'מקבילים = כמו פסי רכבת. הסימון: ∥' },
+        { q: 'מה הם ישרים מאונכים?', o: ['ישרים שנפגשים ויוצרים זווית ישרה (90°)', 'ישרים שלא נפגשים אף פעם', 'ישרים באותו אורך', 'ישרים שנפגשים בכל זווית'], e: 'מאונכים = נפגשים בזווית ישרה. הסימון: ⊥, ובציור – ריבוע קטן.' },
+        { q: 'האם אפשר לסרטט במעגל אחד שני קטרים מקבילים?', o: ['לא – כל הקטרים עוברים דרך המרכז, ולכן נפגשים בו', 'כן, תמיד', 'כן, אם המעגל גדול', 'רק אם הם קצרים'], e: 'מקבילים לא נפגשים, אבל כל שני קטרים נפגשים במרכז. לכן זה בלתי אפשרי.' },
+        { q: 'כמה מיתרים מקבילים לקוטר AB אפשר לסרטט במעגל?', o: ['אינסוף', 'אחד', 'שניים', 'אף אחד'], e: 'אפשר לסרטט עוד ועוד מיתרים מקבילים לקוטר, מעליו ומתחתיו – אינסוף.' },
+        { q: 'מה פירוש הסימון AB ⊥ CD?', o: ['AB מאונך ל-CD', 'AB מקביל ל-CD', 'AB שווה ל-CD', 'AB חוצה את CD'], e: '⊥ = מאונך. ∥ = מקביל.' },
+        { q: 'סרטטו קוטר AB, ואחר כך מיתר שמאונך ל-AB. איזה כלי עוזר לוודא שהזווית ישרה?', o: ['משולש (או פינה של דף)', 'מחוגה בלבד', 'מחשבון', 'מחק'], e: 'למשולש יש זווית ישרה. מניחים אותו על הקוטר ומסרגלים לאורך הצלע השנייה.' }
+    ]
+}
+];
+
+// ============================================================
+// State
+// ============================================================
+const EXAM_APP_ID = 'circle-review';
+let quiz = [];
+let qIndex = 0;
+let score = 0;
+let mode = 'topic';  // 'topic' | 'exam' | 'retry'
+let currentTopic = null;
+let wrongList = [];
+let perTopic = {};
+
+function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+function loadBest() {
+    try { return JSON.parse(localStorage.getItem('circle_best') || '{}'); } catch (e) { return {}; }
+}
+function saveBest(key, pct) {
+    try {
+        const b = loadBest();
+        if (!b[key] || pct > b[key]) { b[key] = pct; localStorage.setItem('circle_best', JSON.stringify(b)); }
+    } catch (e) {}
+}
+
+function show(id) {
+    ['menu-screen', 'summary-screen', 'quiz-screen', 'result-screen'].forEach(s =>
+        document.getElementById(s).classList.toggle('hidden', s !== id));
+    window.scrollTo(0, 0);
+}
+
+// ============================================================
+// Menu
+// ============================================================
+function showMenu() {
+    const best = loadBest();
+    document.getElementById('topics-grid').innerHTML = TOPICS.map((t, i) => `
+        <div class="topic-card" style="--c:${t.color}" onclick="showSummary(${i})">
+            <span class="t-icon">${t.icon}</span>
+            <span class="t-title">${i + 1}. ${t.title}</span>
+            <span class="t-meta">${t.qs.length} שאלות · סיכום</span>
+            ${best[t.id] !== undefined ? `<span class="t-best">הכי טוב: ${best[t.id]}% ${best[t.id] >= 90 ? '⭐' : ''}</span>` : ''}
+        </div>`).join('');
+    show('menu-screen');
+}
+
+function showSummary(i) {
+    const t = TOPICS[i];
+    currentTopic = i;
+    const figs = t.figs ? `<div class="summary-figs">${t.figs.map(([cap, s]) => `<figure>${s}<figcaption>${cap}</figcaption></figure>`).join('')}</div>` : '';
+    const panel = document.getElementById('summary-panel');
+    panel.style.setProperty('--c', t.color);
+    panel.innerHTML = `
+        <h2>${t.icon} ${t.title} – סיכום</h2>
+        ${figs}
+        <ul class="summary-list">${t.summary.map(s => `<li>${s}</li>`).join('')}</ul>
+        <div class="actions">
+            <button class="btn btn-light" onclick="showMenu()">🏠 לתפריט</button>
+            <button class="btn btn-green" onclick="startTopic(${i})">✏️ לתרגול (${t.qs.length} שאלות)</button>
+        </div>`;
+    show('summary-screen');
+}
+
+// ============================================================
+// Quiz
+// ============================================================
+function buildItem(topic, item) {
+    return { topicId: topic.id, topicTitle: topic.title, q: item.q, o: shuffle(item.o), correct: item.o[0], e: item.e, fig: item.fig || '' };
+}
+
+function startTopic(i) {
+    mode = 'topic';
+    currentTopic = i;
+    const t = TOPICS[i];
+    beginQuiz(shuffle(t.qs).map(it => buildItem(t, it)));
+}
+
+function startExam() {
+    mode = 'exam';
+    const items = [];
+    TOPICS.forEach(t => shuffle(t.qs).slice(0, 3).forEach(it => items.push(buildItem(t, it))));
+    beginQuiz(shuffle(items));
+}
+
+function startRetry() {
+    mode = 'retry';
+    beginQuiz(shuffle(wrongList).map(it => ({ ...it, o: shuffle(it.o) })));
+}
+
+function beginQuiz(items) {
+    quiz = items;
+    qIndex = 0;
+    score = 0;
+    wrongList = [];
+    perTopic = {};
+    show('quiz-screen');
+    renderQuestion();
+}
+
+function renderQuestion() {
+    const item = quiz[qIndex];
+    document.getElementById('q-counter').textContent = `שאלה ${qIndex + 1} מתוך ${quiz.length}`;
+    document.getElementById('q-topic').textContent = item.topicTitle;
+    document.getElementById('q-score').textContent = `✅ ${score}`;
+    document.getElementById('progress-bar').style.width = (qIndex / quiz.length * 100) + '%';
+    document.getElementById('q-text').textContent = item.q;
+    document.getElementById('q-figure').innerHTML = item.fig;
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback';
+    fb.innerHTML = '';
+    document.getElementById('next-btn').classList.add('hidden');
+
+    const opts = document.getElementById('options');
+    opts.innerHTML = '';
+    item.o.forEach(text => {
+        const b = document.createElement('button');
+        b.className = 'option';
+        b.textContent = text;
+        b.onclick = () => answer(b, text);
+        opts.appendChild(b);
+    });
+}
+
+function answer(btn, text) {
+    const item = quiz[qIndex];
+    const ok = text === item.correct;
+    document.querySelectorAll('.option').forEach(b => {
+        b.disabled = true;
+        if (b.textContent === item.correct) b.classList.add('correct');
+    });
+    if (!perTopic[item.topicId]) perTopic[item.topicId] = { title: item.topicTitle, ok: 0, total: 0 };
+    perTopic[item.topicId].total++;
+    const fb = document.getElementById('feedback');
+    if (ok) {
+        score++;
+        perTopic[item.topicId].ok++;
+        fb.className = 'feedback show good';
+        fb.innerHTML = `<b>✅ נכון!</b> ${item.e}`;
+    } else {
+        btn.classList.add('wrong');
+        wrongList.push(item);
+        fb.className = 'feedback show bad';
+        fb.innerHTML = `<b>❌ לא בדיוק.</b> התשובה הנכונה: <b>${item.correct}</b><br>${item.e}`;
+    }
+    document.getElementById('q-score').textContent = `✅ ${score}`;
+    const next = document.getElementById('next-btn');
+    next.textContent = qIndex + 1 < quiz.length ? 'לשאלה הבאה ←' : 'לסיכום התוצאות 🏁';
+    next.classList.remove('hidden');
+}
+
+function nextQuestion() {
+    qIndex++;
+    if (qIndex < quiz.length) renderQuestion();
+    else showResult();
+}
+
+function showResult() {
+    const total = quiz.length;
+    const pct = Math.round(score / total * 100);
+    let emoji = '💪', msg = 'כדאי לחזור על הסיכום ולנסות שוב!';
+    if (pct >= 90) { emoji = '🏆'; msg = 'מצוין! את מוכנה למבחן!'; }
+    else if (pct >= 75) { emoji = '🌟'; msg = 'כל הכבוד! עוד קצת חזרה על הטעויות ומושלם.'; }
+    else if (pct >= 55) { emoji = '👍'; msg = 'בכיוון הנכון! כדאי לחזור על הנושאים החלשים.'; }
+
+    if (mode === 'topic') saveBest(TOPICS[currentTopic].id, pct);
+    if (mode === 'exam') {
+        saveBest('exam', pct);
+        if (typeof saveAppScore === 'function') saveAppScore(EXAM_APP_ID, score, total);
+    }
+
+    let breakdown = '';
+    if (mode === 'exam') {
+        const rows = Object.values(perTopic).sort((a, b) => (a.ok / a.total) - (b.ok / b.total));
+        breakdown = `<h3 style="margin-top:18px;">לפי נושא:</h3><div class="breakdown">` +
+            rows.map(r => `<div class="breakdown-row ${r.ok < r.total ? 'weak' : ''}"><span>${r.title}</span><span>${r.ok}/${r.total} ${r.ok === r.total ? '✅' : '🔁'}</span></div>`).join('') +
+            `</div>`;
+    }
+
+    const retryBtn = wrongList.length
+        ? `<button class="btn btn-orange" onclick="startRetry()">🔁 לתרגל שוב את הטעויות (${wrongList.length})</button>` : '';
+    const againBtn = mode === 'exam'
+        ? `<button class="btn btn-primary" onclick="startExam()">📝 מבחן מסכם חדש</button>`
+        : (mode === 'topic' ? `<button class="btn btn-primary" onclick="startTopic(${currentTopic})">🔄 שוב את הנושא</button>` : '');
+
+    document.getElementById('result-panel').innerHTML = `
+        <div class="result-big">${emoji}</div>
+        <div class="result-score">${score} מתוך ${total} (${pct}%)</div>
+        <div class="result-msg">${msg}</div>
+        ${breakdown}
+        <div class="actions">
+            ${retryBtn}
+            ${againBtn}
+            <a class="btn btn-light" href="circle_open.html" style="text-decoration:none;">✍️ לשלב הבא: שאלות פתוחות</a>
+            <button class="btn btn-light" onclick="showMenu()">🏠 לתפריט</button>
+        </div>`;
+    show('result-screen');
+}
+
+showMenu();
+</script>
+<script src="../../app-tracker.js"></script>
+</body>
+</html>
