@@ -2,6 +2,7 @@
 
 מסמך handoff לסשנים חדשים. כאן מוסבר איך בנוי האתר, איך מוסיפים אפליקציה, ואיך מחברים בדיקת AI (Gemini).
 אפשר להעתיק אותו כמו שהוא גם לפרויקטים אחרים שמשתמשים באותו פרויקט Firebase.
+יש גם סקיל `school-app-cards` בתיקייה `.claude/skills/school-app-cards/SKILL.md`, עם סיכום מקוצר של כרטיסיות, נתיבים ו-AI. כשמשנים משהו כאן, כדאי לעדכן גם אותו.
 
 ---
 
@@ -248,5 +249,4 @@ curl -sS -X POST "https://firebasevertexai.googleapis.com/v1beta/projects/homewo
 
 ## 8. בעיות ידועות / TODO
 
-- `apps/science/nutrition_quiz.html` כבר כולל App Check, אבל עדיין על 11.8.1. כדאי לשדרג ל-12.19.0 ולהוסיף `thinkingBudget: 0`.
-- הסקיל `school-app-cards` מתעד רק את grade-3, grade-5 וגן. עמודי הכיתות הפעילים עכשיו הם **א', ד', ו'** (`grade-1/4/6.html`).
+- אין כרגע.
