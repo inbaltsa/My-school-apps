@@ -584,9 +584,9 @@
 // עד שמפעילים — השאלות עדיין עובדות, פשוט בלי בדיקת AI.
 // ==============================================
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
-import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app-check.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app-check.js";
 
 let aiService = null;
 let aiModel = null;
@@ -643,7 +643,7 @@ async function initAI() {
     try {
         // ניסיון 1: Firebase AI Logic API חדש (firebase/ai)
         const aiModule = await import(
-            "https://www.gstatic.com/firebasejs/11.8.1/firebase-ai.js"
+            "https://www.gstatic.com/firebasejs/12.19.0/firebase-ai.js"
         );
         const { getAI, getGenerativeModel, GoogleAIBackend } = aiModule;
         
@@ -654,7 +654,9 @@ async function initAI() {
             systemInstruction: TUTOR_SYSTEM_PROMPT,
             generationConfig: {
                 temperature: 0.3,
-                maxOutputTokens: 1500,
+                maxOutputTokens: 2048,
+                // בלי thinkingBudget:0 החשיבה נספרת ב-maxOutputTokens והתשובה נקטעת לפני הציון
+                thinkingConfig: { thinkingBudget: 0 },
             }
         });
         aiAvailable = true;
@@ -666,7 +668,7 @@ async function initAI() {
         try {
             // ניסיון 2: Vertex AI API ישן (fallback)
             const vtxModule = await import(
-                "https://www.gstatic.com/firebasejs/11.8.1/firebase-vertexai.js"
+                "https://www.gstatic.com/firebasejs/12.19.0/firebase-vertexai.js"
             );
             const { getVertexAI, getGenerativeModel } = vtxModule;
             
