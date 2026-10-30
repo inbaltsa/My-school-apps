@@ -313,13 +313,14 @@ try {
 
 // כשהבקשה ל-Gemini נדחית בגלל App Check, מבקשים טוקן מחדש כדי לראות למה ההחלפה נכשלה
 // (appCheck/recaptcha-error = בעיה במפתח/בדומיין של reCAPTCHA, fetch-status-error 403 = Firebase דחה את reCAPTCHA, throttled = חסימה זמנית אחרי כישלון)
+// מחזיר { ok, msg }. כש-ok, הטוקן החדש נשמר ב-SDK והבקשה הבאה ל-Gemini משתמשת בו.
 async function appCheckDiagnosis() {
-    if (!appCheck) return `App Check לא אותחל: ${appCheckInitError}`;
+    if (!appCheck) return { ok: false, msg: `App Check לא אותחל: ${appCheckInitError}` };
     try {
         await getToken(appCheck, true);
-        return 'App Check: התקבל טוקן תקין בניסיון החוזר';
+        return { ok: true, msg: 'App Check: התקבל טוקן תקין בניסיון החוזר' };
     } catch (err) {
-        return `App Check: ${err.code || ''} ${err.message || err}`;
+        return { ok: false, msg: `App Check: ${err.code || ''} ${err.message || err}` };
     }
 }
 const auth = getAuth(app);
@@ -399,7 +400,11 @@ ${studentAnswer}
 """`;
     let lastError = '';
     let lastText = '';
-    for (const model of [aiModel, aiModelFallback]) {
+    // טוקן App Check ישן/פגום (למשל מניסיון כושל קודם) נדחה ב-401: מרעננים פעם אחת ומנסים שוב את אותו מודל
+    let refreshed = false;
+    const models = [aiModel, aiModelFallback];
+    for (let i = 0; i < models.length; i++) {
+        const model = models[i];
         try {
             const result = await model.generateContent(prompt);
             const text = (result.response.text() || '').trim();
@@ -412,9 +417,17 @@ ${studentAnswer}
         } catch (err) {
             lastError = err.message || String(err);
             console.error("AI check error:", err);
+            if (!refreshed && /app check/i.test(lastError)) {
+                refreshed = true;
+                const diag = await appCheckDiagnosis();
+                if (diag.ok) { i--; continue; }
+                lastError += ' | ' + diag.msg;
+                break;  // בלי טוקן תקין גם המודל השני ייכשל
+            } else if (refreshed && /app check/i.test(lastError)) {
+                lastError += ' | App Check: גם הטוקן החדש נדחה';
+            }
         }
     }
-    if (/app check/i.test(lastError)) lastError += ' | ' + await appCheckDiagnosis();
     return { success: false, error: lastError, feedback: lastText };
 };
 
