@@ -284,7 +284,7 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app-check.js";
+import { initializeAppCheck, ReCaptchaV3Provider, getToken } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app-check.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAi0YrEfLEr7GK2VRjJ9FOuhz4066_7T5M",
@@ -299,13 +299,28 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig, "ai-app");
 
 // אותו App Check כמו ב-firebase-homework.js. בלי זה Gemini מחזיר 403 כשיש אכיפת App Check.
+let appCheck = null;
+let appCheckInitError = '';
 try {
-    initializeAppCheck(app, {
+    appCheck = initializeAppCheck(app, {
         provider: new ReCaptchaV3Provider('6Lc3ybEsAAAAAJpdWESSOGNXCqW764S9qIpsbc0k'),
         isTokenAutoRefreshEnabled: true
     });
 } catch (err) {
+    appCheckInitError = err.message;
     console.warn("⚠️ App Check not initialized:", err.message);
+}
+
+// כשהבקשה ל-Gemini נדחית בגלל App Check, מבקשים טוקן מחדש כדי לראות למה ההחלפה נכשלה
+// (appCheck/recaptcha-error = בעיה במפתח/בדומיין של reCAPTCHA, fetch-status-error 403 = Firebase דחה את reCAPTCHA, throttled = חסימה זמנית אחרי כישלון)
+async function appCheckDiagnosis() {
+    if (!appCheck) return `App Check לא אותחל: ${appCheckInitError}`;
+    try {
+        await getToken(appCheck, true);
+        return 'App Check: התקבל טוקן תקין בניסיון החוזר';
+    } catch (err) {
+        return `App Check: ${err.code || ''} ${err.message || err}`;
+    }
 }
 const auth = getAuth(app);
 
@@ -399,6 +414,7 @@ ${studentAnswer}
             console.error("AI check error:", err);
         }
     }
+    if (/app check/i.test(lastError)) lastError += ' | ' + await appCheckDiagnosis();
     return { success: false, error: lastError, feedback: lastText };
 };
 
