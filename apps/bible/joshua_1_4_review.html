@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>יהושע א–ד - חזרה למבחן</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            background: linear-gradient(135deg, #efebe9 0%, #fff8e1 50%, #e3f2fd 100%);
+            min-height: 100vh;
+            padding: 12px;
+            color: #2d3436;
+        }
+
+        .app-container { max-width: 760px; margin: 0 auto; }
+
+        .app-header {
+            text-align: center;
+            padding: 20px 15px;
+            background: linear-gradient(135deg, #6d4c41, #c62828);
+            border-radius: 20px;
+            color: white;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(30,136,229,0.3);
+        }
+        .app-header h1 { font-size: 1.6em; font-weight: 800; }
+        .app-header p { font-size: 0.95em; opacity: 0.9; margin-top: 5px; }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 10px;
+            color: #1565c0;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .btn {
+            font-family: inherit;
+            font-size: 1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 14px;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary { background: #1e88e5; color: white; box-shadow: 0 3px 10px rgba(30,136,229,0.3); }
+        .btn-green { background: #43a047; color: white; box-shadow: 0 3px 10px rgba(67,160,71,0.3); }
+        .btn-orange { background: #fb8c00; color: white; box-shadow: 0 3px 10px rgba(251,140,0,0.3); }
+        .btn-light { background: white; color: #2d3436; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+        .exam-box {
+            background: white;
+            border-radius: 18px;
+            padding: 18px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            text-align: center;
+            border-top: 5px solid #e53935;
+        }
+        .exam-box h2 { font-size: 1.2em; margin-bottom: 6px; }
+        .exam-box p { color: #636e72; margin-bottom: 12px; font-size: 0.95em; }
+
+        .formula-box {
+            background: #fffde7;
+            border: 2px dashed #f9a825;
+            border-radius: 18px;
+            padding: 14px 18px;
+            margin-bottom: 15px;
+            text-align: center;
+            line-height: 1.8;
+        }
+        .formula-box h3 { color: #e65100; margin-bottom: 4px; }
+        .formula { font-weight: 700; font-size: 1.1em; direction: rtl; }
+        .formula-box .small { color: #636e72; font-size: 0.9em; }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+        }
+        .topic-card {
+            background: white;
+            border-radius: 16px;
+            padding: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            border-right: 6px solid var(--c, #1e88e5);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .topic-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+        .topic-card .t-icon { font-size: 1.8em; }
+        .topic-card .t-title { font-weight: 700; font-size: 1.05em; }
+        .topic-card .t-meta { font-size: 0.85em; color: #636e72; }
+        .topic-card .t-best { font-size: 0.85em; font-weight: 600; color: #43a047; }
+
+        .panel {
+            background: white;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 15px;
+        }
+        .panel h2 { margin-bottom: 12px; font-size: 1.35em; }
+        .summary-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .summary-list li {
+            background: #f5f9ff;
+            border-radius: 12px;
+            padding: 10px 14px;
+            line-height: 1.6;
+            border-right: 4px solid var(--c, #1e88e5);
+        }
+        .summary-list b { color: #1565c0; }
+        .summary-figs { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 12px; }
+        .summary-figs figure { text-align: center; font-size: 0.9em; font-weight: 600; color: #455a64; }
+        .summary-figs svg { width: 130px; height: 130px; }
+        .actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 18px; }
+
+        .progress-container {
+            background: #e0e0e0;
+            border-radius: 20px;
+            height: 12px;
+            margin: 10px 0 15px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #42a5f5, #e53935);
+            border-radius: 20px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+        .q-meta { display: flex; justify-content: space-between; color: #636e72; font-size: 0.9em; flex-wrap: wrap; gap: 6px; }
+        .q-topic-tag {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .q-text { font-size: 1.2em; font-weight: 600; margin: 14px 0; line-height: 1.6; }
+        .q-figure { margin: 6px auto 14px; text-align: center; }
+        .q-figure svg { width: 220px; max-width: 100%; height: auto; }
+
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option {
+            font-family: inherit;
+            font-size: 1.05em;
+            text-align: right;
+            background: #f8f9fa;
+            border: 2px solid #dfe6e9;
+            border-radius: 14px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+            color: #2d3436;
+            line-height: 1.5;
+        }
+        .option:hover:not(:disabled) { background: #e3f2fd; border-color: #90caf9; }
+        .option.correct { background: #e8f5e9; border-color: #43a047; font-weight: 600; }
+        .option.wrong { background: #ffebee; border-color: #e53935; }
+        .option:disabled { cursor: default; }
+
+        .feedback {
+            margin-top: 14px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            line-height: 1.6;
+            display: none;
+        }
+        .feedback.show { display: block; }
+        .feedback.good { background: #e8f5e9; border-right: 5px solid #43a047; }
+        .feedback.bad { background: #fff3e0; border-right: 5px solid #fb8c00; }
+
+        .result-big { font-size: 3em; text-align: center; margin: 10px 0; }
+        .result-score { text-align: center; font-size: 1.4em; font-weight: 700; }
+        .result-msg { text-align: center; color: #636e72; margin-top: 6px; }
+        .breakdown { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        .breakdown-row.weak { background: #fff3e0; }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 480px) {
+            .app-header h1 { font-size: 1.3em; }
+            .q-text { font-size: 1.08em; }
+            .topics-grid { grid-template-columns: 1fr 1fr; }
+            .topic-card .t-title { font-size: 0.95em; }
+            .summary-figs svg { width: 110px; height: 110px; }
+        }
+        /* שאלות סידור */
+        .order-hint { color: #636e72; font-size: 0.92em; margin: -6px 0 10px; }
+        .option .num {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 26px; height: 26px; border-radius: 50%;
+            background: #8d6e63; color: white; font-weight: 700; font-size: 0.9em;
+            margin-left: 8px;
+        }
+        .option.picked { background: #efebe9; border-color: #a1887f; }
+        .order-list { margin: 6px 22px 0 0; line-height: 1.7; }
+        .verse { font-weight: 700; color: #4e342e; }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <a class="back-link" href="../../grade-6.html">→ חזרה לכיתה ו'</a>
+
+    <div class="app-header">
+        <h1>📜 יהושע פרקים א–ד – חזרה למבחן</h1>
+        <p>📅 יום ה' 5.11 · סיכום לכל פרק · אמריקאיות, נכון/לא נכון, מי אמר למי, פירוש מילים וסידור אירועים</p>
+    </div>
+
+    <!-- ===== Menu ===== -->
+    <div id="menu-screen">
+        <div class="exam-box">
+            <h2>📝 מבחן מסכם – כל הנושאים</h2>
+            <p>3 שאלות אקראיות מכל נושא (21 שאלות) מכל הסוגים. כל פעם שאלות אחרות!</p>
+            <button class="btn btn-primary" onclick="startExam()">להתחיל מבחן מסכם</button>
+        </div>
+        <div class="topics-grid" id="topics-grid"></div>
+    </div>
+
+    <!-- ===== Summary ===== -->
+    <div id="summary-screen" class="hidden">
+        <div class="panel" id="summary-panel"></div>
+    </div>
+
+    <!-- ===== Quiz ===== -->
+    <div id="quiz-screen" class="hidden">
+        <div class="panel">
+            <div class="q-meta">
+                <span id="q-counter"></span>
+                <span class="q-topic-tag" id="q-topic"></span>
+                <span id="q-score"></span>
+            </div>
+            <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
+            <div class="q-text" id="q-text"></div>
+            <div class="order-hint hidden" id="order-hint">👆 לחצי על האירועים לפי הסדר שבו קרו – מהראשון לאחרון. אפשר ללחוץ שוב כדי לבטל.</div>
+            <div class="options" id="options"></div>
+            <div class="feedback" id="feedback"></div>
+            <div class="actions">
+                <button class="btn btn-light" onclick="showMenu()">🏠 לתפריט</button>
+                <button class="btn btn-green hidden" id="order-check-btn" onclick="checkOrder()">✅ לבדיקה</button>
+                <button class="btn btn-primary hidden" id="next-btn" onclick="nextQuestion()">לשאלה הבאה ←</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Result ===== -->
+    <div id="result-screen" class="hidden">
+        <div class="panel" id="result-panel"></div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// סוגי שאלות:
+//   אמריקאית:  { q, o: [נכונה, ...מסיחים], e }   – o[0] תמיד הנכונה
+//   נכון/לא:   { q, tf: true|false, e }
+//   סידור:     { q, order: [אירוע ראשון, ..., אחרון], e }
+// נושא "מילים" ונושא "מי אמר למי" נבנים אוטומטית מרשימות (המסיחים נלקחים מהרשימה עצמה)
+// ============================================================
+
+const VOCAB = [
+    ['משרת משה', 'העוזר הקרוב של משה'],
+    ['חזק ואמץ', 'היה חזק ואמיץ'],
+    ['לא ארפך ולא אעזבך', 'לא אעזוב אותך, אהיה איתך תמיד'],
+    ['לא ימוש (ספר התורה) מפיך', 'לא יזוז ממך – תמיד תעסוק בו'],
+    ['והגית בו יומם ולילה', 'תלמד ותקרא בו כל הזמן'],
+    ['אל תערוץ ואל תחת', 'אל תפחד ואל תיבהל'],
+    ['צידה', 'אוכל לדרך'],
+    ['טפכם', 'הילדים הקטנים שלכם'],
+    ['חמושים', 'מצוידים בנשק ומוכנים למלחמה'],
+    ['גיבורי החיל', 'לוחמים אמיצים'],
+    ['ימרה את פיך', 'לא יציית לך, ימרוד בפקודה שלך'],
+    ['חרש', 'בסתר, בשקט'],
+    ['ותצפנו', 'והחביאה אותו'],
+    ['פשתי העץ', 'גבעולים של צמח הפשתן'],
+    ['נמוגו / וימס לבבנו', 'נבהלו מאוד ואיבדו את האומץ'],
+    ['נפשנו תחתיכם למות', 'אנחנו מתחייבים בחיינו להגן עליכם'],
+    ['תקוות חוט השני', 'חבל בצבע אדום'],
+    ['דמו בראשו', 'הוא האשם במה שיקרה לו'],
+    ['התקדשו', 'הכינו את עצמכם לקראת מאורע קדוש'],
+    ['נד אחד', 'ערימה אחת, כמו חומה'],
+    ['גדותיו', 'שפות הנהר, הצדדים שלו'],
+    ['בחרבה', 'ביבשה'],
+    ['מלון', 'מקום שבו לנים בלילה'],
+    ['חלוצי הצבא', 'לוחמים שהולכים בראש']
+];
+
+const QUOTES = [
+    ['"קום עבור את הירדן הזה, אתה וכל העם הזה"', 'ה\' ליהושע', 'פרק א'],
+    ['"כאשר הייתי עם משה אהיה עמך"', 'ה\' ליהושע', 'פרק א'],
+    ['"הכינו לכם צידה, כי בעוד שלושת ימים אתם עוברים את הירדן"', 'יהושע (דרך השוטרים) לעם', 'פרק א'],
+    ['"כל אשר צויתנו נעשה, ואל כל אשר תשלחנו נלך"', 'שבטי ראובן, גד וחצי המנשה ליהושע', 'פרק א'],
+    ['"לכו ראו את הארץ ואת יריחו"', 'יהושע למרגלים', 'פרק ב'],
+    ['"הוציאי האנשים הבאים אלייך"', 'מלך יריחו (בשליחים) לרחב', 'פרק ב'],
+    ['"ידעתי כי נתן ה\' לכם את הארץ"', 'רחב למרגלים', 'פרק ב'],
+    ['"ההרה לכו, פן יפגעו בכם הרודפים"', 'רחב למרגלים', 'פרק ב'],
+    ['"נפשנו תחתיכם למות, אם לא תגידו את דברנו זה"', 'המרגלים לרחב', 'פרק ב'],
+    ['"כי נתן ה\' בידנו את כל הארץ"', 'המרגלים ליהושע', 'פרק ב'],
+    ['"התקדשו, כי מחר יעשה ה\' בקרבכם נפלאות"', 'יהושע לעם', 'פרק ג'],
+    ['"שאו את ארון הברית ועברו לפני העם"', 'יהושע לכהנים', 'פרק ג'],
+    ['"היום הזה אחל גדלך בעיני כל ישראל"', 'ה\' ליהושע', 'פרק ג'],
+    ['"מה האבנים האלה לכם?"', 'הילדים (הדורות הבאים) להוריהם', 'פרק ד'],
+    ['"ביבשה עבר ישראל את הירדן הזה"', 'ההורים לילדים (כך יהושע מורה לענות)', 'פרק ד'],
+    ['"עלו מן הירדן"', 'יהושע לכהנים', 'פרק ד']
+];
+
+const TOPICS = [
+{
+    id: 'ch1', icon: '🧭', color: '#6d4c41', title: 'פרק א – יהושע מקבל את ההנהגה',
+    summary: [
+        'הספר מתחיל <b>אחרי מות משה</b>. ה\' מדבר אל <b>יהושע בן נון, משרת משה</b>.',
+        'הציווי: <span class="verse">"קום עבור את הירדן הזה, אתה וכל העם הזה, אל הארץ"</span>.',
+        'ההבטחה: <span class="verse">"כאשר הייתי עם משה אהיה עמך, לא ארפך ולא אעזבך"</span>, ו<span class="verse">"לא יתייצב איש לפניך כל ימי חייך"</span>.',
+        '<b>גבולות הארץ:</b> מהמדבר והלבנון עד הנהר הגדול, <b>נהר פרת</b>, ועד <b>הים הגדול</b> (הים התיכון) במערב, "מבוא השמש".',
+        '<b>"חזק ואמץ"</b> – ה\' אומר ליהושע <b>3 פעמים</b>, ובסוף הפרק העם אומר לו את זה פעם רביעית.',
+        '<b>התנאי להצלחה:</b> לשמור ולעשות את כל התורה – <span class="verse">"לא ימוש ספר התורה הזה מפיך, והגית בו יומם ולילה"</span>.',
+        'יהושע מצווה את <b>שוטרי העם</b>: <span class="verse">"הכינו לכם צידה, כי בעוד שלושת ימים אתם עוברים את הירדן"</span>.',
+        '<b>ראובן, גד וחצי שבט המנשה</b> (שנחלתם בעבר הירדן המזרחי): הנשים, הטף והמקנה <b>נשארים</b>; הלוחמים עוברים <b>חמושים לפני אחיהם</b> ועוזרים עד שכולם יקבלו נחלה – ואז חוזרים.',
+        'תשובת השבטים: <span class="verse">"כל אשר צויתנו נעשה... כאשר שמענו אל משה כן נשמע אליך... רק חזק ואמץ"</span>.'
+    ],
+    qs: [
+        { q: 'מתי מתחיל ספר יהושע?', o: ['אחרי מות משה', 'אחרי כיבוש יריחו', 'ביציאת מצרים', 'כשיהושע כבר היה זקן'], e: '"ויהי אחרי מות משה עבד ה\'..." – יהושע מחליף את משה.' },
+        { q: 'איך מתואר יהושע בפסוק הראשון של הספר?', o: ['משרת משה', 'אחיו של משה', 'בנו של משה', 'הכהן הגדול'], e: 'יהושע בן נון היה "משרת משה" – העוזר הקרוב שלו.' },
+        { q: 'מה ה\' מצווה את יהושע לעשות?', o: ['לעבור את הירדן עם כל העם אל הארץ', 'לחזור למצרים', 'לבנות את בית המקדש', 'לעלות להר סיני'], e: '"קום עבור את הירדן הזה, אתה וכל העם הזה".' },
+        { q: 'השלימי: "כאשר הייתי עם משה ___"', o: ['אהיה עמך', 'אשלח מלאכי', 'אתן לך כוח', 'אלך לפניך'], e: '"כאשר הייתי עם משה אהיה עמך, לא ארפך ולא אעזבך".' },
+        { q: 'כמה פעמים ה\' אומר ליהושע "חזק ואמץ" בפרק א?', o: ['3', '1', '7', '10'], e: 'ה\' אומר 3 פעמים, ובסוף הפרק השבטים אומרים לו "רק חזק ואמץ" – פעם רביעית.' },
+        { q: 'מי אומר ליהושע "רק חזק ואמץ" בסוף פרק א?', o: ['שבטי ראובן, גד וחצי המנשה', 'ה\'', 'רחב', 'המרגלים'], e: 'השבטים מסיימים את תשובתם ליהושע ב"רק חזק ואמץ".' },
+        { q: 'מה יהושע מצווה את שוטרי העם?', o: ['להכין צידה, כי בעוד 3 ימים עוברים את הירדן', 'לבנות חומה סביב המחנה', 'לשלוח מרגלים ליריחו', 'לספור את העם'], e: '"הכינו לכם צידה, כי בעוד שלושת ימים אתם עוברים את הירדן".' },
+        { q: 'מה התנאי להצלחה של יהושע לפי פרק א?', o: ['לשמור ולעשות את כל התורה', 'להביא קורבנות בכל יום', 'לבנות צבא גדול', 'לכרות ברית עם מלך יריחו'], e: '"רק חזק ואמץ מאוד לשמור לעשות ככל התורה... למען תשכיל בכל אשר תלך".' },
+        { q: 'מה יקרה לנשים, לילדים ולמקנה של ראובן, גד וחצי המנשה?', o: ['יישארו בעבר הירדן המזרחי', 'יעברו ראשונים את הירדן', 'יחזרו למצרים', 'יגורו ביריחו'], e: 'הם נשארים בנחלה שקיבלו מעבר לירדן, והלוחמים עוברים לעזור לאחיהם.' },
+        { q: 'מה תפקיד הלוחמים של ראובן, גד וחצי המנשה?', o: ['לעבור חמושים לפני אחיהם ולעזור להם לכבוש את הארץ', 'לשמור על הנשים בעבר הירדן', 'לשאת את ארון הברית', 'לרגל ביריחו'], e: 'הם עוברים "חמושים לפני אחיכם... ועזרתם אותם" עד שכולם מקבלים נחלה.' },
+        { q: 'מהו הגבול המערבי של הארץ לפי פרק א?', o: ['הים הגדול (הים התיכון)', 'נהר פרת', 'נהר הירדן', 'ים סוף'], e: '"ועד הים הגדול מבוא השמש" – מבוא השמש = מערב.' },
+        { q: 'ה\' מבטיח ליהושע: "לא יתייצב איש לפניך כל ימי חייך".', tf: true, e: 'נכון. כלומר אף אויב לא יוכל לעמוד מולו.' },
+        { q: 'יהושע היה הבן של משה.', tf: false, e: 'לא נכון. יהושע הוא בן נון, והיה משרתו (עוזרו) של משה.' },
+        { q: 'השבטים אמרו ליהושע: "כאשר שמענו אל משה כן נשמע אליך".', tf: true, e: 'נכון. הם מקבלים את יהושע כמנהיג במקום משה.' }
+    ]
+},
+{
+    id: 'ch2', icon: '🕵️', color: '#c62828', title: 'פרק ב – המרגלים ורחב',
+    summary: [
+        'יהושע שולח <b>מהשיטים</b> <b>שני מרגלים</b>, <b>בסתר</b> ("חרש"): <span class="verse">"לכו ראו את הארץ ואת יריחו"</span>.',
+        'המרגלים מגיעים לבית של <b>רחב</b> (לפי פרשנים – בעלת פונדק). הבית שלה <b>בנוי בתוך חומת העיר</b>.',
+        '<b>מלך יריחו</b> שומע ושולח אליה: <span class="verse">"הוציאי האנשים"</span>.',
+        'רחב <b>מחביאה</b> אותם <b>על הגג, בתוך פשתי העץ</b>, ואומרת לשליחים שהאנשים יצאו כשנסגר שער העיר בחושך – <b>"רדפו מהר אחריהם"</b>.',
+        'הרודפים יוצאים <b>לכיוון הירדן, אל המעברות</b>, ושער העיר נסגר אחריהם.',
+        'דברי רחב: <span class="verse">"ידעתי כי נתן ה\' לכם את הארץ... ונמוגו כל יושבי הארץ מפניכם"</span>. הם שמעו על <b>ייבוש ים סוף</b> ועל הניצחון על <b>סיחון ועוג</b>, מלכי האמורי – <span class="verse">"וימס לבבנו"</span>.',
+        'רחב מבקשת: עשיתי איתכם <b>חסד</b> – עשו חסד עם בית אבי, ותנו לי <b>אות אמת</b> שתשאירו בחיים את אבי, אמי, אחיי ואחיותיי.',
+        'המרגלים נשבעים: <span class="verse">"נפשנו תחתיכם למות"</span> – בתנאי שלא תגלי את הסוד.',
+        'רחב מורידה אותם <b>בחבל דרך החלון</b>, ומייעצת: <b>לכו להר והתחבאו 3 ימים</b> עד שהרודפים יחזרו.',
+        '<b>התנאים:</b> לקשור את <b>תקוות חוט השני</b> (חבל אדום) בחלון; לאסוף את כל המשפחה לבית – מי שייצא החוצה, <b>"דמו בראשו"</b>; ולא לגלות את הסוד.',
+        'המרגלים חוזרים ומדווחים ליהושע: <span class="verse">"כי נתן ה\' בידנו את כל הארץ, וגם נמוגו כל יושבי הארץ מפנינו"</span>.'
+    ],
+    qs: [
+        { q: 'כמה מרגלים שלח יהושע?', o: ['2', '12', '1', '40'], e: 'יהושע שלח שני אנשים, בסתר. (משה, במדבר, שלח 12.)' },
+        { q: 'מאיזה מקום שלח יהושע את המרגלים?', o: ['מהשיטים', 'מגלגל', 'ממצרים', 'מהר נבו'], e: '"וישלח יהושע בן נון מן השיטים שניים אנשים מרגלים חרש".' },
+        { q: 'למה שלח יהושע את המרגלים "חרש"?', o: ['כדי שהשליחות תהיה בסתר', 'כי הם לא שמעו טוב', 'כי הם היו חרשי עץ (נגרים)', 'כי זה היה בלילה בלבד'], e: '"חרש" = בסתר, בשקט, בלי שאחרים ידעו.' },
+        { q: 'איפה הסתירה רחב את המרגלים?', o: ['על הגג, בתוך פשתי העץ', 'במרתף הבית', 'בבאר מים', 'בארמון המלך'], e: '"והיא העלתם הגגה ותטמנם בפשתי העץ".' },
+        { q: 'מה אמרה רחב לשליחי מלך יריחו?', o: ['שהאנשים יצאו כשנסגר השער בחושך, ושירדפו אחריהם מהר', 'שהאנשים עדיין בבית', 'שהיא לא ראתה אף אחד', 'שהאנשים הלכו אל הים'], e: 'היא שלחה את הרודפים לדרך הלא נכונה – "רדפו מהר אחריהם כי תשיגום".' },
+        { q: 'לאן יצאו הרודפים?', o: ['לכיוון הירדן, אל המעברות', 'אל ההר', 'אל הים הגדול', 'אל ארמון המלך'], e: '"והאנשים רדפו אחריהם דרך הירדן על המעברות".' },
+        { q: 'על מה שמעו יושבי יריחו, לפי רחב?', o: ['על ייבוש ים סוף ועל הניצחון על סיחון ועוג', 'על מעבר הירדן ביבשה', 'על נפילת חומות העי', 'על אבני הזיכרון בגלגל'], e: 'מעבר הירדן עוד לא קרה! הם שמעו על ים סוף ועל מלכי האמורי סיחון ועוג.' },
+        { q: 'מה ביקשה רחב מהמרגלים?', o: ['שיצילו אותה ואת כל משפחתה', 'כסף וזהב', 'שייקחו אותה למצרים', 'שימנו אותה למלכת יריחו'], e: 'היא ביקשה "אות אמת" שיחיו את אביה, אמה, אחיה, אחיותיה וכל אשר להם.' },
+        { q: 'איך ירדו המרגלים מבית רחב?', o: ['בחבל, דרך החלון', 'דרך שער העיר', 'בסולם מהגג אל הרחוב', 'במנהרה מתחת לחומה'], e: '"ותורידם בחבל בעד החלון".' },
+        { q: 'למה המרגלים יכלו לרדת מהחלון ישר אל מחוץ לעיר?', o: ['כי הבית של רחב היה בתוך חומת העיר', 'כי החלון היה ליד השער', 'כי השומרים ישנו', 'כי הבית היה על הר'], e: '"כי ביתה בקיר החומה, ובחומה היא יושבת".' },
+        { q: 'מה הייתה העצה של רחב למרגלים?', o: ['ללכת להר ולהתחבא שם 3 ימים', 'לחזור מיד אל הירדן', 'להישאר אצלה בבית', 'ללכת אל מלך יריחו'], e: '"ההרה לכו פן יפגעו בכם הרודפים, ונחבתם שמה שלושת ימים".' },
+        { q: 'מה הסימן שהמרגלים נתנו לרחב?', o: ['תקוות חוט השני (חבל אדום) בחלון', 'דגל לבן על הגג', 'אבן גדולה ליד הדלת', 'נר דולק בחלון'], e: '"את תקוות חוט השני הזה תקשרי בחלון אשר הורדתנו בו".' },
+        { q: 'מה דיווחו המרגלים ליהושע?', o: ['"כי נתן ה\' בידנו את כל הארץ, וגם נמוגו כל יושבי הארץ מפנינו"', 'שהעיר חזקה מדי ואי אפשר לכבוש אותה', 'שצריך לחכות שנה', 'שאין אנשים ביריחו'], e: 'הדיווח מעודד – וכמעט אותן מילים שרחב אמרה להם.' },
+        { q: 'מי מבני משפחת רחב שייצא מהבית החוצה – "דמו בראשו".', tf: true, e: 'נכון. רק מי שבתוך הבית מוגן.' },
+        { q: 'המרגלים הסתתרו בבית של רחב שלושה ימים.', tf: false, e: 'לא נכון. הם התחבאו 3 ימים בהר, כמו שרחב יעצה.' }
+    ]
+},
+{
+    id: 'ch3', icon: '🌊', color: '#1565c0', title: 'פרק ג – מעבר הירדן',
+    summary: [
+        'יהושע משכים בבוקר, והעם נוסע <b>מהשיטים</b> ולן ליד הירדן.',
+        'אחרי <b>3 ימים</b> השוטרים מסבירים: כשתראו את <b>ארון ברית ה\'</b> ואת <b>הכהנים הלויים</b> נושאים אותו – לכו אחריו.',
+        'לשמור מרחק של <b>כאלפיים אמה</b> מהארון, ולא להתקרב אליו, <span class="verse">"כי לא עברתם בדרך מתמול שלשום"</span> – זו דרך חדשה.',
+        'יהושע לעם: <span class="verse">"התקדשו, כי מחר יעשה ה\' בקרבכם נפלאות"</span>.',
+        'ה\' ליהושע: <span class="verse">"היום הזה אחל גדלך בעיני כל ישראל, אשר ידעון כי כאשר הייתי עם משה אהיה עמך"</span>.',
+        '<span class="verse">"בזאת תדעון כי אל חי בקרבכם"</span> – וה\' יוריש את <b>שבעת העמים</b>: הכנעני, החתי, החוי, הפרזי, הגרגשי, האמרי והיבוסי.',
+        'לוקחים <b>12 אנשים – איש אחד מכל שבט</b>.',
+        '<b>הנס:</b> כשרגלי הכהנים נושאי הארון נגעו במי הירדן – המים שבאו מלמעלה <b>עמדו "נד אחד"</b> (כמו חומה), והמים שזרמו למטה, ל<b>ים המלח (ים הערבה)</b>, נפסקו.',
+        'זה קרה בעונת <b>הקציר</b>, כשהירדן <span class="verse">"מלא על כל גדותיו"</span> – כך ברור שזה נס.',
+        'העם עבר <b>מול יריחו</b>, והכהנים עמדו <b>בחרבה (ביבשה) באמצע הירדן</b> עד שכל העם סיים לעבור.'
+    ],
+    qs: [
+        { q: 'מי הלך לפני העם במעבר הירדן?', o: ['הכהנים הלויים נושאי ארון הברית', 'יהושע לבדו', 'שני המרגלים', 'שבט יהודה'], e: 'הארון והכהנים הובילו, והעם הלך אחריהם.' },
+        { q: 'איזה מרחק היה צריך להשאיר בין העם לארון?', o: ['כאלפיים אמה', 'עשר אמות', 'שלושה ימים', 'אין מרחק – הולכים צמוד'], e: '"אך רחוק יהיה ביניכם וביניו כאלפיים אמה במידה".' },
+        { q: 'למה העם הלך אחרי הארון?', o: ['כדי לדעת את הדרך, כי לא עברו בה קודם', 'כי הארון היה כבד', 'כדי להסתתר מאחוריו', 'כי פחדו מהמים'], e: '"למען אשר תדעו את הדרך אשר תלכו בה, כי לא עברתם בדרך מתמול שלשום".' },
+        { q: 'השלימי: "התקדשו, כי מחר יעשה ה\' בקרבכם ___"', o: ['נפלאות', 'מלחמה', 'משפט', 'חג'], e: '"התקדשו כי מחר יעשה ה\' בקרבכם נפלאות".' },
+        { q: 'מה אומר ה\' ליהושע בפרק ג?', o: ['"היום הזה אחל גדלך בעיני כל ישראל"', '"לכו ראו את הארץ"', '"הוציאי האנשים"', '"הכינו לכם צידה"'], e: 'הנס יראה לעם שה\' עם יהושע כמו שהיה עם משה.' },
+        { q: 'כמה אנשים נבחרו, ואיך?', o: ['12 – איש אחד מכל שבט', '2 – מרגלים', '70 – זקנים', '40,000 – חלוצים'], e: '"קחו לכם שני עשר איש משבטי ישראל, איש אחד איש אחד לשבט".' },
+        { q: 'מתי בדיוק נעצרו מי הירדן?', o: ['כשרגלי הכהנים נושאי הארון נגעו במים', 'כשיהושע הרים את המטה', 'כשהעם צעק', 'בחצות הלילה'], e: '"כנוח כפות רגלי הכהנים נושאי ארון ה\'... מי הירדן ייכרתון".' },
+        { q: 'מה קרה למים שבאו מלמעלה?', o: ['עמדו "נד אחד" – נערמו כמו חומה', 'נעלמו לגמרי', 'זרמו אל הים הגדול', 'הפכו לקרח'], e: '"ויעמדו המים הירדים מלמעלה, קמו נד אחד".' },
+        { q: 'באיזו עונה התרחש מעבר הירדן, ולמה זה חשוב?', o: ['בקציר, כשהירדן מלא על כל גדותיו – כך ברור שזה נס', 'בקיץ, כשהירדן כמעט יבש', 'בחורף, כשהירדן קפוא', 'זה לא כתוב ולא חשוב'], e: '"והירדן מלא על כל גדותיו כל ימי קציר" – הנהר היה מלא ושוטף.' },
+        { q: 'איפה עמדו הכהנים בזמן שהעם עבר?', o: ['בחרבה (ביבשה) באמצע הירדן', 'על גדת הירדן', 'בגלגל', 'על ההר'], e: '"ויעמדו הכהנים... בחרבה בתוך הירדן הכן, עד אשר תמו כל הגוי לעבור".' },
+        { q: 'מול איזו עיר עבר העם את הירדן?', o: ['יריחו', 'שכם', 'בית אל', 'העי'], e: '"והעם עברו נגד יריחו".' },
+        { q: '"בזאת תדעון כי אל חי בקרבכם" – במה ידעו?', o: ['בנס של עצירת מי הירדן', 'בנפילת חומות יריחו', 'במן שירד מהשמיים', 'בעמוד האש'], e: 'הנס של הירדן יוכיח שה\' עם העם ויעזור להם לכבוש את הארץ.' },
+        { q: 'המים שזרמו לכיוון ים המלח (ים הערבה) נפסקו.', tf: true, e: 'נכון. "והירדים על ים הערבה ים המלח תמו נכרתו".' },
+        { q: 'יהושע ציווה את העם לעבור את הירדן לפני הכהנים והארון.', tf: false, e: 'לא נכון. הכהנים נושאי הארון עברו ראשונים, והעם הלך אחריהם.' }
+    ]
+},
+{
+    id: 'ch4', icon: '🪨', color: '#2e7d32', title: 'פרק ד – אבני הזיכרון',
+    summary: [
+        'ה\' מצווה: <b>12 אנשים, איש מכל שבט</b>, ייקחו <b>12 אבנים</b> מהמקום שבו עמדו רגלי הכהנים בירדן.',
+        'את האבנים לוקחים אל <b>המלון</b> – המקום שבו ילונו בלילה.',
+        'למה? <span class="verse">"כי ישאלון בניכם מחר לאמור: מה האבנים האלה לכם?"</span> – ותספרו להם שמי הירדן נכרתו מפני ארון ברית ה\'. <span class="verse">"והיו האבנים האלה לזיכרון לבני ישראל עד עולם"</span>.',
+        'יהושע הקים <b>עוד 12 אבנים בתוך הירדן</b>, במקום שבו עמדו רגלי הכהנים.',
+        '<b>ראובן, גד וחצי המנשה</b> עברו חמושים לפני בני ישראל – <b>כ-40,000 חלוצי צבא</b> – אל ערבות יריחו, כמו שהבטיחו.',
+        '<span class="verse">"ביום ההוא גדל ה\' את יהושע בעיני כל ישראל, וייראו אותו כאשר יראו את משה"</span>.',
+        'כשהכהנים עלו מהירדן ורגליהם נגעו ביבשה – <b>מי הירדן חזרו למקומם</b> וזרמו על כל גדותיו כמו קודם.',
+        'התאריך: העם עלה מהירדן <b>בעשור (10) לחודש הראשון</b> (ניסן), וחנה <b>בגלגל</b>, בקצה מזרח יריחו. שם הקים יהושע את 12 האבנים.',
+        'ההסבר לילדים: <span class="verse">"ביבשה עבר ישראל את הירדן הזה"</span> – כמו שה\' ייבש את <b>ים סוף</b>.',
+        'המטרה: <span class="verse">"למען דעת כל עמי הארץ את יד ה\' כי חזקה היא"</span>.'
+    ],
+    qs: [
+        { q: 'כמה אבנים לקחו מהירדן?', o: ['12', '2', '7', '40'], e: 'אבן אחת לכל שבט – 12 אבנים.' },
+        { q: 'מאיפה לקחו את האבנים?', o: ['מהמקום שבו עמדו רגלי הכהנים בירדן', 'מחומת יריחו', 'מההר שבו התחבאו המרגלים', 'מחוף ים המלח'], e: '"ממצב רגלי הכהנים הכין שתים עשרה אבנים".' },
+        { q: 'למה נועדו האבנים?', o: ['לזיכרון – כשהילדים ישאלו, יספרו להם על הנס', 'לבניית חומה סביב המחנה', 'לבניית בית ליהושע', 'כדי לסמן את גבול הארץ'], e: '"והיו האבנים האלה לזיכרון לבני ישראל עד עולם".' },
+        { q: 'איפה הקים יהושע את האבנים שנלקחו מהירדן?', o: ['בגלגל', 'ביריחו', 'בשיטים', 'על הגג של רחב'], e: '"ואת שתים עשרה האבנים... הקים יהושע בגלגל".' },
+        { q: 'איפה הקים יהושע עוד 12 אבנים?', o: ['בתוך הירדן, במקום שעמדו רגלי הכהנים', 'בשער יריחו', 'על הר נבו', 'בחלון של רחב'], e: '"ושתים עשרה אבנים הקים יהושע בתוך הירדן... ויהיו שם עד היום הזה".' },
+        { q: 'כמה לוחמים מראובן, גד וחצי המנשה עברו לפני העם?', o: ['כ-40,000', '12', '600,000', '2'], e: '"כארבעים אלף חלוצי הצבא עברו לפני ה\' למלחמה".' },
+        { q: 'מה קרה ליהושע "ביום ההוא"?', o: ['ה\' גידל אותו בעיני כל ישראל, והם יראו אותו כמו את משה', 'הוא חלה', 'הוא חזר לעבר הירדן', 'הוא הפך לכהן'], e: 'ההבטחה מפרק ג התקיימה – העם מכבד את יהושע כמו את משה.' },
+        { q: 'מה קרה כשהכהנים יצאו מהירדן?', o: ['המים חזרו למקומם וזרמו על כל גדותיו כמו קודם', 'הירדן נשאר יבש לתמיד', 'המים הפכו לדם', 'הירדן זרם הפוך'], e: '"וישובו מי הירדן למקומם, וילכו כתמול שלשום על כל גדותיו".' },
+        { q: 'באיזה תאריך עלה העם מהירדן?', o: ['בעשור (10) לחודש הראשון', 'בראש השנה', 'בט"ו בשבט', 'ביום הכיפורים'], e: '"והעם עלו מן הירדן בעשור לחודש הראשון" – 10 בניסן.' },
+        { q: 'איפה חנה העם אחרי מעבר הירדן?', o: ['בגלגל, בקצה מזרח יריחו', 'בתוך העיר יריחו', 'בשיטים', 'בהר המוריה'], e: '"ויחנו בגלגל בקצה מזרח יריחו".' },
+        { q: 'השלימי: "ביבשה עבר ישראל את ___"', o: ['הירדן הזה', 'ים סוף', 'המדבר', 'החומה'], e: 'זו התשובה שעונים לילדים ששואלים על האבנים.' },
+        { q: 'לאיזה נס משווה יהושע את מעבר הירדן?', o: ['קריעת ים סוף', 'המן במדבר', 'עשר המכות', 'המים מהסלע'], e: '"כאשר עשה ה\' אלוהיכם לים סוף אשר הוביש מפנינו עד עוברנו".' },
+        { q: 'השלימי: "למען דעת כל עמי הארץ את יד ה\' כי ___"', o: ['חזקה היא', 'רחוקה היא', 'קטנה היא', 'נסתרת היא'], e: 'הנס נועד להראות לכל העמים את כוחו של ה\'.' },
+        { q: 'האבנים שהוקמו בתוך הירדן היו שם "עד היום הזה".', tf: true, e: 'נכון. "עד היום הזה" = עד הזמן שבו נכתב הספר.' }
+    ]
+},
+{
+    id: 'vocab', icon: '📖', color: '#8e24aa', title: 'מילים וביטויים',
+    gen: 'vocab',
+    summary: VOCAB.map(([w, m]) => `<b>${w}</b> – ${m}`),
+    qs: []
+},
+{
+    id: 'quotes', icon: '💬', color: '#00838f', title: 'מי אמר למי?',
+    gen: 'quotes',
+    summary: QUOTES.map(([q, who, ch]) => `<span class="verse">${q}</span> – <b>${who}</b> (${ch})`),
+    qs: []
+},
+{
+    id: 'order', icon: '🔢', color: '#ef6c00', title: 'סדר האירועים',
+    summary: [
+        '<b>פרק א:</b> מות משה ← ה\' מדבר אל יהושע ("חזק ואמץ") ← יהושע מצווה על השוטרים להכין צידה ← יהושע מדבר עם ראובן, גד וחצי המנשה ← הם עונים "רק חזק ואמץ".',
+        '<b>פרק ב:</b> שליחת המרגלים מהשיטים ← הגעה לבית רחב ← מלך יריחו שולח "הוציאי האנשים" ← רחב שולחת את הרודפים לירדן ← רחב והמרגלים נשבעים ← ירידה בחבל מהחלון ← 3 ימים בהר ← דיווח ליהושע.',
+        '<b>פרק ג:</b> נסיעה מהשיטים אל הירדן ← אחרי 3 ימים השוטרים מסבירים ללכת אחרי הארון ← "התקדשו" ← רגלי הכהנים נוגעות במים ← המים עומדים נד אחד ← העם עובר בחרבה מול יריחו.',
+        '<b>פרק ד:</b> 12 אנשים לוקחים אבנים מהירדן ← הכהנים עולים מהירדן והמים חוזרים ← חניה בגלגל (10 בניסן) ← הקמת האבנים בגלגל.'
+    ],
+    qs: [
+        { q: 'סדרי את אירועי פרק א:', order: ['ה\' מדבר אל יהושע אחרי מות משה', 'יהושע מצווה על השוטרים להכין צידה', 'יהושע מדבר עם ראובן, גד וחצי המנשה', 'השבטים עונים: "רק חזק ואמץ"'], e: 'פרק א: ה\' ← השוטרים ← השבטים ← תשובת השבטים.' },
+        { q: 'סדרי את אירועי סיפור המרגלים (פרק ב):', order: ['יהושע שולח שני מרגלים מהשיטים', 'המרגלים מגיעים לבית רחב', 'מלך יריחו שולח לרחב: "הוציאי האנשים"', 'רחב מורידה את המרגלים בחבל מהחלון', 'המרגלים מתחבאים בהר שלושה ימים', 'המרגלים מדווחים ליהושע'], e: 'השליחות ← רחב ← המלך ← החלון ← ההר ← הדיווח.' },
+        { q: 'סדרי את אירועי מעבר הירדן (פרק ג):', order: ['העם נוסע מהשיטים ולן ליד הירדן', 'השוטרים מסבירים ללכת אחרי הארון', 'רגלי הכהנים נוגעות במי הירדן', 'המים מלמעלה עומדים "נד אחד"', 'העם עובר בחרבה מול יריחו'], e: 'קודם ההכנות, אחר כך הכהנים נכנסים למים, המים נעצרים, ורק אז העם עובר.' },
+        { q: 'סדרי את אירועי פרק ד:', order: ['12 אנשים לוקחים אבנים מתוך הירדן', 'הכהנים עולים מהירדן', 'מי הירדן חוזרים למקומם', 'יהושע מקים את האבנים בגלגל'], e: 'האבנים נלקחות בזמן שהכהנים עוד בירדן; כשהם יוצאים – המים חוזרים; ואז מקימים את האבנים בגלגל.' },
+        { q: 'סדרי את האירועים בפרקים א–ד:', order: ['מות משה', 'ה\' אומר ליהושע "חזק ואמץ"', 'שליחת המרגלים ליריחו', 'מעבר הירדן בחרבה', 'הקמת אבני הזיכרון בגלגל'], e: 'פרק א ← פרק ב ← פרק ג ← פרק ד.' },
+        { q: 'סדרי את מה שקרה בבית רחב:', order: ['רחב מחביאה את המרגלים בפשתי העץ', 'רחב שולחת את הרודפים לכיוון הירדן', 'רחב מבקשת מהמרגלים להציל את משפחתה', 'רחב מורידה אותם בחבל מהחלון', 'רחב קושרת את חוט השני בחלון'], e: 'ההסתרה והטעיית הרודפים ← השיחה והשבועה ← הירידה בחבל ← קשירת חוט השני (אחרי שהלכו).' }
+    ]
+}
+];
+
+// בונים את השאלות של "מילים" ו"מי אמר למי" מהרשימות
+function pickOthers(all, correct, n) {
+    return shuffle([...new Set(all.filter(x => x !== correct))]).slice(0, n);
+}
+TOPICS.find(t => t.gen === 'vocab').qs = VOCAB.map(([w, m]) => ({
+    q: `מה פירוש הביטוי "${w}"?`, o: [m, ...pickOthers(VOCAB.map(v => v[1]), m, 3)], e: `"${w}" = ${m}.`
+}));
+TOPICS.find(t => t.gen === 'quotes').qs = QUOTES.map(([q, who, ch]) => ({
+    q: `מי אמר למי: ${q}`, o: [who, ...pickOthers(QUOTES.map(x => x[1]), who, 3)], e: `${who} (${ch}).`
+}));
+
+// ============================================================
+// State
+// ============================================================
+const EXAM_APP_ID = 'joshua14-review';
+let quiz = [];
+let qIndex = 0;
+let score = 0;
+let mode = 'topic';  // 'topic' | 'exam' | 'retry'
+let currentTopic = null;
+let wrongList = [];
+let perTopic = {};
+let picked = [];     // לשאלות סידור
+
+function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+function loadBest() {
+    try { return JSON.parse(localStorage.getItem('joshua14_best') || '{}'); } catch (e) { return {}; }
+}
+function saveBest(key, pct) {
+    try {
+        const b = loadBest();
+        if (!b[key] || pct > b[key]) { b[key] = pct; localStorage.setItem('joshua14_best', JSON.stringify(b)); }
+    } catch (e) {}
+}
+
+function show(id) {
+    ['menu-screen', 'summary-screen', 'quiz-screen', 'result-screen'].forEach(s =>
+        document.getElementById(s).classList.toggle('hidden', s !== id));
+    window.scrollTo(0, 0);
+}
+
+// ============================================================
+// Menu
+// ============================================================
+function showMenu() {
+    const best = loadBest();
+    document.getElementById('topics-grid').innerHTML = TOPICS.map((t, i) => `
+        <div class="topic-card" style="--c:${t.color}" onclick="showSummary(${i})">
+            <span class="t-icon">${t.icon}</span>
+            <span class="t-title">${t.title}</span>
+            <span class="t-meta">${t.qs.length} שאלות · סיכום</span>
+            ${best[t.id] !== undefined ? `<span class="t-best">הכי טוב: ${best[t.id]}% ${best[t.id] >= 90 ? '⭐' : ''}</span>` : ''}
+        </div>`).join('');
+    show('menu-screen');
+}
+
+function showSummary(i) {
+    const t = TOPICS[i];
+    currentTopic = i;
+    const panel = document.getElementById('summary-panel');
+    panel.style.setProperty('--c', t.color);
+    panel.innerHTML = `
+        <h2>${t.icon} ${t.title} – סיכום</h2>
+        <ul class="summary-list">${t.summary.map(s => `<li>${s}</li>`).join('')}</ul>
+        <div class="actions">
+            <button class="btn btn-light" onclick="showMenu()">🏠 לתפריט</button>
+            <button class="btn btn-green" onclick="startTopic(${i})">✏️ לתרגול (${t.qs.length} שאלות)</button>
+        </div>`;
+    show('summary-screen');
+}
+
+// ============================================================
+// Quiz
+// ============================================================
+function buildItem(topic, item) {
+    const base = { topicId: topic.id, topicTitle: topic.title, q: item.q, e: item.e };
+    if (item.order) return { ...base, type: 'order', correctOrder: item.order, o: shuffle(item.order) };
+    if (item.tf !== undefined) return { ...base, type: 'mc', o: ['נכון', 'לא נכון'], correct: item.tf ? 'נכון' : 'לא נכון', fixed: true };
+    return { ...base, type: 'mc', o: shuffle(item.o), correct: item.o[0] };
+}
+
+function startTopic(i) {
+    mode = 'topic';
+    currentTopic = i;
+    const t = TOPICS[i];
+    beginQuiz(shuffle(t.qs).map(it => buildItem(t, it)));
+}
+
+function startExam() {
+    mode = 'exam';
+    const items = [];
+    TOPICS.forEach(t => shuffle(t.qs).slice(0, 3).forEach(it => items.push(buildItem(t, it))));
+    beginQuiz(shuffle(items));
+}
+
+function startRetry() {
+    mode = 'retry';
+    beginQuiz(shuffle(wrongList).map(it => it.fixed ? it : { ...it, o: shuffle(it.o) }));
+}
+
+function beginQuiz(items) {
+    quiz = items;
+    qIndex = 0;
+    score = 0;
+    wrongList = [];
+    perTopic = {};
+    show('quiz-screen');
+    renderQuestion();
+}
+
+function renderQuestion() {
+    const item = quiz[qIndex];
+    document.getElementById('q-counter').textContent = `שאלה ${qIndex + 1} מתוך ${quiz.length}`;
+    document.getElementById('q-topic').textContent = item.topicTitle;
+    document.getElementById('q-score').textContent = `✅ ${score}`;
+    document.getElementById('progress-bar').style.width = (qIndex / quiz.length * 100) + '%';
+    document.getElementById('q-text').textContent = item.q;
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback';
+    fb.innerHTML = '';
+    document.getElementById('next-btn').classList.add('hidden');
+    document.getElementById('order-check-btn').classList.add('hidden');
+    document.getElementById('order-hint').classList.toggle('hidden', item.type !== 'order');
+    picked = [];
+
+    const opts = document.getElementById('options');
+    opts.innerHTML = '';
+    item.o.forEach(text => {
+        const b = document.createElement('button');
+        b.className = 'option';
+        b.textContent = text;
+        b.dataset.text = text;
+        b.onclick = () => item.type === 'order' ? toggleOrder(b) : answer(b, text);
+        opts.appendChild(b);
+    });
+}
+
+function recordResult(item, ok) {
+    if (!perTopic[item.topicId]) perTopic[item.topicId] = { title: item.topicTitle, ok: 0, total: 0 };
+    perTopic[item.topicId].total++;
+    if (ok) { score++; perTopic[item.topicId].ok++; }
+    else wrongList.push(item);
+    document.getElementById('q-score').textContent = `✅ ${score}`;
+    const next = document.getElementById('next-btn');
+    next.textContent = qIndex + 1 < quiz.length ? 'לשאלה הבאה ←' : 'לסיכום התוצאות 🏁';
+    next.classList.remove('hidden');
+}
+
+function answer(btn, text) {
+    const item = quiz[qIndex];
+    const ok = text === item.correct;
+    document.querySelectorAll('.option').forEach(b => {
+        b.disabled = true;
+        if (b.dataset.text === item.correct) b.classList.add('correct');
+    });
+    const fb = document.getElementById('feedback');
+    if (ok) {
+        fb.className = 'feedback show good';
+        fb.innerHTML = `<b>✅ נכון!</b> ${item.e}`;
+    } else {
+        btn.classList.add('wrong');
+        fb.className = 'feedback show bad';
+        fb.innerHTML = `<b>❌ לא בדיוק.</b> התשובה הנכונה: <b>${item.correct}</b><br>${item.e}`;
+    }
+    recordResult(item, ok);
+}
+
+// ---- שאלות סידור ----
+function toggleOrder(btn) {
+    const text = btn.dataset.text;
+    const i = picked.indexOf(text);
+    if (i >= 0) picked.splice(i, 1); else picked.push(text);
+    document.querySelectorAll('.option').forEach(b => {
+        const n = picked.indexOf(b.dataset.text);
+        b.classList.toggle('picked', n >= 0);
+        b.innerHTML = (n >= 0 ? `<span class="num">${n + 1}</span>` : '') + escapeHTML(b.dataset.text);
+    });
+    document.getElementById('order-check-btn').classList.toggle('hidden', picked.length !== quiz[qIndex].o.length);
+}
+
+function checkOrder() {
+    const item = quiz[qIndex];
+    const ok = picked.every((t, i) => t === item.correctOrder[i]);
+    document.getElementById('order-check-btn').classList.add('hidden');
+    document.querySelectorAll('.option').forEach(b => {
+        b.disabled = true;
+        const n = picked.indexOf(b.dataset.text);
+        b.classList.remove('picked');
+        b.classList.add(item.correctOrder[n] === b.dataset.text ? 'correct' : 'wrong');
+    });
+    const list = `<ol class="order-list">${item.correctOrder.map(t => `<li>${escapeHTML(t)}</li>`).join('')}</ol>`;
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback show ' + (ok ? 'good' : 'bad');
+    fb.innerHTML = ok ? `<b>✅ נכון! הסדר מדויק.</b> ${item.e}` : `<b>❌ לא בדיוק.</b> הסדר הנכון:${list}${item.e}`;
+    recordResult(item, ok);
+}
+
+function escapeHTML(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function nextQuestion() {
+    qIndex++;
+    if (qIndex < quiz.length) renderQuestion();
+    else showResult();
+}
+
+function showResult() {
+    const total = quiz.length;
+    const pct = Math.round(score / total * 100);
+    let emoji = '💪', msg = 'כדאי לחזור על הסיכום ולנסות שוב!';
+    if (pct >= 90) { emoji = '🏆'; msg = 'מצוין! את מוכנה למבחן!'; }
+    else if (pct >= 75) { emoji = '🌟'; msg = 'כל הכבוד! עוד קצת חזרה על הטעויות ומושלם.'; }
+    else if (pct >= 55) { emoji = '👍'; msg = 'בכיוון הנכון! כדאי לחזור על הנושאים החלשים.'; }
+
+    if (mode === 'topic') saveBest(TOPICS[currentTopic].id, pct);
+    if (mode === 'exam') {
+        saveBest('exam', pct);
+        if (typeof saveAppScore === 'function') saveAppScore(EXAM_APP_ID, score, total);
+    }
+
+    let breakdown = '';
+    if (mode === 'exam') {
+        const rows = Object.values(perTopic).sort((a, b) => (a.ok / a.total) - (b.ok / b.total));
+        breakdown = `<h3 style="margin-top:18px;">לפי נושא:</h3><div class="breakdown">` +
+            rows.map(r => `<div class="breakdown-row ${r.ok < r.total ? 'weak' : ''}"><span>${r.title}</span><span>${r.ok}/${r.total} ${r.ok === r.total ? '✅' : '🔁'}</span></div>`).join('') +
+            `</div>`;
+    }
+
+    const retryBtn = wrongList.length
+        ? `<button class="btn btn-orange" onclick="startRetry()">🔁 לתרגל שוב את הטעויות (${wrongList.length})</button>` : '';
+    const againBtn = mode === 'exam'
+        ? `<button class="btn btn-primary" onclick="startExam()">📝 מבחן מסכם חדש</button>`
+        : (mode === 'topic' ? `<button class="btn btn-primary" onclick="startTopic(${currentTopic})">🔄 שוב את הנושא</button>` : '');
+
+    document.getElementById('result-panel').innerHTML = `
+        <div class="result-big">${emoji}</div>
+        <div class="result-score">${score} מתוך ${total} (${pct}%)</div>
+        <div class="result-msg">${msg}</div>
+        ${breakdown}
+        <div class="actions">
+            ${retryBtn}
+            ${againBtn}
+            <a class="btn btn-light" href="joshua_1_4_open.html" style="text-decoration:none;">✍️ לשלב הבא: שאלות פתוחות</a>
+            <button class="btn btn-light" onclick="showMenu()">🏠 לתפריט</button>
+        </div>`;
+    show('result-screen');
+}
+
+showMenu();
+</script>
+<script src="../../app-tracker.js"></script>
+</body>
+</html>
