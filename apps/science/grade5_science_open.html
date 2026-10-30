@@ -314,7 +314,7 @@ async function initAI() {
     try {
         const { getAI, getGenerativeModel, GoogleAIBackend } =
             await import("https://www.gstatic.com/firebasejs/12.19.0/firebase-ai.js");
-        const ai = getAI(app, { backend: new GoogleAIBackend() });
+        const ai = getAI(app, { backend: new GoogleAIBackend(), useLimitedUseAppCheckTokens: true });
         // gemini-2.5-flash "חושב" לפני התשובה, והחשיבה נספרת ב-maxOutputTokens.
         // בלי לכבות אותה התשובה נקטעת לפני שורת הציון.
         aiModel = getGenerativeModel(ai, {

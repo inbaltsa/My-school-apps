@@ -648,7 +648,7 @@ async function initAI() {
         const { getAI, getGenerativeModel, GoogleAIBackend } = aiModule;
         
         // Gemini Developer API — חינמי!
-        aiService = getAI(app, { backend: new GoogleAIBackend() });
+        aiService = getAI(app, { backend: new GoogleAIBackend(), useLimitedUseAppCheckTokens: true });
         aiModel = getGenerativeModel(aiService, { 
             model: "gemini-2.5-flash",
             systemInstruction: TUTOR_SYSTEM_PROMPT,
@@ -672,7 +672,7 @@ async function initAI() {
             );
             const { getVertexAI, getGenerativeModel } = vtxModule;
             
-            aiService = getVertexAI(app);
+            aiService = getVertexAI(app, { useLimitedUseAppCheckTokens: true });
             aiModel = getGenerativeModel(aiService, { 
                 model: "gemini-2.5-flash",
                 systemInstruction: TUTOR_SYSTEM_PROMPT,
