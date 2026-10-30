@@ -125,6 +125,7 @@ My-school-apps/
 משתמשים ב-**Firebase AI Logic** בפרויקט `homework-barad`. **לא** מכניסים מפתח Gemini לקוד. התבנית המלאה להעתקה נמצאת ב-`CLAUDE.md`, סעיף 5. דברים שחובה לזכור:
 
 1. **App Check הוא חובה.** בלי `initializeAppCheck(app, { provider: new ReCaptchaV3Provider('6Lc3ybEsAAAAAJpdWESSOGNXCqW764S9qIpsbc0k'), isTokenAutoRefreshEnabled: true })` כל בקשה מקבלת 403.
+1א. **טוקנים חד-פעמיים חובה:** `getAI(app, { backend: new GoogleAIBackend(), useLimitedUseAppCheckTokens: true })` (וגם `getVertexAI(app, { useLimitedUseAppCheckTokens: true })` בגיבוי). AI Logic בפרויקט דוחה טוקן App Check רגיל ב-401 `Firebase App Check token is invalid`.
 2. **Firebase SDK 12.19.0** (`https://www.gstatic.com/firebasejs/12.19.0/...`). גרסה 11.8.1 קורסת בשגיאות 403 ומסתירה את הסיבה.
 3. **`thinkingConfig: { thinkingBudget: 0 }`** ב-`generationConfig` של `gemini-2.5-flash`. בלי זה התשובה נקטעת לפני הציון. כדאי להוסיף מודל גיבוי בלי thinkingConfig, עם `maxOutputTokens: 8192`.
 4. **שם נפרד לאפליקציית Firebase:** `initializeApp(firebaseConfig, "ai-app")`, כדי לא להתנגש ב-`firebase-homework.js`.

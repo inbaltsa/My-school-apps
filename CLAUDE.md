@@ -102,6 +102,8 @@ old/                    # ארכיון – לא לגעת
 Firebase AI Logic **הושבת** בפרויקט, ועכשיו הוא עובד רק עם אכיפת App Check. אפליקציה שלא מאתחלת App Check תקבל 403.
 **כל אפליקציה חדשה עם AI חייבת לכלול את `initializeAppCheck` שבתבנית למטה.**
 
+⚠️ **טוקנים חד-פעמיים:** AI Logic בפרויקט דוחה טוקן App Check רגיל (401 `Firebase App Check token is invalid`) ומקבל רק טוקן חד-פעמי (limited-use). לכן `getAI` (וגם `getVertexAI` בגיבוי) חייבים לקבל `useLimitedUseAppCheckTokens: true`. זה נבדק ב-30.10.2026 עם טוקן דיבאג: טוקן רגיל → 401, טוקן `limited_use` → Gemini ענה.
+
 ### תבנית (להעתקה)
 
 ```html
@@ -139,7 +141,8 @@ async function initAI() {
     try {
         const { getAI, getGenerativeModel, GoogleAIBackend } =
             await import("https://www.gstatic.com/firebasejs/12.19.0/firebase-ai.js");
-        const ai = getAI(app, { backend: new GoogleAIBackend() });
+        // חובה! AI Logic בפרויקט מקבל רק טוקני App Check חד-פעמיים. בלי זה – 401 "token is invalid"
+        const ai = getAI(app, { backend: new GoogleAIBackend(), useLimitedUseAppCheckTokens: true });
         aiModel = getGenerativeModel(ai, {
             model: "gemini-2.5-flash",
             systemInstruction: SYSTEM_PROMPT,
@@ -228,7 +231,7 @@ curl -sS -X POST "https://firebasevertexai.googleapis.com/v1beta/projects/homewo
 | `Firebase AI Logic has been deactivated ... must enforce Firebase App Check` | האכיפה לא פעילה ל-AI Logic (App Check → APIs → Enforce). |
 | `Requests from referer ... are blocked` | הכתובת לא ברשימת Website restrictions של המפתח. |
 | `Cannot read properties of undefined (reading 'some')` | גרסת SDK ישנה (11.8.1) שקרסה בזמן קריאת שגיאת 403. צריך לשדרג ל-12.19.0 כדי לראות את השגיאה האמיתית. |
-| `[401] Firebase App Check token is invalid` | הדפדפן לא הצליח להחליף את טוקן ה-reCAPTCHA בטוקן App Check, ולכן שלח טוקן ריק. ב-`apps/math/circle_open.html` השורה האפורה מוסיפה אחרי `|` את השגיאה של App Check עצמו: `recaptcha-error` = המפתח או הדומיין ב-reCAPTCHA; `fetch-status-error` 403 = Firebase דחה (Secret key לא תואם, סוג מפתח לא נכון v3/Enterprise, או ציון נמוך); `throttled` = חסימה זמנית אחרי כישלון. אם הרענון מצליח, האפליקציה שולחת שוב את הבקשה עם הטוקן החדש (קרה אחרי תיקון ההגדרות: הטוקן הראשון שנשמר בדפדפן נדחה, והטוקן אחרי הרענון היה תקין). |
+| `[401] Firebase App Check token is invalid` | **קודם כול:** חסר `useLimitedUseAppCheckTokens: true` ב-`getAI`/`getVertexAI`. AI Logic מקבל רק טוקנים חד-פעמיים, וגם טוקן רגיל ותקין נדחה. אם זה קיים ועדיין 401: ב-`apps/math/circle_open.html` השורה האפורה מוסיפה אחרי `\|` את השגיאה של App Check עצמו. `recaptcha-error` = המפתח או הדומיין ב-reCAPTCHA; `fetch-status-error` 403 = Firebase דחה את reCAPTCHA (Secret key, סוג מפתח v3/Enterprise, ציון נמוך); `throttled` = חסימה זמנית אחרי כישלון. |
 | "אין ציון בתשובה (MAX_TOKENS)" | חסר `thinkingBudget: 0`, או ש-`maxOutputTokens` קטן מדי. |
 
 ---
