@@ -91,6 +91,13 @@ const homeworkData = [
         "date": "18/10"
     },
     {
+        "id": "2303",
+        "grade": 4,
+        "subject": "מתמטיקה",
+        "task": "לסיים עמ' 17-25",
+        "date": "01/11"
+    },
+    {
         "id": "2218",
         "grade": 4,
         "subject": "תרבות ישראל",
