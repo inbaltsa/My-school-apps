@@ -35,6 +35,13 @@ const homeworkData = [
         "date": "29/10"
     },
     {
+        "id": "2365",
+        "grade": 4,
+        "subject": "אנגלית",
+        "task": "p. 44-45",
+        "date": "01/11"
+    },
+    {
         "id": "1053",
         "grade": 4,
         "subject": "מדעים",
@@ -61,6 +68,13 @@ const homeworkData = [
         "subject": "מדעים",
         "task": "עמוד 34-35",
         "date": "20/10"
+    },
+    {
+        "id": "2391",
+        "grade": 4,
+        "subject": "מדעים",
+        "task": "43-45",
+        "date": "02/11"
     },
     {
         "id": "1096",
@@ -96,6 +110,13 @@ const homeworkData = [
         "subject": "מתמטיקה",
         "task": "לסיים עמ' 17-25",
         "date": "01/11"
+    },
+    {
+        "id": "2379",
+        "grade": 4,
+        "subject": "מתמטיקה",
+        "task": "עמ' 26-29",
+        "date": "02/11"
     },
     {
         "id": "2218",
@@ -243,5 +264,12 @@ const homeworkData = [
         "subject": "מתמטיקה",
         "task": "בחוברת עמודים 114-119",
         "date": "29/10"
+    },
+    {
+        "id": "2393",
+        "grade": 6,
+        "subject": "מתמטיקה",
+        "task": "בחוברת עמודים 55-58",
+        "date": "02/11"
     }
 ];
