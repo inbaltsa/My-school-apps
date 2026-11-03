@@ -252,20 +252,45 @@ function lettersUpToStation(stationId) {
 }
 
 // ============================================================
-// כיתה א' — אותיות א–ה (לפי הסדר של המורה)  ·  מסלולים קצרים
+// כיתה א' — סטים קצרים לפי הסדר של המורה
 // ------------------------------------------------------------
-// עובדים רק על חמש האותיות הראשונות, בכמה מסלולים קצרים שמשתמשים
-// באותו סט משחקים של המסע הגדול — בלי לגעת במשחקים עצמם.
-// התחנות כאן נפרדות מ-READING_STATIONS (המסע הגדול לא מושפע),
-// והמשחקים מזהים אותן דרך ?station= ו-getStationById.
+// כל סט = כמה מסלולים קצרים שמשתמשים באותו סט משחקים של המסע
+// הגדול, בלי לגעת במשחקים עצמם. התחנות כאן נפרדות מ-READING_STATIONS
+// (המסע הגדול לא מושפע), והמשחקים מזהים אותן דרך ?station=.
+//   ae = א–ה  (מזהי התחנות g1a_ נשמרו כמו שהיו, כדי לא לאבד כוכבים)
+//   vy = ו–י
+//   ay = חזרה על כל העשר א–י (אותיות מוגרלות בכל סיבוב)
+// עמוד המסלולים: grade1.html?set=<id>
 // ============================================================
 const GRADE1_LETTERS = ['א', 'ב', 'ג', 'ד', 'ה'];
 
-const GRADE1_TRACKS = [
-  { id: 't1', name: 'מכירים את האותיות', emoji: '🌱', types: ['meet', 'hunt', 'hear'] },
-  { id: 't2', name: 'משחקים ומתרגלים',   emoji: '🎨', types: ['sound', 'memory', 'letterpair', 'write'] },
-  { id: 't3', name: 'אלופי האותיות',     emoji: '🏆', types: ['quiz'] },
-];
+const GRADE1_SETS = {
+  ae: { id: 'ae', label: 'א–ה', prefix: 'g1a_', letters: ['א', 'ב', 'ג', 'ד', 'ה'],
+        back: '../grade1.html',
+        tracks: [
+          { id: 't1', name: 'מכירים את האותיות', emoji: '🌱', types: ['meet', 'hunt', 'hear'] },
+          { id: 't2', name: 'משחקים ומתרגלים',   emoji: '🎨', types: ['sound', 'memory', 'letterpair', 'write'] },
+          { id: 't3', name: 'אלופי האותיות',     emoji: '🏆', types: ['quiz'] },
+        ] },
+  vy: { id: 'vy', label: 'ו–י', prefix: 'g1b_', letters: ['ו', 'ז', 'ח', 'ט', 'י'],
+        back: '../grade1.html?set=vy',
+        tracks: [
+          { id: 't1', name: 'מכירים את האותיות', emoji: '🌱', types: ['meet', 'hunt', 'hear'] },
+          { id: 't2', name: 'משחקים ומתרגלים',   emoji: '🎨', types: ['sound', 'memory', 'letterpair', 'write'] },
+          { id: 't3', name: 'אלופי האותיות',     emoji: '🏆', types: ['quiz'] },
+        ] },
+  ay: { id: 'ay', label: 'א–י', prefix: 'g1c_', review: true,
+        letters: ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י'],
+        back: '../grade1.html?set=ay',
+        tracks: [
+          { id: 't1', name: 'חוזרים על הכל',  emoji: '🔁', types: ['hunt', 'hear', 'sound'] },
+          { id: 't2', name: 'זיכרון ענק',     emoji: '🧠', types: ['memory', 'letterpair'] },
+          { id: 't3', name: 'האלופה של א–י',  emoji: '👑', types: ['quiz'] },
+        ] },
+};
+
+// תאימות לאחור: GRADE1_TRACKS = המסלולים של א–ה
+const GRADE1_TRACKS = GRADE1_SETS.ae.tracks;
 
 function buildGrade1Stations() {
   const META = {
@@ -278,19 +303,28 @@ function buildGrade1Stations() {
     write:  { title: 'כותבים את האות',     emoji: '✍️', short: 'כתיבה' },
     quiz:   { title: 'מסע האוצרות',        emoji: '💎', short: 'אוצרות' },
   };
-  const L = GRADE1_LETTERS.slice();
   const stations = [];
-  GRADE1_TRACKS.forEach(track => {
-    track.types.forEach(type => {
-      const m = META[type];
-      stations.push({
-        id: 'g1a_' + track.id + '_' + type,
-        type, letters: L.slice(),
-        title: m.title, emoji: m.emoji, short: m.short,
-        trackId: track.id, trackName: track.name, trackEmoji: track.emoji,
-        groupName: 'אותיות א–ה',
-        isBoss: type === 'quiz',
-        back: '../grade1.html',   // כפתור הבית/המפה חוזר למסלול כיתה א', לא למסע הגדול
+  Object.values(GRADE1_SETS).forEach(set => {
+    const L = set.letters;
+    set.tracks.forEach(track => {
+      track.types.forEach(type => {
+        const m = META[type];
+        const st = {
+          id: set.prefix + track.id + '_' + type,
+          type, letters: L.slice(),
+          title: m.title, emoji: m.emoji, short: m.short,
+          setId: set.id,
+          trackId: track.id, trackName: track.name, trackEmoji: track.emoji,
+          groupName: 'אותיות ' + set.label,
+          isBoss: type === 'quiz',
+          back: set.back,   // כפתור הבית/המפה חוזר למסלול של הסט, לא למסע הגדול
+        };
+        // בחזרה על כל העשר: אותיות מוגרלות בכל סיבוב, וזיכרון בכמה לוחות
+        if (set.review) {
+          if (type === 'memory' || type === 'letterpair') st.full = true;
+          else st.mixed = true;
+        }
+        stations.push(st);
       });
     });
   });
@@ -310,6 +344,7 @@ window.pickWord = pickWord;
 window.lettersUpToStation = lettersUpToStation;
 window.GRADE1_LETTERS = GRADE1_LETTERS;
 window.GRADE1_TRACKS = GRADE1_TRACKS;
+window.GRADE1_SETS = GRADE1_SETS;
 window.GRADE1_STATIONS = GRADE1_STATIONS;
 window.getStationById = id =>
   READING_STATIONS.find(s => s.id === id) ||
