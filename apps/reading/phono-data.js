@@ -164,6 +164,7 @@ const PHONO_WORDS = [
   // ---- ו ----
   { word: 'וֶרֶד',   emoji: '🌹', audio: 'vered.mp3', syl: 2, init: 'ו', rime: '' },
   { word: 'וָפֶל',   emoji: '🧇', audio: '', syl: 2, init: 'ו', rime: '' },
+  { word: 'וָו',     emoji: '🪝', audio: '', syl: 1, init: 'ו', rime: '' },
 
   // ---- נ ----
   { word: 'נָחָשׁ',  emoji: '🐍', audio: 'nachash.mp3', syl: 2, init: 'נ', rime: '' },
@@ -288,6 +289,23 @@ const GRADE1_PHONO_STATIONS = [
   { id: 'g1p_rhyme2', type: 'rhyme',
     title: 'שומרי החרוזים', emoji: '🚪', short: 'שומרי החרוזים', back: '../grade1.html' },
 ];
+
+// סטים נוספים של כיתה א' (ו–י, וחזרה על א–י): מיון צלילים + בלש הצלילים.
+// setId תואם ל-GRADE1_SETS ב-reading-data.js. תחנות א–ה למעלה נשארות כמו שהן.
+GRADE1_PHONO_STATIONS.forEach(s => { s.setId = 'ae'; });
+[
+  { setId: 'vy', pre: 'g1p2_', sounds: ['ו', 'ז', 'ח', 'ט', 'י'] },
+  { setId: 'ay', pre: 'g1p3_', sounds: ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י'] },
+].forEach(g => {
+  const back = '../grade1.html?set=' + g.setId;
+  GRADE1_PHONO_STATIONS.push(
+    { id: g.pre + 'catch', setId: g.setId, type: 'catch', sounds: g.sounds.slice(),
+      title: PHONO_TYPE_META.catch.title, emoji: PHONO_TYPE_META.catch.emoji,
+      short: 'מיון צלילים', back },
+    { id: g.pre + 'odd', setId: g.setId, type: 'odd', sounds: g.sounds.slice(),
+      title: PHONO_TYPE_META.odd.title, emoji: PHONO_TYPE_META.odd.emoji,
+      short: PHONO_TYPE_META.odd.short, back });
+});
 
 function getPhonoStationById(id) {
   return PHONO_STATIONS.find(s => s.id === id) ||

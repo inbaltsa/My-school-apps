@@ -102,27 +102,27 @@
   <div class="sky" id="sky"></div>
   <header>
     <a class="home" href="../../grade-1.html" title="חזרה לכיתה א'">🏠</a>
-    <span class="title"><span class="logo" id="logo"></span>אותיות א–ה</span>
+    <span class="title"><span class="logo" id="logo"></span><span id="setTitle">אותיות א–ה</span></span>
     <span class="stars" id="totalStars">⭐ 0</span>
   </header>
 
   <div class="hero">
     <div class="uni" id="heroUni"></div>
     <h1>האותיות של כיתה א'</h1>
-    <div class="abc">א ב ג ד ה</div>
+    <div class="abc" id="abc">א ב ג ד ה</div>
     <div class="sub" id="heroSub">בוחרים מסלול קצר ומתחילים לשחק ✨</div>
   </div>
 
   <a class="song-cta" href="songs.html"><span class="note">🎵</span> שירי האותיות — בואו נשיר יחד!</a>
   <div class="tracks" id="tracks"></div>
-  <p class="footnote">אותו סט משחקים כמו במסע הגדול — רק עם חמש האותיות הראשונות 💛</p>
+  <p class="footnote" id="footnote">אותו סט משחקים כמו במסע הגדול — רק עם חמש האותיות הראשונות 💛</p>
 
-  <script src="reading-data.js?v=21"></script>
+  <script src="reading-data.js?v=22"></script>
   <script src="reading-progress.js?v=16"></script>
   <script src="reading-profile.js?v=16"></script>
   <script src="reading-voices.js?v=18"></script>
   <script src="reading-engine.js?v=17"></script>
-  <script src="phono-data.js?v=26"></script>
+  <script src="phono-data.js?v=27"></script>
   <script>
     document.getElementById('logo').innerHTML = RG.unicorn(32);
     document.getElementById('heroUni').innerHTML = RG.unicorn(80);
@@ -137,23 +137,35 @@
                         rhymematch: 'phono-games/rhyme-match.html', rhyme: 'phono-games/rhyme.html' };
 
     const tracksEl = document.getElementById('tracks');
-    const stations = GRADE1_STATIONS;
-    const phonoStations = window.GRADE1_PHONO_STATIONS || [];
+    const params = new URLSearchParams(location.search);
+
+    // איזה סט אותיות: ?set=ae (א–ה, ברירת מחדל) · vy (ו–י) · ay (חזרה על א–י)
+    const SET = GRADE1_SETS[params.get('set')] || GRADE1_SETS.ae;
+    const stations = GRADE1_STATIONS.filter(s => s.setId === SET.id);
+    const phonoStations = (window.GRADE1_PHONO_STATIONS || []).filter(s => s.setId === SET.id);
+
+    document.title = 'אותיות ' + SET.label + " · כיתה א' 🌱";
+    document.getElementById('setTitle').textContent = 'אותיות ' + SET.label;
+    document.getElementById('abc').textContent = SET.letters.join(' ');
+    document.querySelector('.hero h1').textContent =
+      SET.review ? 'חוזרים על כל האותיות א–י' : "האותיות של כיתה א'";
+    document.getElementById('footnote').textContent = SET.review
+      ? 'כל עשר האותיות מתערבבות — בכל משחק מגרילים אותיות אחרות 💛'
+      : 'אותו סט משחקים כמו במסע הגדול — רק עם חמש אותיות ' + SET.label + ' 💛';
 
     // מסלול הצלילים מצטרף כמסלול נוסף (משחקי המודעות הפונולוגית)
     const phonoTrack = { id: 'tp', name: 'משחקי צלילים', emoji: '🦻', phono: true };
-    const ALL_TRACKS = GRADE1_TRACKS.concat([phonoTrack]);
+    const ALL_TRACKS = SET.tracks.concat(phonoStations.length ? [phonoTrack] : []);
     const stationsOf = track => track.phono ? phonoStations : stations.filter(s => s.trackId === track.id);
 
     // שני מצבים מעמוד הכיתה: ?view=phono (משחקי צלילים) · ?view=letters (כל שאר המשחקים)
     // (?track=<id> נשמר לתאימות לאחור)
-    const params = new URLSearchParams(location.search);
     const wantTrack = params.get('track');
     const wantView = params.get('view');
     let tracksToRender;
     if (wantTrack) tracksToRender = ALL_TRACKS.filter(t => t.id === wantTrack);
     else if (wantView === 'phono') tracksToRender = [phonoTrack];
-    else if (wantView === 'letters') tracksToRender = GRADE1_TRACKS.slice();
+    else if (wantView === 'letters') tracksToRender = SET.tracks.slice();
     else tracksToRender = ALL_TRACKS;
     if (!tracksToRender.length) tracksToRender = ALL_TRACKS;
 
@@ -207,7 +219,7 @@
       tracksEl.appendChild(section);
     });
 
-    // סך הכוכבים — כל העבודה על א–ה (אותיות + צלילים)
+    // סך הכוכבים — כל העבודה על הסט הנוכחי (אותיות + צלילים)
     const g1Stars = stations.concat(phonoStations)
       .reduce((sum, s) => sum + ReadingProgress.starsOf(s.id), 0);
     document.getElementById('totalStars').textContent = '⭐ ' + g1Stars;
