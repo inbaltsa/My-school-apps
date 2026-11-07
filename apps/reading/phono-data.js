@@ -93,7 +93,6 @@ const PHONO_WORDS = [
   { word: 'פַּרְפַּר', emoji: '🦋', audio: '', syl: 2, init: 'פ', rime: '' },
   { word: 'פִּיצָה',  emoji: '🍕', audio: '', syl: 2, init: 'פ', rime: '' },
   { word: 'פֶּרַח',   emoji: '🌸', audio: '', syl: 2, init: 'פ', rime: '' },
-  { word: 'פֻּזְמָק',  emoji: '🧦', audio: '', syl: 2, init: 'פ', rime: '' },
 
   // ---- ד ----
   { word: 'דֹּב',       emoji: '🐻', audio: 'dov.mp3', syl: 1, init: 'ד', rime: '', parts: ['ד','ו','ב'] },
