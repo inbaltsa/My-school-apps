@@ -18,6 +18,42 @@ const RG = (function () {
   let currentAudio = null;               // ההקלטה שמתנגנת כרגע (כדי לעצור לפני מעבר)
   const audioCache = {};
 
+  // --- פונט האותיות: אותיות דפוס פשוטות וברורות (כמו בדפי עבודה ובשירים) ---
+  // רק האותיות הגדולות שהילדה מזהה; ההוראות והכפתורים נשארים ב-Heebo.
+  // משחקי הכתב (ktav) מציגים אותיות כתב, אז שם לא נוגעים.
+  // אם הפונט לא נטען (אין רשת) – נשאר Heebo.
+  const LETTER_FONT = "'Noto Sans Hebrew'";
+  let letterCssReady = Promise.resolve();
+  (function useLetterFont() {
+    try {
+      if (/\/ktav/.test(location.pathname)) return;
+      if (document.getElementById('rg-letter-font')) return;
+      const link = document.createElement('link');
+      link.id = 'rg-letter-font';
+      link.rel = 'stylesheet';
+      link.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@700;900&display=swap';
+      letterCssReady = new Promise(res => { link.onload = res; link.onerror = res; setTimeout(res, 2500); });
+      document.head.appendChild(link);
+      const st = document.createElement('style');
+      st.textContent =
+        // meet · hunt · hear · sound · memory · letterpair · write · quiz · shop · grade1 map
+        '.lcard .bl, .hud b, .hud .big, .scene .letter, .sea .bubble, .house .body,' +
+        '.face.back .big, .watermark, .list .big, .coin, #abc, .rg-letter' +
+        '{font-family:' + LETTER_FONT + ',"Heebo",sans-serif !important;}';
+      document.head.appendChild(st);
+    } catch (e) {}
+  })();
+  // לציור על canvas (משחק הכתיבה): קודם מחכים לגיליון הסגנון של הפונט
+  // (בלעדיו הדפדפן עוד לא מכיר את הפונט), ואז לפונט עצמו. עד 4 שניות בסך הכול.
+  function letterFontReady() {
+    if (!document.fonts || !document.fonts.load) return Promise.resolve();
+    return Promise.race([
+      // הטקסט העברי חשוב: הפונט מחולק לקבצים לפי כתב, ובלעדיו נטען רק הקובץ הלטיני
+      letterCssReady.then(() => document.fonts.load('900 100px ' + LETTER_FONT, 'אבגדהוזחטיכלמנסעפצקרשת')).catch(() => {}),
+      new Promise(res => setTimeout(res, 4000)),
+    ]);
+  }
+
   // --- הזרקת סגנון משותף (מסך סיום, כוכבים, סרגל, קונפטי) ---
   function injectStyle() {
     if (document.getElementById('rg-style')) return;
@@ -402,6 +438,7 @@ const RG = (function () {
     ding, buzz, fanfare, confetti, unicorn,
     mountTopBar, mountBackground, starsForAccuracy, finish,
     currentStation, shuffle, pickDistractors,
+    letterFont: LETTER_FONT, letterFontReady,
   };
 })();
 
