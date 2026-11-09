@@ -294,7 +294,7 @@ const GRADE1_SETS = {
         tracks: [
           { id: 't1', name: 'מכירים את האותיות', emoji: '🌱', types: ['meet', 'hunt', 'hear'] },
           { id: 't2', name: 'משחקים ומתרגלים',   emoji: '🎨', types: ['sound', 'memory', 'letterpair', 'write'] },
-          { id: 't3', name: 'אלופי האותיות',     emoji: '🏆', types: ['quiz'] },
+          { id: 't3', name: 'אלופי האותיות',     emoji: '🏆', types: ['quiz', 'shop'] },
         ] },
   ae: { id: 'ae', label: 'א–ה', prefix: 'g1a_', letters: ['א', 'ב', 'ג', 'ד', 'ה'],
         back: '../grade1.html',
@@ -348,6 +348,7 @@ function buildGrade1Stations() {
     letterpair: { title: 'זיכרון זוגות אותיות', emoji: '🎴', short: 'זוגות אותיות' },
     write:  { title: 'כותבים את האות',     emoji: '✍️', short: 'כתיבה' },
     quiz:   { title: 'מסע האוצרות',        emoji: '💎', short: 'אוצרות' },
+    shop:   { title: 'חנות האותיות',       emoji: '🏪', short: 'חנות' },
   };
   const stations = [];
   Object.values(GRADE1_SETS).forEach(set => {

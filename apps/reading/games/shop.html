@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <!-- Google Analytics (מזהה האתר הגדול) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W58S98V8J0"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-W58S98V8J0');
+    </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>חנות האותיות</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;800&display=swap">
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;min-height:100%;}
+  body{font-family:'Heebo',system-ui,sans-serif;color:#4a2c12;min-height:100vh;display:flex;flex-direction:column;
+       background:linear-gradient(180deg,#fff4e0 0%,#ffe9c7 100%);}
+
+  /* השלט + רשימת הקניות */
+  .sign{margin:8px auto 0;background:repeating-linear-gradient(90deg,#ef5350 0 28px,#fff 28px 56px);
+        border-radius:14px 14px 0 0;height:16px;width:min(560px,94vw);}
+  .list{margin:0 auto;width:min(560px,94vw);background:#fff;border-radius:0 0 18px 18px;padding:10px 12px;
+        box-shadow:0 4px 10px rgba(0,0,0,.08);display:flex;align-items:center;gap:10px;}
+  .list .shopper{flex:none;}
+  .list .txt{flex:1;font-weight:800;font-size:1.1em;line-height:1.3;}
+  .list .big{color:#e65100;font-size:1.9em;vertical-align:-4px;padding:0 2px;}
+  .list .nm{color:#8d6e63;font-size:.8em;font-weight:700;}
+  .list .sfx{flex:none;border:none;background:#ffe0b2;border-radius:50%;width:46px;height:46px;font-size:1.4em;cursor:pointer;}
+  .prog{text-align:center;font-weight:700;color:#8d6e63;margin:8px 0 2px;font-size:.95em;}
+
+  /* המדפים */
+  .shelves{margin:4px auto 0;width:min(560px,94vw);display:grid;grid-template-columns:repeat(4,1fr);gap:10px 8px;
+           padding:12px 8px 14px;background:#d7a86e;border-radius:16px;
+           box-shadow:inset 0 -8px 0 #b5834a,0 4px 10px rgba(0,0,0,.1);
+           background-image:linear-gradient(transparent calc(50% - 5px),#b5834a calc(50% - 5px),#b5834a calc(50% + 1px),transparent calc(50% + 1px));}
+  .prod{aspect-ratio:1;border:none;border-radius:16px;background:#fffaf2;box-shadow:0 3px 6px rgba(0,0,0,.15);
+        font-size:clamp(1.9rem,9vw,2.8rem);cursor:pointer;display:flex;align-items:center;justify-content:center;
+        transition:transform .15s;font-family:inherit;padding:0;}
+  .prod:active{transform:scale(.94);}
+  .prod.in{visibility:hidden;}
+  .prod.no{animation:no .4s;background:#ffebee;}
+  @keyframes no{20%{transform:translateX(-7px) rotate(-8deg)}60%{transform:translateX(7px) rotate(8deg)}}
+
+  /* הסל */
+  .basketbar{margin:12px auto 0;width:min(560px,94vw);display:flex;align-items:center;gap:10px;
+             background:#fff;border-radius:18px;padding:8px 12px;box-shadow:0 3px 8px rgba(0,0,0,.08);min-height:72px;}
+  .basket{font-size:2.6rem;flex:none;}
+  .basket.bump{animation:bump .35s;}
+  @keyframes bump{50%{transform:scale(1.25) rotate(-6deg)}}
+  .inside{flex:1;display:flex;flex-wrap:wrap;gap:4px;font-size:1.9rem;min-height:40px;align-items:center;}
+  .inside span{animation:drop .35s;}
+  @keyframes drop{from{transform:translateY(-30px);opacity:0}}
+  .count{flex:none;background:#2e7d32;color:#fff;border-radius:40px;padding:4px 12px;font-weight:800;}
+
+  /* הקופה */
+  .register{position:fixed;inset:0;background:rgba(74,44,18,.55);display:none;align-items:center;justify-content:center;z-index:40;padding:16px;}
+  .register.show{display:flex;}
+  .till{background:#fff;border-radius:24px;padding:18px 16px 20px;text-align:center;width:min(420px,94vw);
+        box-shadow:0 10px 30px rgba(0,0,0,.25);}
+  .till h2{margin:4px 0 2px;color:#e65100;font-size:1.35em;}
+  .till p{margin:0 0 14px;color:#6d4c41;font-weight:700;}
+  .coins{display:flex;justify-content:center;gap:14px;}
+  .coin{width:84px;height:84px;border-radius:50%;border:5px solid #f9a825;background:radial-gradient(circle at 35% 30%,#fff59d,#fbc02d);
+        font-size:2.6rem;font-weight:800;color:#6d4c00;cursor:pointer;font-family:inherit;box-shadow:0 4px 0 #c49000;}
+  .coin:active{transform:translateY(3px);box-shadow:0 1px 0 #c49000;}
+  .coin.no{animation:no .4s;opacity:.5;}
+  .coin.yes{animation:bump .4s;background:radial-gradient(circle at 35% 30%,#c8e6c9,#66bb6a);border-color:#2e7d32;color:#1b5e20;}
+  .hint{margin-top:12px;font-size:.9em;color:#8d6e63;}
+</style>
+</head>
+<body>
+  <div class="sign"></div>
+  <div class="list">
+    <span class="shopper" id="shopper"></span>
+    <span class="txt" id="listTxt"></span>
+    <button class="sfx" id="sfx" aria-label="לשמוע שוב">🔊</button>
+  </div>
+  <div class="prog" id="prog"></div>
+  <div class="shelves" id="shelves"></div>
+  <div class="basketbar">
+    <span class="basket" id="basket">🧺</span>
+    <span class="inside" id="inside"></span>
+    <span class="count" id="count">0/3</span>
+  </div>
+
+  <div class="register" id="register">
+    <div class="till">
+      <div style="font-size:2.4rem">🏪💰</div>
+      <h2>לקופה!</h2>
+      <p>משלמים עם המטבע של האות <span id="payName"></span></p>
+      <div class="coins" id="coins"></div>
+      <div class="hint" id="payHint"></div>
+    </div>
+  </div>
+
+  <script src="../reading-data.js?v=25"></script>
+  <script src="../reading-progress.js?v=16"></script>
+  <script src="../reading-profile.js?v=16"></script>
+  <script src="../reading-voices.js?v=19"></script>
+  <script src="../reading-engine.js?v=17"></script>
+  <script>
+    RG.audioBase = '../../../letters/';
+    const station = RG.currentStation();
+
+    if (!station || station.type !== 'shop') {
+      document.body.innerHTML = '<p style="padding:20px">לא נמצאה החנות. <a href="../../../grade-1.html">חזרה לכיתה א\'</a></p>';
+    } else {
+      RG.mountTopBar('חנות האותיות 🏪', { bg: false });
+      document.getElementById('shopper').innerHTML = RG.unicorn(52);
+
+      // אותיות שנשמעות אותו דבר בתחילת מילה — לא שמים אותן יחד על המדף,
+      // כדי שלא יהיה מוצר "נכון לפי האוזן" שנחשב טעות (כּלב/קוף, תפוח/טירה...)
+      const SOUND_ALIKE = [['ת', 'ט'], ['כ', 'ק', 'ח'], ['א', 'ע'], ['ו', 'ב'], ['ס', 'ש']];
+      const alike = l => (SOUND_ALIKE.find(g => g.includes(l)) || [l]);
+
+      const rounds = RG.shuffle(station.letters.slice());   // 5–6 אותיות מוגרלות = 5–6 סיבובי קנייה
+      const allLetters = Object.keys(READING_LETTERS);
+      let idx = 0, target = null, need = 0, got = 0, good = 0, bad = 0, busy = false;
+
+      const shelvesEl = document.getElementById('shelves');
+      const insideEl = document.getElementById('inside');
+      const countEl = document.getElementById('count');
+      const basketEl = document.getElementById('basket');
+      const reg = document.getElementById('register');
+      document.getElementById('sfx').onclick = () => RG.playLetter(target);
+
+      function setupRound() {
+        busy = false;
+        target = rounds[idx];
+        const name = (READING_LETTERS[target] || {}).name || '';
+        document.getElementById('listTxt').innerHTML =
+          `רשימת קניות: דברים שמתחילים ב-<span class="big">${target}</span><span class="nm">(${name})</span>`;
+        document.getElementById('prog').textContent = `קנייה ${idx + 1} מתוך ${rounds.length}`;
+        insideEl.innerHTML = '';
+
+        const correct = RG.shuffle(letterWords(target)).slice(0, 3);
+        need = correct.length; got = 0;
+        countEl.textContent = `0/${need}`;
+
+        // מסיחים: מילים של אותיות אחרות (לא אותיות שנשמעות כמו האות של הסיבוב), בלי אימוג'י כפול
+        const banned = alike(target);
+        const usedEmoji = new Set(correct.map(w => w.emoji));
+        const others = RG.shuffle(allLetters.filter(l => !banned.includes(l)));
+        const distract = [];
+        for (const l of others) {
+          if (distract.length >= 8 - need) break;
+          const w = pickWord(l);
+          if (!w || usedEmoji.has(w.emoji)) continue;
+          usedEmoji.add(w.emoji);
+          distract.push({ l, w });
+        }
+
+        const items = RG.shuffle(correct.map(w => ({ ok: true, l: target, w }))
+                         .concat(distract.map(d => ({ ok: false, l: d.l, w: d.w }))));
+        shelvesEl.innerHTML = '';
+        items.forEach(it => {
+          const b = document.createElement('button');
+          b.className = 'prod';
+          b.textContent = it.w.emoji;
+          b.setAttribute('aria-label', it.w.word);
+          b.onclick = () => pick(it, b);
+          shelvesEl.appendChild(b);
+        });
+        setTimeout(() => RG.playLetter(target), 350);
+      }
+
+      function pick(it, b) {
+        if (busy || b.classList.contains('in')) return;
+        RG.playWord(it.l, it.w);                 // שומעים את שם המוצר — גם כשטועים
+        if (it.ok) {
+          good++; got++;
+          b.classList.add('in');
+          RG.ding();
+          const s = document.createElement('span'); s.textContent = it.w.emoji; insideEl.appendChild(s);
+          basketEl.classList.remove('bump'); void basketEl.offsetWidth; basketEl.classList.add('bump');
+          countEl.textContent = `${got}/${need}`;
+          if (got >= need) { busy = true; setTimeout(openRegister, 1100); }
+        } else {
+          bad++;
+          RG.buzz();
+          b.classList.remove('no'); void b.offsetWidth; b.classList.add('no');
+        }
+      }
+
+      // הקופה: משלמים במטבע של האות (3 מטבעות, אחד נכון)
+      function openRegister() {
+        const banned = alike(target);
+        const pool = RG.shuffle(allLetters.filter(l => !banned.includes(l)));
+        // מעדיפים מסיחים מתוך האותיות של המשחק הזה
+        const fromGame = RG.shuffle(rounds.filter(l => !banned.includes(l)));
+        const wrong = [...new Set(fromGame.concat(pool))].slice(0, 2);
+        const coins = RG.shuffle([target].concat(wrong));
+        document.getElementById('payName').textContent = (READING_LETTERS[target] || {}).name || target;
+        document.getElementById('payHint').textContent = '';
+        const box = document.getElementById('coins');
+        box.innerHTML = '';
+        let paid = false;
+        coins.forEach(l => {
+          const c = document.createElement('button');
+          c.className = 'coin'; c.textContent = l;
+          c.onclick = () => {
+            if (paid) return;
+            if (l === target) {
+              paid = true; good++;
+              c.classList.add('yes'); RG.ding(); RG.playLetter(target);
+              setTimeout(() => {
+                reg.classList.remove('show');
+                idx++;
+                if (idx >= rounds.length) return win();
+                setupRound();
+              }, 1300);
+            } else {
+              bad++; RG.buzz();
+              c.classList.remove('no'); void c.offsetWidth; c.classList.add('no');
+              document.getElementById('payHint').textContent = 'זה המטבע של ' + ((READING_LETTERS[l] || {}).name || l) + ' — נסי שוב 🙂';
+            }
+          };
+          box.appendChild(c);
+        });
+        reg.classList.add('show');
+        setTimeout(() => RG.playLetter(target), 300);
+      }
+
+      function win() {
+        RG.finish({ stationId: station.id, correct: good, total: good + bad,
+                    replay: () => location.reload() });
+      }
+
+      setupRound();
+    }
+  </script>
+</body>
+</html>
