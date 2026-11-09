@@ -34,6 +34,14 @@
         .summer-banner .title { font-weight: bold; color: #2e7d32; font-size: 1.05em; }
         .summer-banner .desc { color: #555; font-size: 0.9em; margin-top: 2px; }
     </style>
+    <style>
+        /* המשחקים הקודמים: כרטיסיות קטנות, בלי תיאור */
+        .old-letter-games .apps-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+        .old-letter-games .card { min-height: 0; padding: 8px 6px; }
+        .old-letter-games .icon { font-size: 1.4rem; margin-bottom: 4px; }
+        .old-letter-games .card-title { font-size: .85rem; margin-bottom: 0; }
+        .old-letter-games .card-desc { display: none; }
+    </style>
 </head>
 
 <body>
@@ -54,7 +62,7 @@
                 <span class="icon">🎒</span>
                 <div>
                     <div class="title">ברוכה הבאה לכיתה א'!</div>
-                    <div class="desc">כאן נתרגל לפי מה שלומדים בכיתה — עכשיו עובדים על האותיות א–ה</div>
+                    <div class="desc">כאן נתרגל לפי מה שלומדים בכיתה — עכשיו משחקים עם כל האותיות 🎲</div>
                 </div>
             </div>
 
@@ -63,56 +71,35 @@
                 <p style="text-align:center; color:#888;">אין שיעורי בית 🎉</p>
             </div>
 
-            <!-- ===== אותיות ו–י (לפי הכיתה) ===== -->
+            <!-- ===== כל האותיות: 5–6 אותיות מוגרלות בכל משחק ===== -->
             <details class="subject-box" open>
-                <summary class="subject-title">✏️ אותיות ו–י (לפי הכיתה)</summary>
+                <summary class="subject-title">🎲 משחקים עם כל האותיות</summary>
                 <div class="apps-grid">
-                    <div class="card" data-app-id="g1-letters-vy" data-added="2026-11-03">
-                        <a class="card-main" href="apps/reading/grade1.html?set=vy&view=letters">
-                            <span class="icon">✏️</span>
-                            <span class="card-title">משחקי האותיות ו–י</span>
-                            <span class="card-desc">ו ז ח ט י — הכרה, ציד, שמיעה, כתיבה, זיכרון ואוצרות</span>
+                    <div class="card" data-app-id="g1-letters-mix" data-added="2026-11-09">
+                        <a class="card-main" href="apps/reading/grade1.html?set=mix&view=letters">
+                            <span class="icon">🎲</span>
+                            <span class="card-title">משחקי כל האותיות</span>
+                            <span class="card-desc">בכל משחק מוגרלות 5–6 אותיות חדשות — הכרה, ציד, שמיעה, כתיבה, זיכרון ואוצרות</span>
                         </a>
                     </div>
-                    <div class="card" data-app-id="g1-sounds-vy" data-added="2026-11-03">
-                        <a class="card-main" href="apps/reading/grade1.html?set=vy&view=phono">
+                    <div class="card" data-app-id="g1-sounds-mix" data-added="2026-11-09">
+                        <a class="card-main" href="apps/reading/grade1.html?set=mix&view=phono">
                             <span class="icon">🦻</span>
-                            <span class="card-title">משחקי צלילים ו–י</span>
-                            <span class="card-desc">מיון צלילים ובלש הצלילים עם ו ז ח ט י</span>
+                            <span class="card-title">משחקי צלילים</span>
+                            <span class="card-desc">מיון צלילים, בלש הצלילים וחרוזים — צלילים מוגרלים בכל פעם</span>
                         </a>
                     </div>
                 </div>
             </details>
 
-            <!-- ===== חזרה על כל העשר א–י ===== -->
-            <details class="subject-box" open>
-                <summary class="subject-title">🏆 חזרה על כל האותיות א–י</summary>
-                <div class="apps-grid">
-                    <div class="card" data-app-id="g1-letters-ay" data-added="2026-11-03">
-                        <a class="card-main" href="apps/reading/grade1.html?set=ay&view=letters">
-                            <span class="icon">👑</span>
-                            <span class="card-title">אלופת האותיות א–י</span>
-                            <span class="card-desc">כל העשר מתערבבות — ציד, שמיעה, צליל פותח, זיכרון ואוצרות</span>
-                        </a>
-                    </div>
-                    <div class="card" data-app-id="g1-sounds-ay" data-added="2026-11-03">
-                        <a class="card-main" href="apps/reading/grade1.html?set=ay&view=phono">
-                            <span class="icon">🦻</span>
-                            <span class="card-title">משחקי צלילים א–י</span>
-                            <span class="card-desc">מיון צלילים ובלש הצלילים עם כל העשר</span>
-                        </a>
-                    </div>
-                </div>
-            </details>
-
-            <!-- ===== אותיות א–ה (לפי הכיתה) ===== -->
-            <details class="subject-box" open>
-                <summary class="subject-title">✏️ אותיות א–ה (לפי הכיתה)</summary>
+            <!-- ===== המשחקים הקודמים (א–ה, ו–י, א–י) — סגור כברירת מחדל, כרטיסיות קטנות ===== -->
+            <details class="subject-box old-letter-games">
+                <summary class="subject-title">📦 המשחקים הקודמים (א–ה, ו–י, א–י)</summary>
                 <div class="apps-grid">
                     <div class="card" data-app-id="g1-sounds">
                         <a class="card-main" href="apps/reading/grade1.html?view=phono">
                             <span class="icon">🦻</span>
-                            <span class="card-title">משחקי צלילים</span>
+                            <span class="card-title">משחקי צלילים א–ה</span>
                             <span class="card-desc">מודעות פונולוגית — מיון, בלש וחרוזים</span>
                         </a>
                     </div>
@@ -121,6 +108,34 @@
                             <span class="icon">✏️</span>
                             <span class="card-title">משחקי האותיות א–ה</span>
                             <span class="card-desc">כל המשחקים — הכרה, ציד, שמיעה, כתיבה, זיכרון ואוצרות</span>
+                        </a>
+                    </div>
+                    <div class="card" data-app-id="g1-letters-vy">
+                        <a class="card-main" href="apps/reading/grade1.html?set=vy&view=letters">
+                            <span class="icon">✏️</span>
+                            <span class="card-title">משחקי האותיות ו–י</span>
+                            <span class="card-desc">ו ז ח ט י — הכרה, ציד, שמיעה, כתיבה, זיכרון ואוצרות</span>
+                        </a>
+                    </div>
+                    <div class="card" data-app-id="g1-sounds-vy">
+                        <a class="card-main" href="apps/reading/grade1.html?set=vy&view=phono">
+                            <span class="icon">🦻</span>
+                            <span class="card-title">משחקי צלילים ו–י</span>
+                            <span class="card-desc">מיון צלילים ובלש הצלילים עם ו ז ח ט י</span>
+                        </a>
+                    </div>
+                    <div class="card" data-app-id="g1-letters-ay">
+                        <a class="card-main" href="apps/reading/grade1.html?set=ay&view=letters">
+                            <span class="icon">👑</span>
+                            <span class="card-title">אלופת האותיות א–י</span>
+                            <span class="card-desc">כל העשר מתערבבות — ציד, שמיעה, צליל פותח, זיכרון ואוצרות</span>
+                        </a>
+                    </div>
+                    <div class="card" data-app-id="g1-sounds-ay">
+                        <a class="card-main" href="apps/reading/grade1.html?set=ay&view=phono">
+                            <span class="icon">🦻</span>
+                            <span class="card-title">משחקי צלילים א–י</span>
+                            <span class="card-desc">מיון צלילים ובלש הצלילים עם כל העשר</span>
                         </a>
                     </div>
                 </div>

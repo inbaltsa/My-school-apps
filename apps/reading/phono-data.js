@@ -296,6 +296,10 @@ GRADE1_PHONO_STATIONS.forEach(s => { s.setId = 'ae'; });
   { setId: 'vy', pre: 'g1p2_', sounds: ['ו', 'ז', 'ח', 'ט', 'י'] },
   { setId: 'ay', pre: 'g1p3_', sounds: ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י'] },
 ].forEach(g => {
+  addGrade1PhonoSet(g);
+});
+
+function addGrade1PhonoSet(g) {
   const back = '../grade1.html?set=' + g.setId;
   GRADE1_PHONO_STATIONS.push(
     { id: g.pre + 'catch', setId: g.setId, type: 'catch', sounds: g.sounds.slice(),
@@ -304,7 +308,29 @@ GRADE1_PHONO_STATIONS.forEach(s => { s.setId = 'ae'; });
     { id: g.pre + 'odd', setId: g.setId, type: 'odd', sounds: g.sounds.slice(),
       title: PHONO_TYPE_META.odd.title, emoji: PHONO_TYPE_META.odd.emoji,
       short: PHONO_TYPE_META.odd.short, back });
-});
+  if (g.rhymes) GRADE1_PHONO_STATIONS.push(
+    { id: g.pre + 'rhyme', setId: g.setId, type: 'rhymematch',
+      title: 'זוגות שמתחרזים', emoji: '🎵', short: 'זוגות חורזים', back },
+    { id: g.pre + 'rhyme2', setId: g.setId, type: 'rhyme',
+      title: 'שומרי החרוזים', emoji: '🚪', short: 'שומרי החרוזים', back });
+}
+
+// כל האותיות: בכל פתיחה של משחק מוגרלים 5–6 צלילים (רק כאלה שיש להם 3 מילים לפחות)
+(function () {
+  const pool = Object.keys(PHONO_SOUNDS).filter(s => PHONO_WORDS.filter(w => w.init === s).length >= 3);
+  let here = '';
+  try { here = new URLSearchParams(location.search).get('station') || ''; } catch (e) {}
+  let sounds = pool.slice();
+  if (here.startsWith('g1p4_')) {
+    const n = Math.random() < 0.5 ? 5 : 6;
+    let last = [];
+    try { last = JSON.parse(localStorage.getItem('g1-mix-last-sounds') || '[]'); } catch (e) {}
+    const sh = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+    sounds = sh(pool.filter(x => !last.includes(x))).concat(sh(pool.filter(x => last.includes(x)))).slice(0, n);
+    try { localStorage.setItem('g1-mix-last-sounds', JSON.stringify(sounds)); } catch (e) {}
+  }
+  addGrade1PhonoSet({ setId: 'mix', pre: 'g1p4_', sounds, rhymes: true });
+})();
 
 function getPhonoStationById(id) {
   return PHONO_STATIONS.find(s => s.id === id) ||
