@@ -18,11 +18,11 @@ const RG = (function () {
   let currentAudio = null;               // ההקלטה שמתנגנת כרגע (כדי לעצור לפני מעבר)
   const audioCache = {};
 
-  // --- פונט האותיות: אותיות דפוס קלאסיות (כמו בשירים ובספרים) ---
+  // --- פונט האותיות: אותיות דפוס פשוטות וברורות (כמו בדפי עבודה ובשירים) ---
   // רק האותיות הגדולות שהילדה מזהה; ההוראות והכפתורים נשארים ב-Heebo.
   // משחקי הכתב (ktav) מציגים אותיות כתב, אז שם לא נוגעים.
   // אם הפונט לא נטען (אין רשת) – נשאר Heebo.
-  const LETTER_FONT = "'Noto Serif Hebrew'";
+  const LETTER_FONT = "'Noto Sans Hebrew'";
   let letterCssReady = Promise.resolve();
   (function useLetterFont() {
     try {
@@ -31,7 +31,7 @@ const RG = (function () {
       const link = document.createElement('link');
       link.id = 'rg-letter-font';
       link.rel = 'stylesheet';
-      link.href = 'https://fonts.googleapis.com/css2?family=Noto+Serif+Hebrew:wght@700;900&display=swap';
+      link.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@700;900&display=swap';
       letterCssReady = new Promise(res => { link.onload = res; link.onerror = res; setTimeout(res, 2500); });
       document.head.appendChild(link);
       const st = document.createElement('style');
@@ -39,7 +39,7 @@ const RG = (function () {
         // meet · hunt · hear · sound · memory · letterpair · write · quiz · shop · grade1 map
         '.lcard .bl, .hud b, .hud .big, .scene .letter, .sea .bubble, .house .body,' +
         '.face.back .big, .watermark, .list .big, .coin, #abc, .rg-letter' +
-        '{font-family:' + LETTER_FONT + ',"Heebo",serif !important;}';
+        '{font-family:' + LETTER_FONT + ',"Heebo",sans-serif !important;}';
       document.head.appendChild(st);
     } catch (e) {}
   })();
