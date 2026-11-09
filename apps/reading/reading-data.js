@@ -260,6 +260,7 @@ function lettersUpToStation(stationId) {
 //   ae = א–ה  (מזהי התחנות g1a_ נשמרו כמו שהיו, כדי לא לאבד כוכבים)
 //   vy = ו–י
 //   ay = חזרה על כל העשר א–י (אותיות מוגרלות בכל סיבוב)
+//   ka = כ–ע · pt = פ–ת (סטים מוכנים, אם יהיה צורך להתמקד)
 //   mix = כל 22 האותיות: בכל פתיחה של משחק מוגרלות 5–6 אותיות חדשות
 // עמוד המסלולים: grade1.html?set=<id>
 // ============================================================
@@ -304,6 +305,21 @@ const GRADE1_SETS = {
         ] },
   vy: { id: 'vy', label: 'ו–י', prefix: 'g1b_', letters: ['ו', 'ז', 'ח', 'ט', 'י'],
         back: '../grade1.html?set=vy',
+        tracks: [
+          { id: 't1', name: 'מכירים את האותיות', emoji: '🌱', types: ['meet', 'hunt', 'hear'] },
+          { id: 't2', name: 'משחקים ומתרגלים',   emoji: '🎨', types: ['sound', 'memory', 'letterpair', 'write'] },
+          { id: 't3', name: 'אלופי האותיות',     emoji: '🏆', types: ['quiz'] },
+        ] },
+  // סטים מוכנים להמשך, אם יהיה צורך להתמקד באותיות מסוימות
+  ka: { id: 'ka', label: 'כ–ע', prefix: 'g1e_', letters: ['כ', 'ל', 'מ', 'נ', 'ס', 'ע'],
+        back: '../grade1.html?set=ka',
+        tracks: [
+          { id: 't1', name: 'מכירים את האותיות', emoji: '🌱', types: ['meet', 'hunt', 'hear'] },
+          { id: 't2', name: 'משחקים ומתרגלים',   emoji: '🎨', types: ['sound', 'memory', 'letterpair', 'write'] },
+          { id: 't3', name: 'אלופי האותיות',     emoji: '🏆', types: ['quiz'] },
+        ] },
+  pt: { id: 'pt', label: 'פ–ת', prefix: 'g1f_', letters: ['פ', 'צ', 'ק', 'ר', 'ש', 'ת'],
+        back: '../grade1.html?set=pt',
         tracks: [
           { id: 't1', name: 'מכירים את האותיות', emoji: '🌱', types: ['meet', 'hunt', 'hear'] },
           { id: 't2', name: 'משחקים ומתרגלים',   emoji: '🎨', types: ['sound', 'memory', 'letterpair', 'write'] },

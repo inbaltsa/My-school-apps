@@ -295,6 +295,9 @@ GRADE1_PHONO_STATIONS.forEach(s => { s.setId = 'ae'; });
 [
   { setId: 'vy', pre: 'g1p2_', sounds: ['ו', 'ז', 'ח', 'ט', 'י'] },
   { setId: 'ay', pre: 'g1p3_', sounds: ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י'] },
+  // לכ', ע' ו-ת' אין צליל במשחקי הצלילים, אז הן לא נכללות כאן
+  { setId: 'ka', pre: 'g1p5_', sounds: ['ל', 'מ', 'נ', 'ס'] },
+  { setId: 'pt', pre: 'g1p6_', sounds: ['פ', 'צ', 'ק', 'ר', 'ש'] },
 ].forEach(g => {
   addGrade1PhonoSet(g);
 });
