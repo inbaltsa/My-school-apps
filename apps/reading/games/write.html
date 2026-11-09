@@ -63,7 +63,7 @@
   <script src="../reading-progress.js?v=16"></script>
   <script src="../reading-profile.js?v=16"></script>
   <script src="../reading-voices.js?v=19"></script>
-  <script src="../reading-engine.js?v=17"></script>
+  <script src="../reading-engine.js?v=18"></script>
   <script>
     RG.audioBase = '../../../letters/';
     const station = RG.currentStation();
@@ -100,7 +100,7 @@
         ctx.clearRect(0, 0, side, side);
         ctx.fillStyle = color;
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.font = '800 ' + Math.round(side * 0.74) + 'px Heebo, sans-serif';
+        ctx.font = '900 ' + Math.round(side * 0.74) + 'px ' + RG.letterFont + ', Heebo, sans-serif';
         ctx.fillText(letters[idx], side / 2, side / 2 + side * 0.03);
       }
 
@@ -215,8 +215,7 @@
       document.getElementById('hear').onclick = () => RG.playLetter(letters[idx]);
 
       // מחכים לטעינת הפונט כדי שהאות תצויר נכון
-      (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve())
-        .then(() => setupLetter());
+      RG.letterFontReady().then(() => setupLetter());
     }
   </script>
 </body>
