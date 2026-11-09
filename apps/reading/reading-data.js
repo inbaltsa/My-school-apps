@@ -260,11 +260,42 @@ function lettersUpToStation(stationId) {
 //   ae = א–ה  (מזהי התחנות g1a_ נשמרו כמו שהיו, כדי לא לאבד כוכבים)
 //   vy = ו–י
 //   ay = חזרה על כל העשר א–י (אותיות מוגרלות בכל סיבוב)
+//   ka = כ–ע · pt = פ–ת (סטים מוכנים, אם יהיה צורך להתמקד)
+//   mix = כל 22 האותיות: בכל פתיחה של משחק מוגרלות 5–6 אותיות חדשות
 // עמוד המסלולים: grade1.html?set=<id>
 // ============================================================
 const GRADE1_LETTERS = ['א', 'ב', 'ג', 'ד', 'ה'];
 
+// ------------------------------------------------------------
+// הגרלת אותיות למשחק: בכל פתיחה של משחק מוגרלות 5–6 אותיות מתוך pool.
+// מעדיפים אותיות שלא היו בהגרלה הקודמת (נשמר ב-localStorage), כדי
+// שבפעם הבאה יגיעו אותיות חדשות. הגרלה רק כשהעמוד הוא משחק של הסט
+// (stationId מתחיל ב-prefix), כדי שעמודים אחרים לא "ישרפו" הגרלה.
+// ------------------------------------------------------------
+function grade1RandomPick(pool, prefix, storeKey) {
+  let here = '';
+  try { here = new URLSearchParams(location.search).get('station') || ''; } catch (e) {}
+  if (!here.startsWith(prefix)) return pool.slice();
+  const n = Math.random() < 0.5 ? 5 : 6;
+  let last = [];
+  try { last = JSON.parse(localStorage.getItem(storeKey) || '[]'); } catch (e) {}
+  const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const fresh = shuffle(pool.filter(l => !last.includes(l)));
+  const old = shuffle(pool.filter(l => last.includes(l)));
+  const pick = fresh.concat(old).slice(0, n);
+  try { localStorage.setItem(storeKey, JSON.stringify(pick)); } catch (e) {}
+  return pick;
+}
+
 const GRADE1_SETS = {
+  mix: { id: 'mix', label: 'א–ת', prefix: 'g1d_', random: true,
+        letters: ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ', 'ק', 'ר', 'ש', 'ת'],
+        back: '../grade1.html?set=mix',
+        tracks: [
+          { id: 't1', name: 'מכירים את האותיות', emoji: '🌱', types: ['meet', 'hunt', 'hear'] },
+          { id: 't2', name: 'משחקים ומתרגלים',   emoji: '🎨', types: ['sound', 'memory', 'letterpair', 'write'] },
+          { id: 't3', name: 'אלופי האותיות',     emoji: '🏆', types: ['quiz'] },
+        ] },
   ae: { id: 'ae', label: 'א–ה', prefix: 'g1a_', letters: ['א', 'ב', 'ג', 'ד', 'ה'],
         back: '../grade1.html',
         tracks: [
@@ -274,6 +305,21 @@ const GRADE1_SETS = {
         ] },
   vy: { id: 'vy', label: 'ו–י', prefix: 'g1b_', letters: ['ו', 'ז', 'ח', 'ט', 'י'],
         back: '../grade1.html?set=vy',
+        tracks: [
+          { id: 't1', name: 'מכירים את האותיות', emoji: '🌱', types: ['meet', 'hunt', 'hear'] },
+          { id: 't2', name: 'משחקים ומתרגלים',   emoji: '🎨', types: ['sound', 'memory', 'letterpair', 'write'] },
+          { id: 't3', name: 'אלופי האותיות',     emoji: '🏆', types: ['quiz'] },
+        ] },
+  // סטים מוכנים להמשך, אם יהיה צורך להתמקד באותיות מסוימות
+  ka: { id: 'ka', label: 'כ–ע', prefix: 'g1e_', letters: ['כ', 'ל', 'מ', 'נ', 'ס', 'ע'],
+        back: '../grade1.html?set=ka',
+        tracks: [
+          { id: 't1', name: 'מכירים את האותיות', emoji: '🌱', types: ['meet', 'hunt', 'hear'] },
+          { id: 't2', name: 'משחקים ומתרגלים',   emoji: '🎨', types: ['sound', 'memory', 'letterpair', 'write'] },
+          { id: 't3', name: 'אלופי האותיות',     emoji: '🏆', types: ['quiz'] },
+        ] },
+  pt: { id: 'pt', label: 'פ–ת', prefix: 'g1f_', letters: ['פ', 'צ', 'ק', 'ר', 'ש', 'ת'],
+        back: '../grade1.html?set=pt',
         tracks: [
           { id: 't1', name: 'מכירים את האותיות', emoji: '🌱', types: ['meet', 'hunt', 'hear'] },
           { id: 't2', name: 'משחקים ומתרגלים',   emoji: '🎨', types: ['sound', 'memory', 'letterpair', 'write'] },
@@ -305,7 +351,8 @@ function buildGrade1Stations() {
   };
   const stations = [];
   Object.values(GRADE1_SETS).forEach(set => {
-    const L = set.letters;
+    // בסט המוגרל: הגרלה אחת לעמוד (כל התחנות באותו עמוד מקבלות אותן אותיות)
+    const L = set.random ? grade1RandomPick(set.letters, set.prefix, 'g1-mix-last') : set.letters;
     set.tracks.forEach(track => {
       track.types.forEach(type => {
         const m = META[type];
@@ -315,7 +362,7 @@ function buildGrade1Stations() {
           title: m.title, emoji: m.emoji, short: m.short,
           setId: set.id,
           trackId: track.id, trackName: track.name, trackEmoji: track.emoji,
-          groupName: 'אותיות ' + set.label,
+          groupName: set.random ? 'אותיות מעורבבות' : 'אותיות ' + set.label,
           isBoss: type === 'quiz',
           back: set.back,   // כפתור הבית/המפה חוזר למסלול של הסט, לא למסע הגדול
         };
