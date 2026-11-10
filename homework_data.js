@@ -42,6 +42,13 @@ const homeworkData = [
         "date": "08/11"
     },
     {
+        "id": "2817",
+        "grade": 4,
+        "subject": "אנגלית",
+        "task": "p. 62-65 לסיים בבית",
+        "date": "10/11"
+    },
+    {
         "id": "2790",
         "grade": 4,
         "subject": "לשון",
@@ -203,6 +210,13 @@ const homeworkData = [
         "date": "08/11"
     },
     {
+        "id": "2814",
+        "grade": 6,
+        "subject": "אנגלית",
+        "task": "w. b. p. 28-29",
+        "date": "10/11"
+    },
+    {
         "id": "1314",
         "grade": 6,
         "subject": "מתמטיקה",
@@ -341,5 +355,12 @@ const homeworkData = [
         "subject": "מתמטיקה",
         "task": "בחוברת עמודים 74-76, 78",
         "date": "09/11"
+    },
+    {
+        "id": "2844",
+        "grade": 6,
+        "subject": "מתמטיקה",
+        "task": "בחוברת עמודים 79,80-81",
+        "date": "10/11"
     }
 ];
