@@ -56,13 +56,6 @@ const homeworkData = [
         "date": "09/11"
     },
     {
-        "id": "1405",
-        "grade": 4,
-        "subject": "מדעים",
-        "task": "עמודים 26-27",
-        "date": "13/10"
-    },
-    {
         "id": "1458",
         "grade": 4,
         "subject": "מדעים",
@@ -103,6 +96,13 @@ const homeworkData = [
         "subject": "מולדת",
         "task": "הכנת בול - בנושא ביה\"ס, אתר בעירנו",
         "date": "05/11"
+    },
+    {
+        "id": "custom-tree-20261113",
+        "grade": 4,
+        "subject": "משימה ביתית",
+        "task": "🪴 להשקות את העץ במרפסת",
+        "date": "13/11"
     },
     {
         "id": "1646",
@@ -189,13 +189,6 @@ const homeworkData = [
         "date": "29/10"
     },
     {
-        "id": "1374",
-        "grade": 6,
-        "subject": "אנגלית",
-        "task": "w. b. p. 10-12",
-        "date": "13/10"
-    },
-    {
         "id": "1607",
         "grade": 6,
         "subject": "אנגלית",
@@ -222,13 +215,6 @@ const homeworkData = [
         "subject": "אנגלית",
         "task": "w. b. p. 28-29",
         "date": "10/11"
-    },
-    {
-        "id": "1394",
-        "grade": 6,
-        "subject": "מתמטיקה",
-        "task": "בחוברת עמודים 69-76",
-        "date": "13/10"
     },
     {
         "id": "1459",
