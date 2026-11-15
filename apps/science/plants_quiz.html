@@ -700,12 +700,14 @@ async function checkOpen(i){
   const aiStatus = window._aiStatus || { available: false, signedIn: false };
   if(!aiStatus.signedIn){
     res.className='ai-res show';
-    res.innerHTML='🔑 צריך להתחבר עם Google כדי לקבל בדיקת AI.<br><button onclick="window.signInForAI()" style="margin-top:8px;padding:8px 20px;border:none;border-radius:10px;background:linear-gradient(135deg,#4285f4,#356ac3);color:white;font-family:Rubik,sans-serif;font-weight:600;cursor:pointer;">🔐 התחברות עם Google</button>';
+    res.innerHTML='🔑 בדיקה חכמה (AI) זמינה למשתמשים מורשים אחרי התחברות.<br><button onclick="window.signInForAI()" style="margin-top:8px;padding:8px 20px;border:none;border-radius:10px;background:linear-gradient(135deg,#4285f4,#356ac3);color:white;font-family:Rubik,sans-serif;font-weight:600;cursor:pointer;">🔐 התחברות עם Google</button>';
     return;
   }
   if(!aiStatus.available){
     res.className='ai-res show';
-    res.innerHTML='⚠️ בדיקת AI לא פעילה כרגע. צריך להפעיל Firebase AI Logic ב-Console.';
+    res.innerHTML = aiStatus.allowed === false
+      ? '✍️ בדיקה חכמה זמינה רק למשתמשים מורשים. השווי את התשובה שלך לסיכום של הנושא.'
+      : '⚠️ בדיקת AI לא פעילה כרגע. נסי שוב מאוחר יותר.';
     return;
   }
 
@@ -887,12 +889,17 @@ async function initAI() {
 }
 
 // בדיקת מצב התחברות + אתחול AI
+// בדיקה חכמה רק למשתמשים ברשימה ai_users במסד (ראו ai-access.js). כל השאר – בדיקה עצמית.
+let aiAccess = false;
+async function checkAIAccess(user) {
+    aiAccess = await import("../../ai-access.js").then(m => m.isAIAllowed(app, user)).catch(() => false);
+    return aiAccess;
+}
+
 onAuthStateChanged(auth, async (user) => {
-    if (user && !aiAvailable) {
-        console.log("👤 User signed in:", user.displayName);
-        await initAI();
-    }
-    window._aiStatus = { available: aiAvailable, signedIn: !!user };
+    if (user && !aiAvailable && await checkAIAccess(user)) await initAI();
+    else if (user && aiAvailable) await checkAIAccess(user);
+    window._aiStatus = { available: aiAvailable && aiAccess, signedIn: !!user, allowed: !!user && aiAccess };
     window.dispatchEvent(new Event('ai-status-changed'));
 });
 

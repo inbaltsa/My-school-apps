@@ -34,6 +34,7 @@ firebase-homework.js    # Firebase (compat): התחברות, שיעורי בית
 app-tracker.js          # saveAppScore() + כוכבים על הכרטיסיות
 back-link.js            # כפתור "חזרה לכיתה" לאפליקציות ישנות שאין להן קישור חזרה משלהן
 exam-manager.js         # באנרים ותגיות "למבחן" לפי data-exam-date (אוטומטי, נעלם אחרי התאריך)
+ai-access.js            # מי מקבל בדיקת AI: רק משתמשים ב-ai_users/{uid} = true במסד; השאר בדיקה עצמית
 ai-usage.js             # רישום כל בדיקת AI ל-ai_usage/{uid} ב-Realtime Database (לדוח השימוש)
 usage-report.html       # דוח שימוש בבדיקה החכמה: לפי יום, אפליקציה, משתמש ומודל
 homework_data.js        # נוצר אוטומטית מהמשו"ב – לא לערוך ידנית
@@ -206,6 +207,25 @@ window.checkWithAI = async function(question, expectedAnswer, studentAnswer, att
 - `gemini-3.1-flash-lite` נבדק ב-15.11.2026: עונה, לא "חושב", ומחזיר ציון בפורמט הנכון. (`gemini-2.0-flash` כבר לא זמין; `gemini-3.5-flash` זמין אבל "חושב" כברירת מחדל – יקר ואיטי יותר.)
 - `gemini-2.5-flash-lite` כבר לא זמין לפרויקטים חדשים (404). נבדק ב-15.11.2026: `gemini-3.5-flash-lite` עונה ומחזיר ציון בפורמט הנכון.
 - כדי להגדיל את המכסה: Firebase Console ← Usage and billing ← תוכנית **Blaze** (תשלום לפי שימוש; כדאי להגדיר התראת תקציב).
+
+### מי מקבל בדיקה חכמה (הרשאות)
+- **רק משתמשים ברשימה `ai_users/{uid}: true`** ב-Realtime Database (ענבל והבנות). כל השאר מקבלים **בדיקה עצמית** (תשובה לדוגמה). את הרשימה מנהלים ידנית בקונסולה.
+- כל אפליקציה עם AI בודקת את זה ב-`onAuthStateChanged` לפני `initAI()`:
+  ```js
+  let aiAccess = false;
+  async function checkAIAccess(user) {
+      aiAccess = await import("../../ai-access.js").then(m => m.isAIAllowed(app, user)).catch(() => false);
+      return aiAccess;
+  }
+  onAuthStateChanged(auth, async (user) => {
+      if (user && await checkAIAccess(user)) await initAI();
+      window._aiStatus = { available: aiAvailable && aiAccess, signedIn: !!user, allowed: !!user && aiAccess };
+      window.dispatchEvent(new Event('ai-status-changed'));
+  });
+  ```
+  ובפס הסטטוס: `allowed === false` ← "✍️ בדיקה עצמית". **אפליקציה חדשה עם AI צריכה לעשות את זה.**
+- כלל המסד: `"ai_users": { "$uid": { ".read": "auth != null && auth.uid === $uid", ".write": false } }`.
+- זו הגבלה בצד הדפדפן (Firebase AI Logic לא בודק משתמש). את העלות מגבילה המכסה היומית ב-Google Cloud.
 
 ### דוח שימוש
 - כל אפליקציה עם AI רושמת כל בדיקה דרך `ai-usage.js`, בטעינה דינמית (כך שתקלה ברישום לא שוברת את הבדיקה):
