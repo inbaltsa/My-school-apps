@@ -225,6 +225,10 @@ body {
 }
 .print-btn:hover { background: #555; }
 </style>
+<style>
+/* התאמה למסך טלפון (לא משפיע על הדפסה) */
+@media screen and (max-width: 520px) { .classify-table { display: block; overflow-x: auto; } }
+</style>
 </head>
 <body>
 
@@ -495,5 +499,6 @@ body {
   <button class="print-btn" onclick="window.print()">🖨️ הדפסה</button>
 </div>
 
+<script src="../../back-link.js" data-back="grade-3.html"></script>
 </body>
 </html>

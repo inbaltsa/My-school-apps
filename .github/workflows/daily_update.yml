@@ -2,9 +2,9 @@ name: Update Homework
 
 # ==========================================================
 # ✅ פעיל לשנה"ל תשפ"ז (2026/2027)
-# העדכון האוטומטי מהמשו"ב רץ כל יום עבור שלוש הבנות:
-#   מעיין (ו'/6) · יעל (ד'/4) · ענת (א'/1)
-# המיפוי והשנה מוגדרים ב-update_homework.py (KIDS_MAPPING, year=2027).
+# העדכון האוטומטי מהמשו"ב רץ כל יום עבור כיתות א', ד', ו'.
+# ההתאמה בין שם לכיתה שמורה בסוד MASHOV_KIDS (שם=כיתה, שם=כיתה).
+# השנה מוגדרת ב-update_homework.py (year=2027).
 #
 # ⏸️ כדי לכבות לחופשה: להוסיף # בחזרה לשתי שורות ה-schedule למטה.
 # תמיד אפשר גם להריץ ידנית דרך לשונית Actions (workflow_dispatch).
@@ -33,6 +33,7 @@ jobs:
           MASHOV_ID: ${{ secrets.MASHOV_ID }}
           MASHOV_PASS: ${{ secrets.MASHOV_PASS }}
           MASHOV_SEMEL: ${{ secrets.MASHOV_SEMEL }}
+          MASHOV_KIDS: ${{ secrets.MASHOV_KIDS }}
         run: python update_homework.py
       - name: Commit changes
         run: |

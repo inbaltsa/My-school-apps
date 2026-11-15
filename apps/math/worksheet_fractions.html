@@ -2,6 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>דף עבודה - ממלכת השברים</title>
     <style>
         body {
@@ -138,6 +139,10 @@
         }
 
     </style>
+<style>
+/* התאמה למסך טלפון (לא משפיע על הדפסה) */
+@media screen and (max-width: 520px) { .exercises-grid { grid-template-columns: 1fr; } body { padding: 12px; } .student-info { flex-direction: column; gap: 10px; } .line { width: 150px; } }
+</style>
 </head>
 <body>
 
@@ -425,5 +430,6 @@
         </div>
     </div>
 
+<script src="../../back-link.js" data-pos="flow" data-back="grade-5.html"></script>
 </body>
 </html>

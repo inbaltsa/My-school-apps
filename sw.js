@@ -54,17 +54,23 @@ self.addEventListener('notificationclick', event => {
 });
 
 // --- קאש ---
-const CACHE_NAME = 'homework-v2';
+const CACHE_NAME = 'homework-v3';
 const URLS_TO_CACHE = [
     '/My-school-apps/',
     '/My-school-apps/index.html',
     '/My-school-apps/style.css',
-    '/My-school-apps/grade-3.html',
-    '/My-school-apps/grade-5.html',
-    '/My-school-apps/kindergarten.html',
+    '/My-school-apps/manifest.json',
+    '/My-school-apps/icon-192.png',
+    '/My-school-apps/grade-1.html',
+    '/My-school-apps/grade-4.html',
+    '/My-school-apps/grade-6.html',
     '/My-school-apps/homework_data.js',
     '/My-school-apps/homework_manual.js',
     '/My-school-apps/firebase-homework.js',
+    '/My-school-apps/app-tracker.js',
+    '/My-school-apps/exam-manager.js',
+    '/My-school-apps/remember-name.js',
+    '/My-school-apps/back-link.js',
     '/My-school-apps/notification-manager.js'
 ];
 

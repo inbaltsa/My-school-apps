@@ -29,6 +29,12 @@ if (firebase.appCheck) {
 // --- הגדרות ---
 const SOFT_DELETE_DAYS = 7;
 
+// טקסט שלא כתבנו בעצמנו (משו"ב, שם משתמש) נכנס לעמוד רק דרך הפונקציה הזו
+function escapeHTML(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
 // --- זיהוי משתמש ---
 let currentUser = null;       // Firebase UID
 let currentDisplayName = null;
@@ -185,7 +191,7 @@ function showGradeSelection() {
         overlay.innerHTML = `
             <div style="background: white; border-radius: 20px; padding: 30px 25px; text-align: center; max-width: 340px; width: 90%; box-shadow: 0 8px 30px rgba(0,0,0,0.2); direction: rtl;">
                 <div style="font-size: 2.5em; margin-bottom: 8px;">🎒</div>
-                <h2 style="margin: 0 0 6px 0; font-size: 1.3em; color: #333;">שלום ${currentDisplayName}!</h2>
+                <h2 style="margin: 0 0 6px 0; font-size: 1.3em; color: #333;">שלום ${escapeHTML(currentDisplayName)}!</h2>
                 <p style="margin: 0 0 22px 0; color: #666; font-size: 0.95em;">באיזו כיתה את/ה?</p>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
                     <button onclick="selectGrade(1)" class="grade-select-btn" style="
@@ -354,7 +360,7 @@ function showUserBadge() {
         display: flex; align-items: center; gap: 6px;
     `;
     badge.title = "לחצי לאפשרויות";
-    badge.innerHTML = `<span style="font-size: 0.9em;">👤</span> ${currentDisplayName}${gradeLabel}`;
+    badge.innerHTML = `<span style="font-size: 0.9em;">👤</span> ${escapeHTML(currentDisplayName)}${gradeLabel}`;
     
     badge.addEventListener("click", () => {
         showUserMenu();
@@ -514,18 +520,19 @@ async function renderHomework(grade, containerId) {
     if (pendingTasks.length > 0) {
         html += '<h3 style="margin:0 0 10px 0; font-size:1.1em;">📝 שיעורי בית:</h3>';
         pendingTasks.forEach(task => {
-            const dateHtml = task.date ? `<span class="hw-date">${task.date}</span>` : '';
+            const dateHtml = task.date ? `<span class="hw-date">${escapeHTML(task.date)}</span>` : '';
             html += `
-                <div class="homework-item" id="task-${task.id}">
+                <div class="homework-item" id="task-${escapeHTML(task.id)}">
                     <div class="homework-info" style="width: 100%;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                            <span class="homework-subject">${task.subject}</span>
+                            <span class="homework-subject">${escapeHTML(task.subject)}</span>
                             ${dateHtml}
                         </div>
-                        <div style="color:#555; line-height:1.4;">${task.task}</div>
+                        <div style="color:#555; line-height:1.4;">${escapeHTML(task.task)}</div>
                     </div>
                     <button class="hw-done-btn"
-                            onclick="markHomeworkDone('${task.id}')"
+                            data-task-id="${escapeHTML(task.id)}"
+                            onclick="markHomeworkDone(this.dataset.taskId)"
                             title="סיימתי!">✓</button>
                 </div>
             `;
@@ -537,16 +544,16 @@ async function renderHomework(grade, containerId) {
         html += '<summary class="hw-completed-title">✅ הושלמו (' + completedTasks.length + ')</summary>';
         completedTasks.forEach(task => {
             const dateHtml = task.completedDisplay 
-                ? `<span class="hw-date">הושלם ${task.completedDisplay}</span>` 
+                ? `<span class="hw-date">הושלם ${escapeHTML(task.completedDisplay)}</span>` 
                 : '';
             html += `
-                <div class="homework-item hw-done" id="task-${task.id}">
+                <div class="homework-item hw-done" id="task-${escapeHTML(task.id)}">
                     <div class="homework-info" style="width: 100%;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                            <span class="homework-subject">${task.subject}</span>
+                            <span class="homework-subject">${escapeHTML(task.subject)}</span>
                             ${dateHtml}
                         </div>
-                        <div class="hw-done-text">${task.task}</div>
+                        <div class="hw-done-text">${escapeHTML(task.task)}</div>
                     </div>
                     <span class="hw-done-icon">✔️</span>
                 </div>
