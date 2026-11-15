@@ -11,6 +11,8 @@
     </script>
     
     <meta charset="UTF-8">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#5c6bc0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>כאן לומדות ולומדים בכיף - עמוד ראשי</title>
     
@@ -68,7 +70,7 @@
     </header>
 
     <main class="entrance-nav">
-        <p class="section-label">🎒 לקראת שנת הלימודים הבאה:</p>
+        <p class="section-label">🎒 הכיתות שלנו השנה:</p>
         <a href="grade-1.html" class="tab-btn entrance-btn" style="--grade-color: #43a047;">כיתה א' 🌱</a>
         <a href="grade-4.html" class="tab-btn entrance-btn" style="--grade-color: #00897b;">כיתה ד' 🐬</a>
         <a href="grade-6.html" class="tab-btn entrance-btn" style="--grade-color: #8e24aa;">כיתה ו' 🚀</a>
@@ -87,5 +89,10 @@
     </footer>
 </div>
 
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
 </body>
 </html>

@@ -15,15 +15,17 @@ window.saveAppScore = function(appId, score, total) {
     // בדיקה שיש Firebase ומשתמש מחובר
     if (typeof firebase === 'undefined' || !firebase.auth || !firebase.auth().currentUser) {
         // שמירה זמנית ב-localStorage עד שיתחבר
-        const pending = JSON.parse(localStorage.getItem('pending_scores') || '[]');
-        pending.push({ appId, score, total, timestamp: new Date().toISOString() });
-        localStorage.setItem('pending_scores', JSON.stringify(pending));
+        try {
+            const pending = JSON.parse(localStorage.getItem('pending_scores') || '[]');
+            pending.push({ appId, score, total, timestamp: new Date().toISOString() });
+            localStorage.setItem('pending_scores', JSON.stringify(pending));
+        } catch (e) { /* localStorage לא זמין — מוותרים על השמירה */ }
         return;
     }
 
     const user = firebase.auth().currentUser;
     const uid = user.uid;
-    const percent = Math.round((score / total) * 100);
+    const percent = total > 0 ? Math.round((score / total) * 100) : 0;
     const stars = percentToStars(percent);
 
     const db = firebase.database();
@@ -120,14 +122,15 @@ async function loadAndDisplayAppScores() {
 
 // --- שליחת ציונים תלויים (ששמרנו לפני ההתחברות) ---
 function flushPendingScores() {
-    const pending = JSON.parse(localStorage.getItem('pending_scores') || '[]');
-    if (pending.length === 0) return;
+    let pending = [];
+    try { pending = JSON.parse(localStorage.getItem('pending_scores') || '[]'); } catch (e) { return; }
+    if (!Array.isArray(pending) || pending.length === 0) return;
 
     pending.forEach(item => {
         saveAppScore(item.appId, item.score, item.total);
     });
 
-    localStorage.removeItem('pending_scores');
+    try { localStorage.removeItem('pending_scores'); } catch (e) {}
 }
 
 // --- הרצה אוטומטית כשהדף נטען (בעמודי כיתות) ---

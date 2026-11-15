@@ -26,13 +26,16 @@
     function createPromptDialog() {
         // Don't show if name already exists
         if (getSavedName()) return;
+        // שואלים רק בעמוד שבאמת משתמש בשם (דף עבודה / ברכה) —
+        // לא בעמודי הכיתות, שם כבר יש מסך התחברות
+        if (!document.querySelector('#student-name, #greeting, .student-name-fill')) return;
 
         const overlay = document.createElement('div');
         overlay.id = 'name-prompt-overlay';
         overlay.style.cssText = `
             position:fixed; inset:0; background:rgba(0,0,0,0.4);
             display:flex; align-items:center; justify-content:center;
-            z-index:9999; font-family:'Segoe UI',Tahoma,sans-serif;
+            direction:rtl; z-index:9999; font-family:'Segoe UI',Tahoma,sans-serif;
         `;
 
         overlay.innerHTML = `
@@ -43,16 +46,16 @@
             ">
                 <div style="font-size:2.5em; margin-bottom:10px;">👋</div>
                 <div style="font-size:1.3em; font-weight:bold; color:#333; margin-bottom:5px;">
-                    ?מה השם שלך
+                    מה השם שלך?
                 </div>
                 <div style="font-size:0.9em; color:#888; margin-bottom:18px;">
                     ככה נוכל לכתוב את השם שלך על דפי העבודה
                 </div>
-                <input id="name-prompt-input" type="text" placeholder="...הקלידי את השם שלך"
+                <input id="name-prompt-input" type="text" placeholder="כאן כותבים את השם..."
                     style="
                         width:85%; padding:10px 14px; font-size:1.15em;
                         border:2px solid #ddd; border-radius:12px;
-                        text-align:center; outline:none; direction:ltr;
+                        text-align:center; outline:none; direction:rtl;
                         font-family:inherit;
                     "
                     autofocus
@@ -63,7 +66,7 @@
                     border:none; padding:10px 30px; border-radius:25px;
                     font-size:1.1em; font-weight:bold; cursor:pointer;
                     box-shadow:0 3px 8px rgba(92,107,192,0.3);
-                ">!יאללה</button>
+                ">יאללה!</button>
             </div>
         `;
 
@@ -118,7 +121,7 @@
         link.style.cursor = 'pointer';
         link.addEventListener('click', e => {
             e.preventDefault();
-            const newName = prompt('?מה השם החדש');
+            const newName = prompt('מה השם החדש?');
             if (newName && newName.trim()) {
                 saveName(newName.trim());
                 applyName(newName.trim());

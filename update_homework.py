@@ -47,14 +47,14 @@ def update_homework():
         if initial_csrf: headers["X-Csrf-Token"] = initial_csrf
     except Exception as e:
         print(f"❌ Connection error: {e}")
-        return []
+        return None
 
     login_data = {"semel": MASHOV_SEMEL, "year": 2027, "username": MASHOV_ID, "password": MASHOV_PASS, "loginType": 1}
     
     login_resp = dirty_session.post(f"{BASE_URL}/login", json=login_data, headers=headers)
     if login_resp.status_code != 200:
         print(f"❌ Login failed: {login_resp.status_code}")
-        return []
+        return None
 
     print("✅ Login success! Extracting data...")
 
@@ -75,7 +75,7 @@ def update_homework():
 
     if not children:
         print("❌ Could not find children list.")
-        return []
+        return None
 
     print(f"✅ Found {len(children)} children. Switching to CLEAN session...")
 
@@ -150,8 +150,10 @@ def update_homework():
                 
             else:
                 print(f"   ❌ Failed to fetch (Code {hw_resp.status_code})")
+                return None
         except Exception as e:
             print(f"   ⚠️ Error processing child: {e}")
+            return None
             
     return all_tasks
 
@@ -171,6 +173,12 @@ def add_personal_tasks(tasks_list):
 
 if __name__ == "__main__":
     tasks = update_homework()
+
+    # אם המשיכה מהמשו"ב נכשלה (התחברות, רשת, או אחת הבנות) — לא נוגעים בקובץ הקיים,
+    # כדי ששיעורי הבית לא ייעלמו מהאתר בגלל תקלה זמנית.
+    if tasks is None:
+        print("::warning::Mashov fetch failed - homework_data.js was left unchanged")
+        raise SystemExit(0)
     
     # כאן אנחנו מוסיפים את המשימות האישיות שלך
     tasks = add_personal_tasks(tasks)

@@ -561,3 +561,19 @@ footer {
 
 .grade-col.grade-6 h2.grade-title { background: #8e24aa; box-shadow: 0 4px 10px rgba(142, 36, 170, 0.3); }
 .grade-col.grade-6 .homework-box { border-color: #8e24aa; background: #f3e5f5; }
+/* --- טלפון: כפתור "חזרה לראשי" יורד מתחת לכותרת הכיתה במקום לכסות אותה --- */
+@media (max-width: 520px) {
+    .grade-header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    .grade-header .back-btn {
+        position: static;
+        transform: none;
+    }
+}
+
+/* --- קופסת מקצוע בלי אף כרטיסייה מוסתרת אוטומטית --- */
+details.subject-box:not(:has(.card)) { display: none; }

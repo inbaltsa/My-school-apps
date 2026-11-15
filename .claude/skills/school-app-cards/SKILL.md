@@ -41,6 +41,7 @@ My-school-apps/
 ├── style.css             # עיצוב משותף
 ├── firebase-homework.js  # Firebase compat: התחברות, שיעורי בית, App Check
 ├── app-tracker.js        # saveAppScore() + כוכבים
+├── back-link.js          # כפתור "חזרה לכיתה" לאפליקציות בלי קישור חזרה משלהן
 ├── exam-manager.js       # תגיות ובאנרים "למבחן" לפי תאריך (נעלמים לבד)
 ├── homework_data.js      # אוטומטי מהמשו"ב – לא לערוך
 ├── homework_manual.js    # משימות ידניות
