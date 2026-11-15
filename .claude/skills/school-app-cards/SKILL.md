@@ -57,9 +57,9 @@ My-school-apps/
 |---|---|
 | `apps/bible/` | genesis_28_29_31, leviticus9, leviticus9_13, Leviticus19 |
 | `apps/english/` | english, english-unit2, english-unit2-5th-grade, eng-unit2-worksheet, eng-unit3-worksheet, have-has, have-has-worksheet, memory_en, word_game_en |
-| `apps/generators/` | play, generator, generator2 |
+| `apps/generators/` | play |
 | `apps/geography/` | geography, geography3, geography_worksheet, mediterranean (🤖 AI) |
-| `apps/hebrew/` | cat_catcher, grammer, grammer_warrior, hebrew_prep_test, hebrew_prep_work, hebrew_test_prep, magic_bubbles, memory, memory-initial, milim, noun_adj, spelling_game, start_with, VerbsGame, word_game_2, word_warrior |
+| `apps/hebrew/` | cat_catcher, grammer, grammer_warrior, hebrew_prep_test, hebrew_prep_work, magic_bubbles, memory, memory-initial, milim, noun_adj, spelling_game, start_with, VerbsGame, word_game_2, word_warrior |
 | `apps/math/` | addition, calc8, distributive_law, distributive_practice, fractions_game, geometry, geometry2, manhelet_practice, math_game, multiplication1, shape_digger, worksheet_fractions |
 | `apps/reading/` | index, grade1, journey, ktav, phono, songs, studio (+ `games/`) |
 | `apps/science/` | Materials_fix, metals, metals2, digestion_practice, nutrition_quiz (🤖), plants_quiz (🤖), grade5_science_review, grade5_science_open (🤖) |

@@ -8,17 +8,57 @@
         body { 
             text-align: center; 
             background: #e0f7fa; 
-            padding: 20px; 
+            padding: 12px; 
             font-family: 'Segoe UI', Tahoma, sans-serif; 
             margin: 0;
-            overflow: hidden; 
+            overflow-x: hidden; 
         }
+        h2 { margin: 8px 0 12px; font-size: clamp(1.1rem, 5vw, 1.5rem); }
         canvas { 
             border: 4px solid #00bcd4; 
             border-radius: 10px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
             display: block;
             margin: 0 auto;
+            /* מתכווץ למסך קטן; הקואורדינטות הפנימיות נשארות 600x500 */
+            max-width: 100%;
+            height: auto;
+            box-sizing: border-box;
+            touch-action: none;
+            cursor: pointer;
+        }
+        #controls {
+            direction: ltr;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 12px;
+        }
+        #controls button {
+            font-size: 2rem;
+            width: 96px;
+            height: 64px;
+            border: 3px solid #00bcd4;
+            border-radius: 16px;
+            background: #fff;
+            cursor: pointer;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        #controls button:active { background: #b2ebf2; }
+        #play-again {
+            display: none;
+            margin: 14px auto 0;
+            font-family: inherit;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 30px;
+            background: #e91e63;
+            color: #fff;
+            cursor: pointer;
         }
         #instructions {
             color: #00838f;
@@ -31,7 +71,12 @@
 <body>
     <h2>🐱 תופסים את האות הראשונה! 🐱</h2>
     <canvas id="gameCanvas" width="600" height="500"></canvas>
-    <p id="instructions">השתמשו בחצים ⬅️ ➡️ כדי להזיז את הדמות</p>
+    <div id="controls">
+        <button type="button" id="btn-left" aria-label="שמאלה">⬅️</button>
+        <button type="button" id="btn-right" aria-label="ימינה">➡️</button>
+    </div>
+    <button type="button" id="play-again" onclick="location.reload()">🔄 לשחק שוב</button>
+    <p id="instructions">מזיזים את הדמות עם האצבע, עם הכפתורים או עם החצים במקלדת</p>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -204,6 +249,39 @@
             }
         });
 
+        // --- שליטה במגע / עכבר: הדמות עוקבת אחרי האצבע על המשחק ---
+        let dragging = false;
+        function movePlayerTo(clientX) {
+            const rect = canvas.getBoundingClientRect();
+            const x = (clientX - rect.left) * (canvas.width / rect.width);
+            player.x = Math.max(0, Math.min(canvas.width - player.width, x - player.width / 2));
+        }
+        canvas.addEventListener('pointerdown', (e) => {
+            if (isGameOver) return;
+            dragging = true;
+            movePlayerTo(e.clientX);
+            e.preventDefault();
+        });
+        canvas.addEventListener('pointermove', (e) => {
+            if (dragging && !isGameOver) movePlayerTo(e.clientX);
+        });
+        ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev =>
+            canvas.addEventListener(ev, () => { dragging = false; }));
+
+        // --- כפתורי חצים על המסך: לחיצה ארוכה מזיזה ---
+        function bindHold(id, dir) {
+            const btn = document.getElementById(id);
+            btn.addEventListener('pointerdown', (e) => {
+                if (!isGameOver) player.dx = dir * player.speed;
+                e.preventDefault();
+            });
+            ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev =>
+                btn.addEventListener(ev, () => { player.dx = 0; }));
+            btn.addEventListener('contextmenu', (e) => e.preventDefault());
+        }
+        bindHold('btn-left', -1);
+        bindHold('btn-right', 1);
+
         function getCurrentLevelIndex() {
             let index = Math.floor(correctGuessesCount / 5);
             if (index >= levelsConfig.length) index = levelsConfig.length - 1;
@@ -278,12 +356,19 @@
             ctx.font = "28px Arial";
             ctx.fillText("את אלופה! סיימת את כל השלבים!", canvas.width/2, canvas.height/2 + 20);
             
-            ctx.fillStyle = "#00838f";
-            ctx.font = "20px Arial";
-            ctx.fillText("לחצו על רענן (F5) כדי לשחק שוב", canvas.width/2, canvas.height/2 + 80);
+            document.getElementById('controls').style.display = 'none';
+            document.getElementById('play-again').style.display = 'block';
         }
 
-        function gameLoop() {
+        // המשחק מתקדם 60 פעמים בשנייה גם במסכים מהירים (120Hz), כדי שהאותיות לא ייפלו מהר מדי
+        let lastStep = 0;
+        function gameLoop(ts) {
+            if (ts && ts - lastStep < 1000 / 60 - 2) {
+                requestAnimationFrame(gameLoop);
+                return;
+            }
+            lastStep = ts || 0;
+
             if (correctGuessesCount >= levelsConfig.length * 5) {
                 isGameOver = true;
                 drawWinScreen();
@@ -374,5 +459,6 @@
         pickNewTarget();
         gameLoop();
     </script>
+<script src="../../back-link.js" data-pos="flow" data-back="grade-1.html"></script>
 </body>
 </html>
