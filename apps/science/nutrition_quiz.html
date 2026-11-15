@@ -720,16 +720,29 @@ onAuthStateChanged(auth, async (user) => {
 // ==============================
 // גיבוי: מודל אחר עם מכסה חינמית נפרדת (המכסה היומית נספרת לכל מודל בנפרד).
 // כשהמכסה של המודל הראשי נגמרת (429) או שהוא עמוס (503) – מנסים שוב עם מודלי הגיבוי, לפי הסדר.
+// רישום לדוח השימוש (usage-report.html). טעינה דינמית – תקלה ברישום לא משפיעה על הבדיקה.
+function logUsage(modelIndex, ok, error) {
+    import("../../ai-usage.js").then(m => m.logAIUsage(app, auth.currentUser, modelIndex, ok, error)).catch(() => {});
+}
+
 async function generateWithFallback(prompt) {
     try {
-        return await aiModel.generateContent(prompt);
+        const result = await aiModel.generateContent(prompt);
+        logUsage(0, true);
+        return result;
     } catch (err) {
-        if (!/429|quota|503|overloaded/i.test(err.message || '')) throw err;
+        if (!/429|quota|503|overloaded/i.test(err.message || '')) { logUsage(-1, false, err.message); throw err; }
         let lastErr = err;
-        for (const model of [aiModelLite, aiModelLite2]) {
-            if (!model) continue;
-            try { return await model.generateContent(prompt); } catch (e) { lastErr = e; }
+        const backups = [aiModelLite, aiModelLite2];
+        for (let i = 0; i < backups.length; i++) {
+            if (!backups[i]) continue;
+            try {
+                const result = await backups[i].generateContent(prompt);
+                logUsage(i + 1, true);
+                return result;
+            } catch (e) { lastErr = e; }
         }
+        logUsage(-1, false, lastErr.message);
         throw lastErr;
     }
 }

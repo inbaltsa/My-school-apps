@@ -393,6 +393,11 @@ onAuthStateChanged(auth, async (user) => {
     publishStatus(user);
 });
 
+// רישום לדוח השימוש (usage-report.html). טעינה דינמית – תקלה ברישום לא משפיעה על הבדיקה.
+function logUsage(modelIndex, ok, error) {
+    import("../../ai-usage.js").then(m => m.logAIUsage(app, auth.currentUser, modelIndex, ok, error)).catch(() => {});
+}
+
 window.checkWithAI = async function(question, expectedAnswer, studentAnswer, attempt) {
     if (!aiAvailable || !aiModel) return { success: false };
     const prompt = `השאלה: ${question}
@@ -417,7 +422,10 @@ ${studentAnswer}
             const text = (result.response.text() || '').trim();
             const finish = result.response.candidates?.[0]?.finishReason;
             const parsed = parseScore(text);
-            if (parsed.score !== null) return { success: true, ...parsed };
+            if (parsed.score !== null) {
+                logUsage(models.indexOf(model), true);
+                return { success: true, ...parsed };
+            }
             lastText = parsed.feedback;
             lastError = 'אין ציון בתשובה' + (finish ? ` (${finish})` : '');
             console.warn("AI answer without score:", finish, text);
@@ -435,6 +443,7 @@ ${studentAnswer}
             }
         }
     }
+    logUsage(-1, false, lastError);
     return { success: false, error: lastError, feedback: lastText };
 };
 

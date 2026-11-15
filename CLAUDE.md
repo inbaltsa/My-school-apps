@@ -34,6 +34,8 @@ firebase-homework.js    # Firebase (compat): התחברות, שיעורי בית
 app-tracker.js          # saveAppScore() + כוכבים על הכרטיסיות
 back-link.js            # כפתור "חזרה לכיתה" לאפליקציות ישנות שאין להן קישור חזרה משלהן
 exam-manager.js         # באנרים ותגיות "למבחן" לפי data-exam-date (אוטומטי, נעלם אחרי התאריך)
+ai-usage.js             # רישום כל בדיקת AI ל-ai_usage/{uid} ב-Realtime Database (לדוח השימוש)
+usage-report.html       # דוח שימוש בבדיקה החכמה: לפי יום, אפליקציה, משתמש ומודל
 homework_data.js        # נוצר אוטומטית מהמשו"ב – לא לערוך ידנית
 homework_manual.js      # משימות ידניות
 apps/<subject>/         # האפליקציות: bible, english, generators, geography, hebrew, math, reading, science
@@ -204,6 +206,18 @@ window.checkWithAI = async function(question, expectedAnswer, studentAnswer, att
 - `gemini-3.1-flash-lite` נבדק ב-15.11.2026: עונה, לא "חושב", ומחזיר ציון בפורמט הנכון. (`gemini-2.0-flash` כבר לא זמין; `gemini-3.5-flash` זמין אבל "חושב" כברירת מחדל – יקר ואיטי יותר.)
 - `gemini-2.5-flash-lite` כבר לא זמין לפרויקטים חדשים (404). נבדק ב-15.11.2026: `gemini-3.5-flash-lite` עונה ומחזיר ציון בפורמט הנכון.
 - כדי להגדיל את המכסה: Firebase Console ← Usage and billing ← תוכנית **Blaze** (תשלום לפי שימוש; כדאי להגדיר התראת תקציב).
+
+### דוח שימוש
+- כל אפליקציה עם AI רושמת כל בדיקה דרך `ai-usage.js`, בטעינה דינמית (כך שתקלה ברישום לא שוברת את הבדיקה):
+  ```js
+  function logUsage(modelIndex, ok, error) {
+      import("../../ai-usage.js").then(m => m.logAIUsage(app, auth.currentUser, modelIndex, ok, error)).catch(() => {});
+  }
+  ```
+  קוראים ל-`logUsage(i, true)` כשמודל מספר `i` בשרשרת ענה, ול-`logUsage(-1, false, lastError)` כשכולם נכשלו. **אפליקציה חדשה עם AI צריכה לעשות את זה**, וגם להוסיף את השם שלה ל-`APP_LABELS` ב-`usage-report.html`.
+- הדוח: `usage-report.html` (לא מקושר מעמודי הכיתות). קריאת השימוש של **כולם** דורשת כלל ב-Realtime Database:
+  `"ai_usage": { ".read": "auth != null && auth.token.email == '<המייל של ענבל>'", "$uid": { ".write": "auth != null && auth.uid == $uid" } }`.
+  בלי הרשאת קריאה הדוח מציג רק את השימוש של המשתמש המחובר.
 
 ### הפרומפט (מה עבד טוב)
 - מגדירים את התפקיד ואת הקהל: "בודק סבלני וחם לילדה בכיתה X", ואת המקצוע והספר.
