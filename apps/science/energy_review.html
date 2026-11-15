@@ -526,6 +526,8 @@ TOPICS.find(t => t.gen === 'tc').qs = TRANSFER_OR_CONVERT.map(([s, k, ex]) => ({
 // State
 // ============================================================
 const EXAM_APP_ID = 'energy-review';
+const TOPIC_QUIZ_SIZE = 10;  // תרגול נושא: 10 שאלות אקראיות מתוך המאגר, כדי שלא יהיה מתיש
+function topicSize(t) { return Math.min(TOPIC_QUIZ_SIZE, t.qs.length); }
 let quiz = [];
 let qIndex = 0;
 let score = 0;
@@ -569,7 +571,7 @@ function showMenu() {
         <div class="topic-card" style="--c:${t.color}" onclick="showSummary(${i})">
             <span class="t-icon">${t.icon}</span>
             <span class="t-title">${t.title}</span>
-            <span class="t-meta">${t.qs.length} שאלות · סיכום</span>
+            <span class="t-meta">${topicSize(t)} שאלות · סיכום</span>
             ${best[t.id] !== undefined ? `<span class="t-best">הכי טוב: ${best[t.id]}% ${best[t.id] >= 90 ? '⭐' : ''}</span>` : ''}
         </div>`).join('');
     show('menu-screen');
@@ -585,7 +587,7 @@ function showSummary(i) {
         <ul class="summary-list">${t.summary.map(s => `<li>${s}</li>`).join('')}</ul>
         <div class="actions">
             <button class="btn btn-light" onclick="showMenu()">🏠 לתפריט</button>
-            <button class="btn btn-green" onclick="startTopic(${i})">✏️ לתרגול (${t.qs.length} שאלות)</button>
+            <button class="btn btn-green" onclick="startTopic(${i})">✏️ לתרגול (${topicSize(t)} שאלות)</button>
         </div>`;
     show('summary-screen');
 }
@@ -605,7 +607,7 @@ function startTopic(i) {
     mode = 'topic';
     currentTopic = i;
     const t = TOPICS[i];
-    beginQuiz(shuffle(t.qs).map(it => buildItem(t, it)));
+    beginQuiz(shuffle(t.qs).slice(0, TOPIC_QUIZ_SIZE).map(it => buildItem(t, it)));
 }
 
 function startExam() {
