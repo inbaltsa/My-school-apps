@@ -402,13 +402,20 @@ async function initAI() {
     return aiAvailable;
 }
 
+// בדיקה חכמה רק למשתמשים ברשימה ai_users במסד (ראו ai-access.js). כל השאר – בדיקה עצמית.
+let aiAccess = false;
+async function checkAIAccess(user) {
+    aiAccess = await import("../../ai-access.js").then(m => m.isAIAllowed(app, user)).catch(() => false);
+    return aiAccess;
+}
+
 function publishStatus(user) {
-    window._aiStatus = { available: aiAvailable, signedIn: !!user };
+    window._aiStatus = { available: aiAvailable && aiAccess, signedIn: !!user, allowed: !!user && aiAccess };
     window.dispatchEvent(new Event('ai-status-changed'));
 }
 
 onAuthStateChanged(auth, async (user) => {
-    if (user) await initAI();
+    if (user && await checkAIAccess(user)) await initAI();
     publishStatus(user);
 });
 
@@ -670,9 +677,12 @@ function renderAIStatus() {
         el.innerHTML = '🤖 <b>הבודק החכם מחובר!</b> אחרי כל תשובה תקבלי משוב וציון.';
     } else if (!s.signedIn) {
         el.className = 'ai-status warn';
-        el.innerHTML = `🔑 <b>כדי לקבל בדיקה חכמה מה-AI צריך להתחבר עם Google.</b><br>
-            גם בלי זה אפשר לענות, לראות תשובה לדוגמה ולבדוק בעצמך.<br>
+        el.innerHTML = `✍️ <b>בדיקה עצמית:</b> אחרי כל תשובה תופיע תשובה לדוגמה, ותסמני כמה צדקת.<br>
+            <span style="font-size:0.9em;color:#636e72;">משתמשים מורשים יכולים להתחבר לבדיקה חכמה (AI):</span><br>
             <button class="btn btn-google" onclick="window.signInForAI()">🔐 התחברות עם Google</button>`;
+    } else if (s.allowed === false) {
+        el.className = 'ai-status ok';
+        el.innerHTML = '✍️ <b>בדיקה עצמית:</b> אחרי כל תשובה תופיע תשובה לדוגמה, ותסמני כמה צדקת.';
     } else {
         el.className = 'ai-status warn';
         el.innerHTML = '⚠️ <b>בדיקת AI לא פעילה כרגע.</b> אפשר לענות, לראות תשובה לדוגמה ולבדוק בעצמך.';

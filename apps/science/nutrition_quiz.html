@@ -706,12 +706,17 @@ async function initAI() {
 }
 
 // בדיקת מצב התחברות + אתחול AI
+// בדיקה חכמה רק למשתמשים ברשימה ai_users במסד (ראו ai-access.js). כל השאר – בדיקה עצמית.
+let aiAccess = false;
+async function checkAIAccess(user) {
+    aiAccess = await import("../../ai-access.js").then(m => m.isAIAllowed(app, user)).catch(() => false);
+    return aiAccess;
+}
+
 onAuthStateChanged(auth, async (user) => {
-    if (user && !aiAvailable) {
-        console.log("👤 User signed in:", user.displayName);
-        await initAI();
-    }
-    window._aiStatus = { available: aiAvailable, signedIn: !!user };
+    if (user && !aiAvailable && await checkAIAccess(user)) await initAI();
+    else if (user && aiAvailable) await checkAIAccess(user);
+    window._aiStatus = { available: aiAvailable && aiAccess, signedIn: !!user, allowed: !!user && aiAccess };
     window.dispatchEvent(new Event('ai-status-changed'));
 });
 
@@ -1255,7 +1260,7 @@ function showOpenQuestion(q) {
     if (!aiStatus.signedIn) {
         noticeHtml = `
             <div class="ai-setup-notice">
-                <strong>🔑 כדי לקבל בדיקה חכמה מה-AI, צריך להתחבר:</strong>
+                <strong>🔑 בדיקה חכמה (AI) למשתמשים מורשים – התחברות:</strong>
                 <button onclick="window.signInForAI()" style="
                     padding: 8px 20px; border: none; border-radius: 10px;
                     background: linear-gradient(135deg, #4285f4, #356ac3); color: white;
@@ -1265,6 +1270,11 @@ function showOpenQuestion(q) {
                 <div style="margin-top: 6px; font-size: 0.8em; color: #888;">
                     גם בלי — אפשר לכתוב תשובה ולראות את התשובה הנכונה
                 </div>
+            </div>`;
+    } else if (!aiStatus.available && aiStatus.allowed === false) {
+        noticeHtml = `
+            <div class="ai-setup-notice">
+                <strong>✍️ בדיקה עצמית:</strong> כתבי תשובה ותוכלי לראות את התשובה הנכונה.
             </div>`;
     } else if (!aiStatus.available) {
         noticeHtml = `
