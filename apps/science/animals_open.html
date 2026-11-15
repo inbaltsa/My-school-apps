@@ -337,6 +337,7 @@ const auth = getAuth(app);
 
 let aiModel = null;
 let aiModelFallback = null;
+let aiModelFallback2 = null;
 let aiAvailable = false;
 
 const TUTOR_SYSTEM_PROMPT = `אתה בודק מבחנים סבלני וחם לילדה בכיתה ד' בישראל (בת 9-10), שמתכוננת למבחן במדעים בנושא "מפגשים עם בעלי חיים" (ספר "במבט חדש" לכיתה ד').
@@ -387,6 +388,12 @@ async function initAI() {
             systemInstruction: TUTOR_SYSTEM_PROMPT,
             generationConfig: { temperature: 0.3, maxOutputTokens: 8192 }
         });
+        // גיבוי שני: עוד מודל עם מכסה נפרדת
+        aiModelFallback2 = getGenerativeModel(ai, {
+            model: "gemini-3.1-flash-lite",
+            systemInstruction: TUTOR_SYSTEM_PROMPT,
+            generationConfig: { temperature: 0.3, maxOutputTokens: 8192 }
+        });
         aiAvailable = true;
     } catch (err) {
         console.warn("⚠️ AI not available:", err.message);
@@ -427,7 +434,7 @@ ${studentAnswer}
     let lastError = '';
     let lastText = '';
     let refreshed = false;
-    const models = [aiModel, aiModelFallback];
+    const models = [aiModel, aiModelFallback, aiModelFallback2];
     for (let i = 0; i < models.length; i++) {
         const model = models[i];
         try {
