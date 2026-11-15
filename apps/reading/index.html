@@ -11,7 +11,7 @@
     </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>מסע הקריאה של ענת 🦄</title>
+<title>מסע הקריאה של תותי 🦄</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;800&family=Secular+One&display=swap">
@@ -90,7 +90,7 @@
   <div class="wrap">
     <div class="hero">
       <div class="uni" id="uni"></div>
-      <h1>מסע הקריאה<br>של ענת</h1>
+      <h1>מסע הקריאה<br>של תותי</h1>
       <div class="greet" id="greet"></div>
     </div>
 
@@ -164,7 +164,7 @@
     document.getElementById('gBoy').onclick = () => { pendingGender = 'm'; markGender(); };
     document.getElementById('saveBtn').onclick = () => {
       const nm = document.getElementById('nameIn').value.trim();
-      ReadingProfile.set(nm || 'ענת', pendingGender);
+      ReadingProfile.set(nm || 'תותי', pendingGender);
       document.getElementById('overlay').classList.remove('show');
       refreshGreet();
     };
