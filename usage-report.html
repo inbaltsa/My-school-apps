@@ -135,15 +135,20 @@ const db = getDatabase(app);
 
 window.signInForReport = () => signInWithPopup(auth, new GoogleAuthProvider()).catch(console.error);
 
-// מנסים לקרוא את כל ai_usage (דורש הרשאת קריאה בכללי המסד). אם אין – רק את השימוש של המשתמש המחובר.
+// קריאת כל ai_usage מותרת רק לאדמינים (admins/{uid} = true בכללי המסד).
+// אם אין הרשאה – מנסים את השימוש של המשתמש עצמו, ואם גם זה חסום – null (לא אדמין).
 async function loadUsage(user) {
     try {
         const snap = await get(ref(db, 'ai_usage'));
         return { all: true, data: snap.val() || {} };
     } catch (err) {
         console.warn("No read access to all ai_usage:", err.message);
-        const snap = await get(ref(db, 'ai_usage/' + user.uid));
-        return { all: false, data: { [user.uid]: snap.val() || {} } };
+        try {
+            const snap = await get(ref(db, 'ai_usage/' + user.uid));
+            return { all: false, data: { [user.uid]: snap.val() || {} } };
+        } catch (err2) {
+            return null;
+        }
     }
 }
 
@@ -151,6 +156,7 @@ onAuthStateChanged(auth, async (user) => {
     if (!user) { window.renderSignIn(); return; }
     try {
         const res = await loadUsage(user);
+        if (!res) { window.renderNotAdmin(user); return; }
         const rows = [];
         Object.entries(res.data).forEach(([uid, entries]) =>
             Object.values(entries || {}).forEach(e => rows.push({ ...e, uid })));
@@ -200,6 +206,12 @@ function renderSignIn() {
     $('report').classList.add('hidden');
 }
 
+function renderNotAdmin(user) {
+    $('status').className = 'panel status warn';
+    $('status').innerHTML = `🔒 הדוח זמין רק למנהלת האתר.<div class="muted" style="margin-top:4px">מחובר/ת כ-${escapeHTML(user.displayName || user.email || '')}</div>`;
+    $('report').classList.add('hidden');
+}
+
 function renderError(msg) {
     $('status').className = 'panel status err';
     $('status').innerHTML = `⚠️ לא הצלחתי לקרוא את נתוני השימוש.<div class="muted" style="margin-top:4px">${escapeHTML(msg)}</div>`;
@@ -210,12 +222,7 @@ function renderReport(rows, all, user) {
     $('status').className = 'panel status' + (all ? '' : ' warn');
     $('status').innerHTML = all
         ? `✅ מחוברת כ-<b>${escapeHTML(user.displayName || user.email || '')}</b> · כל המשתמשים באתר · ${allRows.length} בדיקות נרשמו`
-        : `👤 מוצג רק השימוש של <b>${escapeHTML(user.displayName || '')}</b>, כי לחשבון הזה אין הרשאה לקרוא את השימוש של כולם.<br>
-           כדי לראות את כולם – הוסיפי בכללי ה-Realtime Database (Firebase Console ← Realtime Database ← Rules):
-           <pre>"ai_usage": {
-  ".read": "auth != null && auth.token.email == 'YOUR_EMAIL'",
-  "$uid": { ".write": "auth != null && auth.uid == $uid" }
-}</pre>`;
+        : `👤 מוצג רק השימוש של <b>${escapeHTML(user.displayName || '')}</b>. הדוח המלא זמין רק למנהלת האתר.`;
     $('filters').innerHTML = [[7, '7 ימים'], [30, '30 יום'], [90, '90 יום'], [0, 'הכול']]
         .map(([d, l]) => `<button class="btn btn-light ${d === days ? 'active' : ''}" onclick="setDays(${d})">${l}</button>`).join('');
     draw();

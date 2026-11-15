@@ -215,9 +215,9 @@ window.checkWithAI = async function(question, expectedAnswer, studentAnswer, att
   }
   ```
   קוראים ל-`logUsage(i, true)` כשמודל מספר `i` בשרשרת ענה, ול-`logUsage(-1, false, lastError)` כשכולם נכשלו. **אפליקציה חדשה עם AI צריכה לעשות את זה**, וגם להוסיף את השם שלה ל-`APP_LABELS` ב-`usage-report.html`.
-- הדוח: `usage-report.html` (לא מקושר מעמודי הכיתות). קריאת השימוש של **כולם** דורשת כלל ב-Realtime Database:
-  `"ai_usage": { ".read": "auth != null && auth.token.email == '<המייל של ענבל>'", "$uid": { ".write": "auth != null && auth.uid == $uid" } }`.
-  בלי הרשאת קריאה הדוח מציג רק את השימוש של המשתמש המחובר.
+- הדוח: `usage-report.html` (לא מקושר מעמודי הכיתות). רק **אדמינים** קוראים את השימוש של כולם. אדמין = רשומה `admins/{uid}: true` במסד (נוספת ידנית בקונסולה). הכללים ב-Realtime Database:
+  `"admins": { ".read": false, ".write": false }, "ai_usage": { ".read": "auth != null && root.child('admins').child(auth.uid).val() === true", "$uid": { ".write": "auth != null && auth.uid === $uid" } }`.
+  משתמש שאינו אדמין רואה "הדוח זמין רק למנהלת האתר". שימי לב: הרשאת `.read` ברמת השורש גוברת על הכלל הזה.
 
 ### הפרומפט (מה עבד טוב)
 - מגדירים את התפקיד ואת הקהל: "בודק סבלני וחם לילדה בכיתה X", ואת המקצוע והספר.
