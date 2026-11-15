@@ -136,7 +136,7 @@ initializeAppCheck(app, {
 });
 
 const auth = getAuth(app);
-let aiModel = null, aiModelFallback = null, aiAvailable = false;
+let aiModel = null, aiModelFallback = null, aiModelFallback2 = null, aiAvailable = false;
 
 const SYSTEM_PROMPT = `...ראו "הפרומפט" למטה...`;
 
@@ -160,6 +160,12 @@ async function initAI() {
             systemInstruction: SYSTEM_PROMPT,
             generationConfig: { temperature: 0.3, maxOutputTokens: 8192 }
         });
+        // גיבוי שני: עוד מודל עם מכסה נפרדת
+        aiModelFallback2 = getGenerativeModel(ai, {
+            model: "gemini-3.1-flash-lite",
+            systemInstruction: SYSTEM_PROMPT,
+            generationConfig: { temperature: 0.3, maxOutputTokens: 8192 }
+        });
         aiAvailable = true;
     } catch (err) { console.warn("AI not available:", err.message); }
     return aiAvailable;
@@ -179,7 +185,7 @@ window.checkWithAI = async function(question, expectedAnswer, studentAnswer, att
     const prompt = `השאלה: ${question}\n\nהתשובה המצופה (לשימושך בלבד): ${expectedAnswer}\n\n` +
                    `${attempt === 1 ? 'ניסיון ראשון' : 'ניסיון שני'}.\n\nהתשובה של התלמידה:\n"""\n${studentAnswer}\n"""`;
     let lastError = '';
-    for (const model of [aiModel, aiModelFallback]) {
+    for (const model of [aiModel, aiModelFallback, aiModelFallback2]) {
         try {
             const text = ((await model.generateContent(prompt)).response.text() || '').trim();
             const m = text.match(/\[\s*ציון\s*:?\s*(\d)\s*\/\s*3\s*\]/) || [...text.matchAll(/(\d)\s*\/\s*3/g)].pop();
@@ -194,7 +200,8 @@ window.checkWithAI = async function(question, expectedAnswer, studentAnswer, att
 
 ### מכסות (Free tier)
 - בתוכנית החינמית יש מכסה של **20 בקשות ביום לכל מודל**, לכל הפרויקט יחד (כל האפליקציות וכל המשתמשים). כשהיא נגמרת: `[429] You exceeded your current quota ... generate_content_free_tier_requests, limit: 20`. היא מתאפסת פעם ביום.
-- לכן מודל הגיבוי הוא **מודל אחר** (`gemini-3.5-flash-lite`), עם מכסה נפרדת. באפליקציות שאין בהן לולאת מודלים (`plants_quiz`, `nutrition_quiz`, `mediterranean`) יש `generateWithFallback()`, שעובר למודל הקל רק על 429/503.
+- לכן יש **שני מודלי גיבוי אחרים**, כל אחד עם מכסה נפרדת: `gemini-3.5-flash-lite` ואחריו `gemini-3.1-flash-lite` (בתוכנית החינמית: עד ~60 בדיקות ביום). באפליקציות שאין בהן לולאת מודלים (`plants_quiz`, `nutrition_quiz`, `mediterranean`) יש `generateWithFallback()`, שעובר למודלי הגיבוי רק על 429/503.
+- `gemini-3.1-flash-lite` נבדק ב-15.11.2026: עונה, לא "חושב", ומחזיר ציון בפורמט הנכון. (`gemini-2.0-flash` כבר לא זמין; `gemini-3.5-flash` זמין אבל "חושב" כברירת מחדל – יקר ואיטי יותר.)
 - `gemini-2.5-flash-lite` כבר לא זמין לפרויקטים חדשים (404). נבדק ב-15.11.2026: `gemini-3.5-flash-lite` עונה ומחזיר ציון בפורמט הנכון.
 - כדי להגדיל את המכסה: Firebase Console ← Usage and billing ← תוכנית **Blaze** (תשלום לפי שימוש; כדאי להגדיר התראת תקציב).
 

@@ -767,6 +767,7 @@ import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com
 let aiService = null;
 let aiModel = null;
 let aiModelLite = null;
+let aiModelLite2 = null;
 let aiAvailable = false;
 
 const firebaseConfig = {
@@ -846,6 +847,11 @@ async function initAI() {
             systemInstruction: TUTOR_SYSTEM_PROMPT,
             generationConfig: { temperature: 0.3, maxOutputTokens: 3000 }
         });
+        aiModelLite2 = getGenerativeModel(aiService, {
+            model: "gemini-3.1-flash-lite",
+            systemInstruction: TUTOR_SYSTEM_PROMPT,
+            generationConfig: { temperature: 0.3, maxOutputTokens: 3000 }
+        });
         aiAvailable = true;
         console.log("✅ Firebase AI Logic initialized (Gemini Developer API)");
         
@@ -894,13 +900,18 @@ onAuthStateChanged(auth, async (user) => {
 // פונקציית בדיקת תשובה עם AI
 
 // גיבוי: מודל אחר עם מכסה חינמית נפרדת (המכסה היומית נספרת לכל מודל בנפרד).
-// כשהמכסה של המודל הראשי נגמרת (429) או שהוא עמוס (503) – מנסים שוב עם המודל הקל.
+// כשהמכסה של המודל הראשי נגמרת (429) או שהוא עמוס (503) – מנסים שוב עם מודלי הגיבוי, לפי הסדר.
 async function generateWithFallback(prompt) {
     try {
         return await aiModel.generateContent(prompt);
     } catch (err) {
-        if (aiModelLite && /429|quota|503|overloaded/i.test(err.message || '')) return await aiModelLite.generateContent(prompt);
-        throw err;
+        if (!/429|quota|503|overloaded/i.test(err.message || '')) throw err;
+        let lastErr = err;
+        for (const model of [aiModelLite, aiModelLite2]) {
+            if (!model) continue;
+            try { return await model.generateContent(prompt); } catch (e) { lastErr = e; }
+        }
+        throw lastErr;
     }
 }
 // ==============================

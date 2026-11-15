@@ -541,7 +541,7 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged }
     from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app-check.js";
 
-let aiService = null, aiModel = null, aiModelLite = null, aiAvailable = false;
+let aiService = null, aiModel = null, aiModelLite = null, aiModelLite2 = null, aiAvailable = false;
 
 const firebaseConfig = {
     apiKey: "AIzaSyAi0YrEfLEr7GK2VRjJ9FOuhz4066_7T5M",
@@ -598,6 +598,10 @@ async function initAI() {
             model: "gemini-3.5-flash-lite", systemInstruction: TUTOR_SYSTEM_PROMPT,
             generationConfig: { temperature: 0.3, maxOutputTokens: 1500 }
         });
+        aiModelLite2 = m.getGenerativeModel(aiService, {
+            model: "gemini-3.1-flash-lite", systemInstruction: TUTOR_SYSTEM_PROMPT,
+            generationConfig: { temperature: 0.3, maxOutputTokens: 1500 }
+        });
         aiAvailable = true;
     } catch (e1) {
         try {
@@ -619,13 +623,18 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 // גיבוי: מודל אחר עם מכסה חינמית נפרדת (המכסה היומית נספרת לכל מודל בנפרד).
-// כשהמכסה של המודל הראשי נגמרת (429) או שהוא עמוס (503) – מנסים שוב עם המודל הקל.
+// כשהמכסה של המודל הראשי נגמרת (429) או שהוא עמוס (503) – מנסים שוב עם מודלי הגיבוי, לפי הסדר.
 async function generateWithFallback(prompt) {
     try {
         return await aiModel.generateContent(prompt);
     } catch (err) {
-        if (aiModelLite && /429|quota|503|overloaded/i.test(err.message || '')) return await aiModelLite.generateContent(prompt);
-        throw err;
+        if (!/429|quota|503|overloaded/i.test(err.message || '')) throw err;
+        let lastErr = err;
+        for (const model of [aiModelLite, aiModelLite2]) {
+            if (!model) continue;
+            try { return await model.generateContent(prompt); } catch (e) { lastErr = e; }
+        }
+        throw lastErr;
     }
 }
 
