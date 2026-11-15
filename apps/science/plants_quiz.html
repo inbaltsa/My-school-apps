@@ -766,6 +766,7 @@ import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com
 
 let aiService = null;
 let aiModel = null;
+let aiModelLite = null;
 let aiAvailable = false;
 
 const firebaseConfig = {
@@ -840,6 +841,11 @@ async function initAI() {
                 thinkingConfig: { thinkingBudget: 0 },
             }
         });
+        aiModelLite = getGenerativeModel(aiService, {
+            model: "gemini-3.5-flash-lite",
+            systemInstruction: TUTOR_SYSTEM_PROMPT,
+            generationConfig: { temperature: 0.3, maxOutputTokens: 3000 }
+        });
         aiAvailable = true;
         console.log("✅ Firebase AI Logic initialized (Gemini Developer API)");
         
@@ -886,6 +892,17 @@ onAuthStateChanged(auth, async (user) => {
 
 // ==============================
 // פונקציית בדיקת תשובה עם AI
+
+// גיבוי: מודל אחר עם מכסה חינמית נפרדת (המכסה היומית נספרת לכל מודל בנפרד).
+// כשהמכסה של המודל הראשי נגמרת (429) או שהוא עמוס (503) – מנסים שוב עם המודל הקל.
+async function generateWithFallback(prompt) {
+    try {
+        return await aiModel.generateContent(prompt);
+    } catch (err) {
+        if (aiModelLite && /429|quota|503|overloaded/i.test(err.message || '')) return await aiModelLite.generateContent(prompt);
+        throw err;
+    }
+}
 // ==============================
 window.checkWithAI = async function(question, studentAnswer) {
     if (!aiAvailable || !aiModel) {
@@ -897,7 +914,7 @@ window.checkWithAI = async function(question, studentAnswer) {
 
     try {
         const prompt = `שאלה: ${question}\n\nתשובת התלמיד/ה: ${studentAnswer}`;
-        const result = await aiModel.generateContent(prompt);
+        const result = await generateWithFallback(prompt);
         const response = await result.response;
         const text = response.text();
         

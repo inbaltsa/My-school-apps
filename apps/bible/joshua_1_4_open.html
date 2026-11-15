@@ -368,9 +368,9 @@ async function initAI() {
             systemInstruction: TUTOR_SYSTEM_PROMPT,
             generationConfig: { temperature: 0.3, maxOutputTokens: 2048, thinkingConfig: { thinkingBudget: 0 } }
         });
-        // גיבוי: בלי thinkingConfig ועם מקום גדול, למקרה שהבקשה הראשונה נכשלת
+        // גיבוי: מודל אחר עם מכסה חינמית נפרדת (המכסה היומית נספרת לכל מודל בנפרד), כדי שהבדיקה תמשיך כשהמכסה של המודל הראשי נגמרת (429)
         aiModelFallback = getGenerativeModel(ai, {
-            model: "gemini-2.5-flash",
+            model: "gemini-3.5-flash-lite",
             systemInstruction: TUTOR_SYSTEM_PROMPT,
             generationConfig: { temperature: 0.3, maxOutputTokens: 8192 }
         });
