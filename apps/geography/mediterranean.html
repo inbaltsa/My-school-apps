@@ -541,7 +541,7 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged }
     from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app-check.js";
 
-let aiService = null, aiModel = null, aiAvailable = false;
+let aiService = null, aiModel = null, aiModelLite = null, aiAvailable = false;
 
 const firebaseConfig = {
     apiKey: "AIzaSyAi0YrEfLEr7GK2VRjJ9FOuhz4066_7T5M",
@@ -594,6 +594,10 @@ async function initAI() {
             model: "gemini-2.5-flash", systemInstruction: TUTOR_SYSTEM_PROMPT,
             generationConfig: { temperature: 0.3, maxOutputTokens: 1500, thinkingConfig: { thinkingBudget: 0 } }
         });
+        aiModelLite = m.getGenerativeModel(aiService, {
+            model: "gemini-3.5-flash-lite", systemInstruction: TUTOR_SYSTEM_PROMPT,
+            generationConfig: { temperature: 0.3, maxOutputTokens: 1500 }
+        });
         aiAvailable = true;
     } catch (e1) {
         try {
@@ -614,10 +618,21 @@ onAuthStateChanged(auth, async (user) => {
     window.dispatchEvent(new Event('ai-status-changed'));
 });
 
+// גיבוי: מודל אחר עם מכסה חינמית נפרדת (המכסה היומית נספרת לכל מודל בנפרד).
+// כשהמכסה של המודל הראשי נגמרת (429) או שהוא עמוס (503) – מנסים שוב עם המודל הקל.
+async function generateWithFallback(prompt) {
+    try {
+        return await aiModel.generateContent(prompt);
+    } catch (err) {
+        if (aiModelLite && /429|quota|503|overloaded/i.test(err.message || '')) return await aiModelLite.generateContent(prompt);
+        throw err;
+    }
+}
+
 window.checkWithAI = async function(question, expectedAnswer, studentAnswer) {
     if (!aiAvailable || !aiModel) return { success: false, message: "בדיקת AI לא זמינה." };
     try {
-        const result = await aiModel.generateContent(
+        const result = await generateWithFallback(
             `השאלה: ${question}\nהתשובה המצופה (אל תחשפי!): ${expectedAnswer}\nתשובת התלמידה: ${studentAnswer}\nבדקי ותני משוב.`
         );
         const text = result.response.text();

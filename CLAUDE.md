@@ -153,8 +153,10 @@ async function initAI() {
             // חשוב: בלי thinkingBudget:0 החשיבה "אוכלת" את maxOutputTokens והתשובה נקטעת לפני הציון
             generationConfig: { temperature: 0.3, maxOutputTokens: 2048, thinkingConfig: { thinkingBudget: 0 } }
         });
+        // גיבוי: מודל אחר, כי המכסה החינמית היומית נספרת לכל מודל בנפרד (ראו "מכסות" למטה).
+        // בלי thinkingConfig – gemini-3.5-flash-lite דוחה thinkingBudget:0 ב-400.
         aiModelFallback = getGenerativeModel(ai, {
-            model: "gemini-2.5-flash",
+            model: "gemini-3.5-flash-lite",
             systemInstruction: SYSTEM_PROMPT,
             generationConfig: { temperature: 0.3, maxOutputTokens: 8192 }
         });
@@ -189,6 +191,12 @@ window.checkWithAI = async function(question, expectedAnswer, studentAnswer, att
 };
 </script>
 ```
+
+### מכסות (Free tier)
+- בתוכנית החינמית יש מכסה של **20 בקשות ביום לכל מודל**, לכל הפרויקט יחד (כל האפליקציות וכל המשתמשים). כשהיא נגמרת: `[429] You exceeded your current quota ... generate_content_free_tier_requests, limit: 20`. היא מתאפסת פעם ביום.
+- לכן מודל הגיבוי הוא **מודל אחר** (`gemini-3.5-flash-lite`), עם מכסה נפרדת. באפליקציות שאין בהן לולאת מודלים (`plants_quiz`, `nutrition_quiz`, `mediterranean`) יש `generateWithFallback()`, שעובר למודל הקל רק על 429/503.
+- `gemini-2.5-flash-lite` כבר לא זמין לפרויקטים חדשים (404). נבדק ב-15.11.2026: `gemini-3.5-flash-lite` עונה ומחזיר ציון בפורמט הנכון.
+- כדי להגדיל את המכסה: Firebase Console ← Usage and billing ← תוכנית **Blaze** (תשלום לפי שימוש; כדאי להגדיר התראת תקציב).
 
 ### הפרומפט (מה עבד טוב)
 - מגדירים את התפקיד ואת הקהל: "בודק סבלני וחם לילדה בכיתה X", ואת המקצוע והספר.
@@ -236,6 +244,8 @@ curl -sS -X POST "https://firebasevertexai.googleapis.com/v1beta/projects/homewo
 | `Requests from referer ... are blocked` | הכתובת לא ברשימת Website restrictions של המפתח. |
 | `Cannot read properties of undefined (reading 'some')` | גרסת SDK ישנה (11.8.1) שקרסה בזמן קריאת שגיאת 403. צריך לשדרג ל-12.19.0 כדי לראות את השגיאה האמיתית. |
 | `[401] Firebase App Check token is invalid` | **קודם כול:** חסר `useLimitedUseAppCheckTokens: true` ב-`getAI`/`getVertexAI`. AI Logic מקבל רק טוקנים חד-פעמיים, וגם טוקן רגיל ותקין נדחה. אם זה קיים ועדיין 401: ב-`apps/math/circle_open.html` השורה האפורה מוסיפה אחרי `\|` את השגיאה של App Check עצמו. `recaptcha-error` = המפתח או הדומיין ב-reCAPTCHA; `fetch-status-error` 403 = Firebase דחה את reCAPTCHA (Secret key, סוג מפתח v3/Enterprise, ציון נמוך); `throttled` = חסימה זמנית אחרי כישלון. |
+| `[429] You exceeded your current quota` | נגמרה המכסה החינמית היומית של המודל (20 בקשות). מודל הגיבוי ממשיך; אחרת מחכים לאיפוס או עוברים ל-Blaze. |
+| `[404] ... is no longer available to new users` | המודל הוצא משימוש לפרויקטים חדשים. ההודעה עצמה ממליצה על מודל חלופי. |
 | "אין ציון בתשובה (MAX_TOKENS)" | חסר `thinkingBudget: 0`, או ש-`maxOutputTokens` קטן מדי. |
 
 ---
