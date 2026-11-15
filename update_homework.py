@@ -7,11 +7,21 @@ MASHOV_ID = os.environ["MASHOV_ID"]
 MASHOV_PASS = os.environ["MASHOV_PASS"]
 MASHOV_SEMEL = os.environ["MASHOV_SEMEL"]
 
-KIDS_MAPPING = {
-    "מעיין": 6,    # ו'
-    "יעל": 4,      # ד'
-    "ענת": 1       # א'
-}
+# התאמה בין שם פרטי במשו"ב לכיתה. השמות לא נשמרים בקוד (הקובץ הזה מתפרסם באתר),
+# אלא בסוד MASHOV_KIDS ב-GitHub, בפורמט:  שם=כיתה, שם=כיתה, שם=כיתה   (למשל: דנה=6, נועה=4)
+def load_kids_mapping():
+    raw = os.environ.get("MASHOV_KIDS", "")
+    mapping = {}
+    for part in raw.replace("\n", ",").split(","):
+        if "=" not in part:
+            continue
+        name, grade = part.split("=", 1)
+        name, grade = name.strip(), grade.strip()
+        if name and grade.isdigit():
+            mapping[name] = int(grade)
+    return mapping
+
+KIDS_MAPPING = load_kids_mapping()
 
 BASE_URL = "https://web.mashov.info/api"
 
@@ -33,6 +43,10 @@ def parse_date(date_str):
 
 def update_homework():
     print("🚀 Starting Homework Update Process...")
+
+    if not KIDS_MAPPING:
+        print("❌ MASHOV_KIDS secret is missing or empty (expected: name=grade, name=grade)")
+        return None
     
     # --- שלב 1: התחברות וקבלת נתונים ---
     dirty_session = requests.Session()
@@ -111,7 +125,7 @@ def update_homework():
         if not grade:
             continue
 
-        print(f"🔎 Fetching homework for {clean_name}...")
+        print(f"🔎 Fetching homework for grade {grade}...")
         try:
             hw_resp = clean_session.get(f"{BASE_URL}/students/{child_id}/homework")
             

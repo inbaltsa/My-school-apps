@@ -48,14 +48,8 @@ function detectPageGrade() {
 ## צ'ק-ליסט להפעלה מחדש בתחילת שנה"ל (ספטמבר 2026)
 
 1. **workflow**: להסיר את ההערות משלוש שורות ה-`schedule` ב-`daily_update.yml`
-2. **update_homework.py**: לעדכן את `KIDS_MAPPING` לכיתות החדשות:
-   ```python
-   KIDS_MAPPING = {
-       "יעל": 4,
-       "מעיין": 6,
-       # להוסיף את העולה לכיתה א' אם יש לה משו"ב
-   }
-   ```
+2. **הסוד `MASHOV_KIDS`** (GitHub → Settings → Secrets and variables → Actions): לעדכן לכיתות החדשות,
+   בפורמט `שם=כיתה, שם=כיתה` (שם פרטי כמו במשו"ב, כיתה כמספר). השמות לא נשמרים בקוד.
 3. **update_homework.py**: לעדכן `"year": 2027` בבקשת ההתחברות (`login_data`)
 4. **עמודי הכיתות החדשים**: להסיר את `style="display:none;"` מ-`hw-container-1/4/6`
 5. **firebase-homework.js**: לעדכן גם את מסך בחירת הכיתה (`showGradeSelection` / `selectGrade`)
