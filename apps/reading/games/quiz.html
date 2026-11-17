@@ -50,7 +50,7 @@
     <div class="uni" id="uni"></div>
   </div>
 
-  <script src="../reading-data.js?v=25"></script>
+  <script src="../reading-data.js?v=26"></script>
   <script src="../reading-progress.js?v=16"></script>
   <script src="../reading-profile.js?v=16"></script>
   <script src="../reading-voices.js?v=19"></script>
@@ -98,7 +98,7 @@
         items.forEach(it => it.el.remove()); items = [];
         target = screens[screenIdx];
         const W = scene.clientWidth, H = scene.clientHeight;
-        document.getElementById('wm').textContent = target;
+        document.getElementById('wm').textContent = station.soundOnly ? '' : target;
 
         // אוצרות נכונים = מילים של האות; מסיחים = מילים של אותיות אחרות
         const correct = RG.shuffle(letterWords(target)).slice(0, Math.min(3, letterWords(target).length));
@@ -180,10 +180,18 @@
       }
 
       function updateHud(got, need) {
-        const name = (READING_LETTERS[target] || {}).name || '';
-        document.getElementById('hud').innerHTML =
-          `אספי דברים שמתחילים ב-<span class="big">${target}</span> <span class="nm">(${name})</span>
-           <span class="sfx" id="sfx">🔊</span> <span class="sc">${got}/${need}</span>`;
+        const hud = document.getElementById('hud');
+        if (station.soundOnly) {
+          // רמה גבוהה: לא כותבים את האות ואת השם — רק כפתור לשמוע שוב
+          hud.innerHTML =
+            `אספי דברים שמתחילים בצליל ששמעת <span class="sfx big" id="sfx">🔊</span>
+             <span class="sc">${got}/${need}</span>`;
+        } else {
+          const name = (READING_LETTERS[target] || {}).name || '';
+          hud.innerHTML =
+            `אספי דברים שמתחילים ב-<span class="big">${target}</span> <span class="nm">(${name})</span>
+             <span class="sfx" id="sfx">🔊</span> <span class="sc">${got}/${need}</span>`;
+        }
         document.getElementById('sfx').onclick = () => RG.playLetter(target);
       }
 

@@ -97,7 +97,7 @@
     </div>
   </div>
 
-  <script src="../reading-data.js?v=25"></script>
+  <script src="../reading-data.js?v=26"></script>
   <script src="../reading-progress.js?v=16"></script>
   <script src="../reading-profile.js?v=16"></script>
   <script src="../reading-voices.js?v=19"></script>
@@ -132,8 +132,9 @@
         busy = false;
         target = rounds[idx];
         const name = (READING_LETTERS[target] || {}).name || '';
-        document.getElementById('listTxt').innerHTML =
-          `רשימת קניות: דברים שמתחילים ב-<span class="big">${target}</span><span class="nm">(${name})</span>`;
+        document.getElementById('listTxt').innerHTML = station.soundOnly
+          ? 'רשימת קניות: דברים שמתחילים בצליל ששמעת 👂'      // רמה גבוהה: בלי אות ושם כתובים
+          : `רשימת קניות: דברים שמתחילים ב-<span class="big">${target}</span><span class="nm">(${name})</span>`;
         document.getElementById('prog').textContent = `קנייה ${idx + 1} מתוך ${rounds.length}`;
         insideEl.innerHTML = '';
 
@@ -194,7 +195,9 @@
         const fromGame = RG.shuffle(rounds.filter(l => !banned.includes(l)));
         const wrong = [...new Set(fromGame.concat(pool))].slice(0, 2);
         const coins = RG.shuffle([target].concat(wrong));
-        document.getElementById('payName').textContent = (READING_LETTERS[target] || {}).name || target;
+        document.getElementById('payName').textContent = station.soundOnly
+          ? 'ששמעת 👂'
+          : ((READING_LETTERS[target] || {}).name || target);
         document.getElementById('payHint').textContent = '';
         const box = document.getElementById('coins');
         box.innerHTML = '';
@@ -216,7 +219,10 @@
             } else {
               bad++; RG.buzz();
               c.classList.remove('no'); void c.offsetWidth; c.classList.add('no');
-              document.getElementById('payHint').textContent = 'זה המטבע של ' + ((READING_LETTERS[l] || {}).name || l) + ' — נסי שוב 🙂';
+              document.getElementById('payHint').textContent = station.soundOnly
+                ? 'לא זה — הקשיבי שוב ונסי עוד פעם 🙂'
+                : 'זה המטבע של ' + ((READING_LETTERS[l] || {}).name || l) + ' — נסי שוב 🙂';
+              if (station.soundOnly) setTimeout(() => RG.playLetter(target), 500);
             }
           };
           box.appendChild(c);

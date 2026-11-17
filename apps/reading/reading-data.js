@@ -294,7 +294,8 @@ const GRADE1_SETS = {
         tracks: [
           { id: 't1', name: 'מכירים את האותיות', emoji: '🌱', types: ['meet', 'hunt', 'hear'] },
           { id: 't2', name: 'משחקים ומתרגלים',   emoji: '🎨', types: ['sound', 'memory', 'letterpair', 'write'] },
-          { id: 't3', name: 'אלופי האותיות',     emoji: '🏆', types: ['quiz', 'shop'] },
+          // הרמה הגבוהה: בלי אות ושם כתובים — מזהים רק לפי מה ששומעים
+          { id: 't3', name: 'אלופי האותיות',     emoji: '🏆', types: ['quiz', 'shop'], soundOnly: true },
         ] },
   ae: { id: 'ae', label: 'א–ה', prefix: 'g1a_', letters: ['א', 'ב', 'ג', 'ד', 'ה'],
         back: '../grade1.html',
@@ -363,6 +364,7 @@ function buildGrade1Stations() {
           title: m.title, emoji: m.emoji, short: m.short,
           setId: set.id,
           trackId: track.id, trackName: track.name, trackEmoji: track.emoji,
+          soundOnly: !!track.soundOnly,
           groupName: set.random ? 'אותיות מעורבבות' : 'אותיות ' + set.label,
           isBoss: type === 'quiz',
           back: set.back,   // כפתור הבית/המפה חוזר למסלול של הסט, לא למסע הגדול
