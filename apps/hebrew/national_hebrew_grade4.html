@@ -281,6 +281,7 @@ const auth = getAuth(app);
 
 let aiModel = null;
 let aiModelFallback = null;
+let aiModelFallback2 = null;
 let aiAvailable = false;
 
 const TUTOR_SYSTEM_PROMPT = `אתה בודק סבלני וחם של מבחן בהבנת הנקרא בעברית, לילדה בכיתה ד' בישראל (בת 9-10), שמתכוננת למבחן הארצי של ראמ"ה ("תנופה") בשפת אם עברית.
@@ -317,8 +318,15 @@ async function initAI() {
             systemInstruction: TUTOR_SYSTEM_PROMPT,
             generationConfig: { temperature: 0.3, maxOutputTokens: 2048, thinkingConfig: { thinkingBudget: 0 } }
         });
+        // גיבוי: מודל אחר עם מכסה חינמית נפרדת (המכסה היומית נספרת לכל מודל בנפרד), כדי שהבדיקה תמשיך כשהמכסה של המודל הראשי נגמרת (429)
         aiModelFallback = getGenerativeModel(ai, {
-            model: "gemini-2.5-flash",
+            model: "gemini-3.5-flash-lite",
+            systemInstruction: TUTOR_SYSTEM_PROMPT,
+            generationConfig: { temperature: 0.3, maxOutputTokens: 8192 }
+        });
+        // גיבוי שני: עוד מודל עם מכסה נפרדת
+        aiModelFallback2 = getGenerativeModel(ai, {
+            model: "gemini-3.1-flash-lite",
             systemInstruction: TUTOR_SYSTEM_PROMPT,
             generationConfig: { temperature: 0.3, maxOutputTokens: 8192 }
         });
@@ -330,15 +338,27 @@ async function initAI() {
     return aiAvailable;
 }
 
+// בדיקה חכמה רק למשתמשים ברשימה ai_users במסד (ראו ai-access.js). כל השאר – בדיקה עצמית.
+let aiAccess = false;
+async function checkAIAccess(user) {
+    aiAccess = await import("../../ai-access.js").then(m => m.isAIAllowed(app, user)).catch(() => false);
+    return aiAccess;
+}
+
 function publishStatus(user) {
-    window._aiStatus = { available: aiAvailable, signedIn: !!user };
+    window._aiStatus = { available: aiAvailable && aiAccess, signedIn: !!user, allowed: !!user && aiAccess };
     window.dispatchEvent(new Event('ai-status-changed'));
 }
 
 onAuthStateChanged(auth, async (user) => {
-    if (user) await initAI();
+    if (user && await checkAIAccess(user)) await initAI();
     publishStatus(user);
 });
+
+// רישום לדוח השימוש (usage-report.html). טעינה דינמית – תקלה ברישום לא משפיעה על הבדיקה.
+function logUsage(modelIndex, ok, error) {
+    import("../../ai-usage.js").then(m => m.logAIUsage(app, auth.currentUser, modelIndex, ok, error)).catch(() => {});
+}
 
 // passage: הטקסט עם מספרי פסקאות; dim: ממד ההבנה
 window.checkWithAI = async function(question, expectedAnswer, studentAnswer, attempt, passage, dim) {
@@ -363,7 +383,7 @@ ${studentAnswer}
     let lastError = '';
     let lastText = '';
     let refreshed = false;
-    const models = [aiModel, aiModelFallback];
+    const models = [aiModel, aiModelFallback, aiModelFallback2];
     for (let i = 0; i < models.length; i++) {
         const model = models[i];
         try {
@@ -371,7 +391,10 @@ ${studentAnswer}
             const text = (result.response.text() || '').trim();
             const finish = result.response.candidates?.[0]?.finishReason;
             const parsed = parseScore(text);
-            if (parsed.score !== null) return { success: true, ...parsed };
+            if (parsed.score !== null) {
+                logUsage(i, true);
+                return { success: true, ...parsed };
+            }
             lastText = parsed.feedback;
             lastError = 'אין ציון בתשובה' + (finish ? ` (${finish})` : '');
             console.warn("AI answer without score:", finish, text);
@@ -389,6 +412,7 @@ ${studentAnswer}
             }
         }
     }
+    logUsage(-1, false, lastError);
     return { success: false, error: lastError, feedback: lastText };
 };
 
@@ -613,9 +637,12 @@ function renderAIStatus() {
         el.innerHTML = '🤖 <b>הבודק החכם מחובר!</b> השאלות הפתוחות ייבדקו לפי המחוון, ותקבלי משוב וציון.';
     } else if (!s.signedIn) {
         el.className = 'ai-status warn';
-        el.innerHTML = `🔑 <b>כדי שהבודק החכם יבדוק את השאלות הפתוחות, צריך להתחבר עם Google.</b><br>
-            גם בלי זה אפשר לתרגל: השאלות הסגורות נבדקות אוטומטית, ובשאלות הפתוחות תראי תשובה לדוגמה ותבדקי בעצמך.<br>
+        el.innerHTML = `✍️ <b>בדיקה עצמית:</b> השאלות הסגורות נבדקות אוטומטית, ובשאלות הפתוחות תופיע תשובה לדוגמה ותסמני כמה צדקת.<br>
+            <span style="font-size:0.9em;color:#636e72;">משתמשים מורשים יכולים להתחבר לבדיקה חכמה (AI):</span><br>
             <button class="btn btn-google" onclick="window.signInForAI()">🔐 התחברות עם Google</button>`;
+    } else if (s.allowed === false) {
+        el.className = 'ai-status ok';
+        el.innerHTML = '✍️ <b>בדיקה עצמית:</b> השאלות הסגורות נבדקות אוטומטית, ובשאלות הפתוחות תופיע תשובה לדוגמה ותסמני כמה צדקת.';
     } else {
         el.className = 'ai-status warn';
         el.innerHTML = '⚠️ <b>בדיקת AI לא פעילה כרגע.</b> השאלות הסגורות נבדקות אוטומטית, ובשאלות הפתוחות תראי תשובה לדוגמה.';
