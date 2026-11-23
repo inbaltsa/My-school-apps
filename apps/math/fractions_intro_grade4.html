@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>שברים - חזרה למבחן כיתה ד'</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Rubik', sans-serif;
+            background: linear-gradient(135deg, #fff3e0 0%, #fce4ec 50%, #e3f2fd 100%);
+            min-height: 100vh; padding: 12px; color: #2d3436;
+        }
+        .app-container { max-width: 760px; margin: 0 auto; }
+        .back-link { display: inline-block; margin-bottom: 10px; color: #e65100; text-decoration: none; font-weight: 600; }
+
+        .app-header {
+            text-align: center; padding: 20px 15px;
+            background: linear-gradient(135deg, #ef6c00, #d81b60);
+            border-radius: 20px; color: white; margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(239,108,0,0.3);
+        }
+        .app-header h1 { font-size: 1.6em; font-weight: 800; }
+        .app-header p { font-size: 0.95em; opacity: 0.92; margin-top: 5px; line-height: 1.5; }
+
+        .btn {
+            font-family: inherit; font-size: 1em; font-weight: 600; border: none; border-radius: 14px;
+            padding: 12px 20px; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .btn:hover:not(:disabled) { transform: translateY(-2px); }
+        .btn:disabled { opacity: 0.55; cursor: default; }
+        .btn-primary { background: #ef6c00; color: white; box-shadow: 0 3px 10px rgba(239,108,0,0.3); }
+        .btn-blue { background: #1e88e5; color: white; box-shadow: 0 3px 10px rgba(30,136,229,0.3); }
+        .btn-green { background: #43a047; color: white; }
+        .btn-orange { background: #fb8c00; color: white; }
+        .btn-light { background: white; color: #2d3436; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+        .panel { background: white; border-radius: 18px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 15px; }
+        .exam-box { text-align: center; border-top: 5px solid #e53935; }
+        .exam-box h2 { font-size: 1.2em; margin-bottom: 6px; }
+        .exam-box p { color: #636e72; margin-bottom: 12px; font-size: 0.95em; line-height: 1.5; }
+
+        .learn summary { font-weight: 700; cursor: pointer; color: #d81b60; font-size: 1.05em; }
+        .learn ul { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+        .learn li { background: #fff8f0; border-radius: 12px; padding: 10px 14px; line-height: 1.7; border-right: 4px solid #ef6c00; }
+        .learn b { color: #e65100; }
+
+        .topics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+        .topic-card {
+            background: white; border-radius: 16px; padding: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+            border-right: 6px solid var(--c, #ef6c00); display: flex; flex-direction: column; gap: 4px;
+        }
+        .topic-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+        .topic-card .t-icon { font-size: 1.8em; }
+        .topic-card .t-title { font-weight: 700; font-size: 1.05em; }
+        .topic-card .t-meta { font-size: 0.85em; color: #636e72; }
+        .topic-card .t-best { font-size: 0.85em; font-weight: 600; color: #43a047; }
+
+        .progress-container { background: #e0e0e0; border-radius: 20px; height: 12px; margin: 10px 0 15px; overflow: hidden; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #ffa726, #ec407a); border-radius: 20px; transition: width 0.4s ease; width: 0%; }
+        .q-meta { display: flex; justify-content: space-between; color: #636e72; font-size: 0.9em; flex-wrap: wrap; gap: 6px; }
+        .q-topic-tag { background: #fff3e0; color: #e65100; padding: 2px 10px; border-radius: 20px; font-weight: 600; }
+        .q-text { font-size: 1.2em; font-weight: 600; margin: 14px 0 8px; line-height: 1.6; }
+        .q-tip { color: #636e72; font-size: 0.9em; margin-bottom: 8px; }
+        .figure { text-align: center; margin: 8px 0 14px; }
+        .figure svg { max-width: 100%; height: auto; }
+        .figure svg .part { cursor: default; }
+        .figure.paint svg .part { cursor: pointer; }
+        .fig-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .fig-cell { display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: 700; color: #6d4c41; }
+
+        /* שבר מאונך */
+        .frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.1; margin: 0 3px; font-weight: 700; }
+        .frac > span { padding: 0 4px; }
+        .frac > span:first-child { border-bottom: 2.5px solid currentColor; }
+        .cmp { direction: ltr; display: flex; justify-content: center; align-items: center; gap: 14px; font-size: 2em; margin: 6px 0 10px; }
+        .cmp .box { width: 54px; height: 54px; border: 3px dashed #bdbdbd; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #d81b60; }
+
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .options.row-opts { flex-direction: row; justify-content: center; flex-wrap: wrap; }
+        .options.ltr { direction: ltr; }
+        .option {
+            font-family: inherit; font-size: 1.15em; text-align: center;
+            background: #f8f9fa; border: 2px solid #dfe6e9; border-radius: 14px;
+            padding: 12px 18px; cursor: pointer; color: #2d3436; line-height: 1.4; min-width: 70px;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .options:not(.row-opts) .option { text-align: right; }
+        .option:hover:not(:disabled) { background: #fff3e0; border-color: #ffb74d; }
+        .option.correct { background: #e8f5e9; border-color: #43a047; font-weight: 600; }
+        .option.wrong { background: #ffebee; border-color: #e53935; }
+        .option:disabled { cursor: default; }
+        .option.big { font-size: 1.8em; min-width: 80px; font-weight: 700; }
+        .option.pic { padding: 8px; }
+
+        .feedback { margin-top: 14px; padding: 12px 16px; border-radius: 14px; line-height: 1.7; display: none; }
+        .feedback.show { display: block; }
+        .feedback.good { background: #e8f5e9; border-right: 5px solid #43a047; }
+        .feedback.bad { background: #fff3e0; border-right: 5px solid #fb8c00; }
+        .feedback .figure { margin: 8px 0 0; }
+        .row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 14px; }
+
+        .result-big { font-size: 3em; text-align: center; margin: 10px 0; }
+        .result-score { text-align: center; font-size: 1.4em; font-weight: 700; }
+        .result-msg { text-align: center; color: #636e72; margin-top: 6px; }
+        .breakdown { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
+        .breakdown-row { display: flex; justify-content: space-between; gap: 8px; padding: 8px 12px; background: #f8f9fa; border-radius: 10px; }
+        .breakdown-row.weak { background: #fff3e0; }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 480px) {
+            .app-header h1 { font-size: 1.3em; }
+            .q-text { font-size: 1.08em; }
+            .topics-grid { grid-template-columns: 1fr 1fr; }
+            .topic-card .t-title { font-size: 0.95em; }
+            .cmp { font-size: 1.7em; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <a class="back-link" href="../../grade-4.html">→ חזרה לכיתה ד'</a>
+
+    <div class="app-header">
+        <h1>🍕 שברים: חזרה למבחן</h1>
+        <p>חלקים שווים · השם של כל חלק · איזה חלק צבוע · צובעים שבר · משווים שברים<br>השאלות מתחלפות בכל פעם, אפשר לתרגל בלי סוף!</p>
+    </div>
+
+    <!-- ===== Menu ===== -->
+    <div id="menu-screen">
+        <div class="panel exam-box">
+            <h2>📝 מבחן מסכם: כל הנושאים</h2>
+            <p>2 שאלות מכל נושא (14 שאלות), כמו בדף החזרה של המורה.</p>
+            <button class="btn btn-primary" onclick="startExam()">להתחיל מבחן מסכם</button>
+        </div>
+        <div class="panel">
+            <details class="learn">
+                <summary>📘 תזכורת: מה צריך לזכור על שברים? (לחצי לפתוח)</summary>
+                <ul id="learn-list"></ul>
+            </details>
+        </div>
+        <div class="topics-grid" id="topics-grid"></div>
+    </div>
+
+    <!-- ===== Quiz ===== -->
+    <div id="quiz-screen" class="hidden">
+        <div class="panel">
+            <div class="q-meta">
+                <span id="q-counter"></span>
+                <span class="q-topic-tag" id="q-topic"></span>
+                <span id="q-score"></span>
+            </div>
+            <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
+            <div class="q-text" id="q-text"></div>
+            <div class="q-tip" id="q-tip"></div>
+            <div class="figure" id="figure"></div>
+            <div class="options" id="options"></div>
+            <div class="row hidden" id="paint-actions">
+                <button class="btn btn-primary" onclick="checkPaint()">✅ סיימתי לצבוע</button>
+            </div>
+            <div class="feedback" id="feedback"></div>
+            <div class="row">
+                <button class="btn btn-light" onclick="showMenu()">🏠 לתפריט</button>
+                <button class="btn btn-blue hidden" id="next-btn" onclick="nextQuestion()">לשאלה הבאה ←</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Result ===== -->
+    <div id="result-screen" class="hidden">
+        <div class="panel" id="result-panel"></div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+// עזרים
+// ============================================================
+const NAMES = { 2: 'חצי', 3: 'שליש', 4: 'רבע', 5: 'חמישית', 6: 'שישית', 7: 'שביעית', 8: 'שמינית', 9: 'תשיעית', 10: 'עשירית' };
+const RED = '#ef5350', YELLOW = '#ffd54f', PAINT = '#ec407a', EMPTY = '#ffffff', LINE = '#37474f';
+
+function $(id) { return document.getElementById(id); }
+function rnd(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    return a;
+}
+function frac(a, b) { return `<span class="frac"><span>${a}</span><span>${b}</span></span>`; }
+
+// ============================================================
+// ציורים (SVG). colors[i] = הצבע של חלק i
+// ============================================================
+// מלבן מחולק לפסים אנכיים. widths = רוחב יחסי של כל פס (שווים או לא)
+function rectStrips(colors, widths, opts = {}) {
+    const W = opts.w || 260, H = opts.h || 100, n = colors.length;
+    const ws = widths || Array(n).fill(1);
+    const sum = ws.reduce((a, b) => a + b, 0);
+    let x = 2, parts = '';
+    ws.forEach((w, i) => {
+        const pw = (W - 4) * w / sum;
+        parts += `<rect class="part" data-i="${i}" x="${x}" y="2" width="${pw}" height="${H - 4}" fill="${colors[i]}" stroke="${LINE}" stroke-width="2"/>`;
+        x += pw;
+    });
+    return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${parts}</svg>`;
+}
+
+// מלבן מחולק לפסים אופקיים
+function rectRows(colors, opts = {}) {
+    const W = opts.w || 260, H = opts.h || 100, n = colors.length;
+    let parts = '';
+    colors.forEach((c, i) => {
+        parts += `<rect class="part" data-i="${i}" x="2" y="${2 + (H - 4) * i / n}" width="${W - 4}" height="${(H - 4) / n}" fill="${c}" stroke="${LINE}" stroke-width="2"/>`;
+    });
+    return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${parts}</svg>`;
+}
+
+// רשת: rows × cols
+function grid(colors, rows, cols, opts = {}) {
+    const S = opts.cell || 52;
+    const W = cols * S + 4, H = rows * S + 4;
+    let parts = '';
+    colors.forEach((c, i) => {
+        const r = Math.floor(i / cols), k = i % cols;
+        parts += `<rect class="part" data-i="${i}" x="${2 + k * S}" y="${2 + r * S}" width="${S}" height="${S}" fill="${c}" stroke="${LINE}" stroke-width="2"/>`;
+    });
+    return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">${parts}</svg>`;
+}
+
+// עיגול מחולק לגזרות. angles = גודל יחסי של כל גזרה (שווים או לא)
+function circle(colors, angles, opts = {}) {
+    const R = opts.r || 80, C = R + 4, n = colors.length;
+    const as = angles || Array(n).fill(1);
+    const sum = as.reduce((a, b) => a + b, 0);
+    if (n === 1) return `<svg viewBox="0 0 ${2 * C} ${2 * C}" width="${2 * C}" height="${2 * C}"><circle class="part" data-i="0" cx="${C}" cy="${C}" r="${R}" fill="${colors[0]}" stroke="${LINE}" stroke-width="2"/></svg>`;
+    let a0 = -Math.PI / 2, parts = '';
+    as.forEach((a, i) => {
+        const a1 = a0 + 2 * Math.PI * a / sum;
+        const x0 = C + R * Math.cos(a0), y0 = C + R * Math.sin(a0);
+        const x1 = C + R * Math.cos(a1), y1 = C + R * Math.sin(a1);
+        const large = (a1 - a0) > Math.PI ? 1 : 0;
+        parts += `<path class="part" data-i="${i}" d="M${C},${C} L${x0.toFixed(2)},${y0.toFixed(2)} A${R},${R} 0 ${large} 1 ${x1.toFixed(2)},${y1.toFixed(2)} Z" fill="${colors[i]}" stroke="${LINE}" stroke-width="2"/>`;
+        a0 = a1;
+    });
+    return `<svg viewBox="0 0 ${2 * C} ${2 * C}" width="${2 * C}" height="${2 * C}">${parts}</svg>`;
+}
+
+// צורה אקראית מחולקת ל-n חלקים שווים
+const GRIDS = { 4: [2, 2], 6: [2, 3], 8: [2, 4], 9: [3, 3], 10: [2, 5] };
+function equalShape(n, colors, kind) {
+    const k = kind || pick(GRIDS[n] ? ['strips', 'circle', 'grid'] : ['strips', 'circle', 'rows']);
+    if (k === 'circle') return circle(colors);
+    if (k === 'grid' && GRIDS[n]) return grid(colors, GRIDS[n][0], GRIDS[n][1]);
+    if (k === 'rows' && n <= 6) return rectRows(colors, { h: 30 * n });
+    return rectStrips(colors);
+}
+
+function colorsFor(n, shadedIdx, on = PAINT, off = EMPTY) {
+    return Array.from({ length: n }, (_, i) => shadedIdx.includes(i) ? on : off);
+}
+function firstK(k) { return Array.from({ length: k }, (_, i) => i); }
+function randomK(n, k) { return shuffle(Array.from({ length: n }, (_, i) => i)).slice(0, k); }
+
+// פס של שבר, לשימוש בהסברי השוואה (כל הפסים באותו אורך)
+function bar(a, b, label) {
+    return `<div class="fig-cell">${rectStrips(colorsFor(b, firstK(a)), null, { w: 240, h: 36 })}<span>${label}</span></div>`;
+}
+
+// אפשרויות שבר שונות זו מזו
+function fracOptions(a, b) {
+    const set = new Map();
+    // רק שברים קטנים מ-1 (מונה קטן ממכנה), כמו שלומדים בכיתה ד'
+    const add = (x, y) => { if (x > 0 && x < y && y <= 12) set.set(x + '/' + y, [x, y]); };
+    add(a, b);
+    [[b - a, b], [a, b - a], [a, b + 1], [a + 1, b], [a - 1, b], [a, b - 1], [a, b + 2], [a + 2, b]].forEach(([x, y]) => { if (!(x === a && y === b)) add(x, y); });
+    const list = [...set.values()].filter(([x, y]) => !(x === a && y === b));
+    return [[a, b], ...shuffle(list).slice(0, 3)];
+}
+
+// ============================================================
+// מחוללי שאלות לפי נושא. כל מחולל מחזיר:
+// { q, tip?, fig?, kind:'mc'|'paint', opts:[{html,ok}], layout?, explain, paint? }
+// ============================================================
+const TOPICS = [
+{
+    id: 'equal', icon: '✂️', color: '#8e24aa', title: 'חלקים שווים',
+    gen() {
+        const n = rnd(3, 6);
+        const isEqual = Math.random() < 0.5;
+        const colors = colorsFor(n, []);
+        let fig;
+        if (isEqual) fig = pick(['strips', 'circle']) === 'circle' ? circle(colors) : rectStrips(colors);
+        else {
+            // לא שווים: פסים או גזרות בגדלים שונים בבירור
+            const sizes = shuffle([1, 1.9, 1, 2.6, 1.4, 0.7].slice(0, n));
+            fig = Math.random() < 0.5 ? circle(colors, sizes) : rectStrips(colors, sizes);
+        }
+        return {
+            q: 'האם השלם מחולק לחלקים שווים?',
+            fig, layout: 'row',
+            fixedOrder: true,
+            opts: [{ html: '👍 כן, החלקים שווים', ok: isEqual }, { html: '👎 לא, החלקים לא שווים', ok: !isEqual }],
+            explain: isEqual
+                ? `כל ${n} החלקים באותו גודל, ולכן אפשר לקרוא לכל חלק "${NAMES[n]}".`
+                : `החלקים בגדלים שונים. שבר מדבר רק על חלקים <b>שווים</b>, ולכן כאן אי אפשר להגיד "${NAMES[n]}".`
+        };
+    }
+},
+{
+    id: 'name', icon: '🏷️', color: '#1e88e5', title: 'כמה חלקים ואיך נקרא כל חלק',
+    gen() {
+        const n = rnd(2, 10);
+        const fig = equalShape(n, colorsFor(n, []));
+        if (Math.random() < 0.5) {
+            const nums = shuffle([...new Set([n, n + 1, n - 1, n + 2, n * 2].filter(x => x >= 2 && x <= 12 && x !== n))]).slice(0, 3);
+            return {
+                q: 'לכמה חלקים שווים מחולק השלם?', fig, layout: 'row',
+                opts: [n, ...nums].map(x => ({ html: String(x), ok: x === n, cls: 'big' })),
+                explain: `ספרי את החלקים: יש ${n} חלקים שווים.`
+            };
+        }
+        const others = shuffle(Object.keys(NAMES).map(Number).filter(x => x !== n)).slice(0, 3);
+        return {
+            q: 'השלם מחולק לחלקים שווים. איך נקרא כל חלק?', fig,
+            opts: [n, ...others].map(x => ({ html: `${NAMES[x]} (${frac(1, x)})`, ok: x === n })),
+            explain: `יש ${n} חלקים שווים, ולכן כל חלק הוא ${frac(1, n)} – <b>${NAMES[n]}</b>.`
+        };
+    }
+},
+{
+    id: 'shaded', icon: '🎨', color: '#d81b60', title: 'איזה חלק צבוע?',
+    gen() {
+        const n = rnd(3, 10), k = rnd(1, n - 1);
+        const fig = equalShape(n, colorsFor(n, Math.random() < 0.5 ? firstK(k) : randomK(n, k)));
+        return {
+            q: 'איזה שבר מתאים לחלק הצבוע?', fig, layout: 'row',
+            opts: fracOptions(k, n).map(([x, y], i) => ({ html: frac(x, y), ok: i === 0, cls: 'big' })),
+            explain: `השלם מחולק ל-<b>${n}</b> חלקים שווים (המכנה), ו-<b>${k}</b> מהם צבועים (המונה). לכן ${frac(k, n)}.`
+        };
+    }
+},
+{
+    id: 'paint', icon: '🖌️', color: '#43a047', title: 'צובעים שבר',
+    gen() {
+        const n = pick([3, 4, 5, 6, 8, 10]), k = rnd(1, n - 1);
+        const kind = pick(GRIDS[n] ? ['strips', 'circle', 'grid'] : ['strips', 'circle']);
+        return {
+            q: 'צבעי את החלק שמתאים לשבר:', qHTML: frac(k, n), kind: 'paint',
+            tip: '👆 לחצי על חלקים כדי לצבוע אותם (לחיצה נוספת מוחקת).',
+            paint: { n, k, kind },
+            explain: `השלם מחולק ל-${n} חלקים שווים, וצריך לצבוע ${k} מהם. לא משנה אילו חלקים – רק כמה!`
+        };
+    }
+},
+{
+    id: 'rest', icon: '🟥', color: '#f9a825', title: 'החלק שנשאר',
+    gen() {
+        const who = pick([['אור', 'צייר', 'חילק', 'צבע'], ['נועה', 'ציירה', 'חילקה', 'צבעה'], ['איתי', 'צייר', 'חילק', 'צבע'], ['מאיה', 'ציירה', 'חילקה', 'צבעה']]);
+        const shape = pick([['ריבוע', 'grid'], ['מלבן', 'strips'], ['עיגול', 'circle']]);
+        const n = shape[1] === 'grid' ? pick([4, 6, 8, 9, 10]) : rnd(4, 10);
+        const red = rnd(1, n - 2), yellow = n - red;
+        const askYellow = Math.random() < 0.6;
+        const fig = equalShape(n, colorsFor(n, firstK(red), RED, YELLOW), shape[1]);
+        const a = askYellow ? yellow : red;
+        return {
+            q: `${who[0]} ${who[1]} ${shape[0]} ו${who[2]} אותו ל-${n} חלקים שווים. ${red === 1 ? 'חלק אחד' : red + ' חלקים'} ${who[3]} באדום, ואת השאר ${who[3]} בצהוב.\nאיזה חלק מה${shape[0]} צבוע ב${askYellow ? 'צהוב' : 'אדום'}?`,
+            fig, layout: 'row',
+            opts: fracOptions(a, n).map(([x, y], i) => ({ html: frac(x, y), ok: i === 0, cls: 'big' })),
+            explain: askYellow
+                ? `יש ${n} חלקים, ${red} באדום. נשארו ${n} − ${red} = <b>${yellow}</b> חלקים בצהוב, כלומר ${frac(yellow, n)}.`
+                : `${red === 1 ? 'חלק אחד' : red + ' חלקים'} מתוך ${n} ${red === 1 ? 'צבוע' : 'צבועים'} באדום, כלומר ${frac(red, n)}.`
+        };
+    }
+},
+{
+    id: 'quarter', icon: '📏', color: '#00897b', title: 'שלם אחד – דרכים שונות',
+    gen() {
+        // כמה מלבנים מחולקים ל-n חלקים בדרכים שונות; אחד מהם מחולק לא נכון
+        const n = pick([2, 4, 4, 3]);
+        const shade = 1;
+        const ways = [
+            () => rectStrips(colorsFor(n, [0]), null, { w: 150, h: 80 }),
+            () => rectRows(colorsFor(n, [0]), { w: 150, h: 80 }),
+        ];
+        if (n === 4) ways.push(() => grid(colorsFor(4, [0]), 2, 2, { cell: 40 }));
+        const good = shuffle(ways).slice(0, 2).map(f => f());
+        let bad;
+        const t = Math.random();
+        if (t < 0.5) bad = rectStrips(colorsFor(n, [0]), shuffle([1, 2.2, 0.8, 1.6].slice(0, n)), { w: 150, h: 80 });
+        else bad = rectStrips(colorsFor(n + 1, [0]), null, { w: 150, h: 80 });
+        const items = shuffle([...good.map(svg => ({ svg, ok: false })), { svg: bad, ok: true }]);
+        const letters = ['א', 'ב', 'ג'];
+        return {
+            q: `כל מלבן הוא שלם. בכל מלבן צבוע חלק אחד.\nבאיזה מלבן החלק הצבוע הוא <u>לא</u> ${NAMES[n]}?`,
+            qIsHTML: true, layout: 'row',
+            opts: items.map((it, i) => ({ html: `<div class="fig-cell">${it.svg}<span>${letters[i]}</span></div>`, ok: it.ok, cls: 'pic' })),
+            explain: `${NAMES[n]} = אחד מתוך ${n} חלקים <b>שווים</b>. אפשר לחלק את המלבן בכמה דרכים (לאורך, לרוחב, רשת), העיקר שכל החלקים שווים ושיש בדיוק ${n}.`
+        };
+    }
+},
+{
+    id: 'compare', icon: '⚖️', color: '#5e35b1', title: 'משווים שברים: < > =',
+    gen() {
+        let a, b, c, d, why, figs;
+        const t = Math.random();
+        if (t < 0.4) {                       // אותו מכנה
+            b = d = rnd(3, 10);
+            a = rnd(1, b - 1); c = Math.random() < 0.15 ? a : rnd(1, b - 1);
+            why = a === c ? 'אותו מכנה ואותו מונה – השברים שווים.' : `המכנה זהה (${b}), אז כל החלקים באותו גודל. משווים את המונים: ${Math.max(a, c)} חלקים זה יותר מ-${Math.min(a, c)} חלקים.`;
+        } else if (t < 0.65) {               // אותו מונה, מכנים שונים
+            a = c = rnd(1, 3);
+            const dens = shuffle([2, 3, 4, 5, 6, 8, 10].filter(x => x > a)).slice(0, 2);
+            b = dens[0]; d = dens[1];
+            why = `אותו מספר חלקים (${a}), אבל כשהשלם מחולק ל<b>יותר</b> חלקים, כל חלק <b>קטן</b> יותר. ${frac(1, Math.min(b, d))} גדול מ-${frac(1, Math.max(b, d))}.`;
+        } else {                             // שברים שקולים וחצי (כמו בלוח)
+            [a, b, c, d] = pick([[1, 2, 2, 4], [2, 4, 1, 2], [1, 2, 3, 6], [3, 6, 1, 2], [1, 2, 5, 10], [3, 5, 4, 10], [3, 5, 6, 10], [2, 5, 4, 10], [1, 2, 3, 8], [1, 2, 5, 8], [1, 4, 2, 8], [3, 4, 6, 8], [1, 3, 2, 6], [2, 3, 3, 6], [4, 10, 1, 2], [4, 5, 7, 10]]);
+            if (Math.random() < 0.5) [a, b, c, d] = [c, d, a, b];
+            const big = Math.max(b, d), small = Math.min(b, d), m = big / small;
+            const [sa, sb] = b === small ? [a, b] : [c, d];
+            why = `נהפוך את ${frac(sa, sb)} לשבר עם מכנה ${big}: מחלקים כל חלק ל-${m}, ומקבלים ${frac(sa * m, big)}. עכשיו משווים ${frac(a * big / b, big)} ל-${frac(c * big / d, big)}.`;
+        }
+        const v1 = a / b, v2 = c / d;
+        const sign = Math.abs(v1 - v2) < 1e-9 ? '=' : v1 > v2 ? '>' : '<';
+        figs = `<div class="fig-row" style="flex-direction:column;align-items:center;">${bar(a, b, frac(a, b))}${bar(c, d, frac(c, d))}</div>`;
+        return {
+            q: 'איזה סימן מתאים? בחרי < או > או =',
+            fig: `<div class="cmp">${frac(a, b)}<span class="box" id="cmp-box">?</span>${frac(c, d)}</div>`,
+            layout: 'row', ltr: true, fixedOrder: true,
+            opts: ['<', '=', '>'].map(s => ({ html: s, ok: s === sign, cls: 'big', sign: s })),
+            explain: `${why}<br>לכן: <span style="direction:ltr;display:inline-block;">${frac(a, b)} ${sign} ${frac(c, d)}</span><div class="figure">${figs}</div>`
+        };
+    }
+}
+];
+
+const LEARN = [
+    '<b>שלם</b> = הדבר כולו (פיצה, עוגה, מלבן). <b>שבר</b> = חלק מהשלם, אבל רק כשהשלם מחולק ל<b>חלקים שווים</b>.',
+    `<b>המכנה</b> (המספר למטה) = לכמה חלקים שווים חילקנו את השלם. <b>המונה</b> (המספר למעלה) = כמה חלקים לקחנו או צבענו. למשל ${frac(3, 5)}: חילקנו ל-5, צבענו 3.`,
+    `<b>שמות החלקים:</b> ${frac(1, 2)} חצי · ${frac(1, 3)} שליש · ${frac(1, 4)} רבע · ${frac(1, 5)} חמישית · ${frac(1, 6)} שישית · ${frac(1, 8)} שמינית · ${frac(1, 10)} עשירית.`,
+    '<b>החלק שנשאר:</b> אם השלם מחולק ל-6 וצבענו 1 באדום, נשארו 6 − 1 = 5 חלקים, כלומר חמש שישיות.',
+    '<b>אותו מכנה?</b> משווים את המונים: 6 עשיריות > 4 עשיריות.',
+    `<b>אותו מונה?</b> כמה שהמכנה <b>גדול</b> יותר – החלק <b>קטן</b> יותר! ${frac(1, 6)} < ${frac(1, 3)}, כי עוגה שמחולקת ל-6 נותנת חתיכות קטנות יותר.`,
+    `<b>שברים שקולים:</b> ${frac(1, 2)} = ${frac(2, 4)} = ${frac(5, 10)}. כדי להשוות ${frac(3, 5)} ו-${frac(4, 10)} מחלקים כל חמישית ל-2: ${frac(3, 5)} = ${frac(6, 10)}, ו-${frac(6, 10)} > ${frac(4, 10)}.`
+];
+
+// ============================================================
+// State
+// ============================================================
+const APP_ID = 'fractions_intro_grade4';
+const BEST_KEY = 'g4fractions_best';
+const PER_TOPIC = 10;
+let quiz = [], qIndex = 0, score = 0, mode = 'topic', currentTopic = null, wrongList = [], perTopic = {};
+let answered = false;
+
+function loadBest() { try { return JSON.parse(localStorage.getItem(BEST_KEY) || '{}'); } catch (e) { return {}; } }
+function saveBest(key, pct) {
+    try {
+        const b = loadBest();
+        if (b[key] === undefined || pct > b[key]) { b[key] = pct; localStorage.setItem(BEST_KEY, JSON.stringify(b)); }
+    } catch (e) {}
+}
+
+function show(id) {
+    ['menu-screen', 'quiz-screen', 'result-screen'].forEach(s => $(s).classList.toggle('hidden', s !== id));
+    window.scrollTo(0, 0);
+}
+
+function showMenu() {
+    const best = loadBest();
+    $('learn-list').innerHTML = LEARN.map(t => `<li>${t}</li>`).join('');
+    $('topics-grid').innerHTML = TOPICS.map((t, i) => `
+        <div class="topic-card" style="--c:${t.color}" onclick="startTopic(${i})">
+            <span class="t-icon">${t.icon}</span>
+            <span class="t-title">${t.title}</span>
+            <span class="t-meta">${PER_TOPIC} שאלות · מתחלפות בכל פעם</span>
+            ${best[t.id] !== undefined ? `<span class="t-best">הכי טוב: ${best[t.id]}% ${best[t.id] >= 90 ? '⭐' : ''}</span>` : ''}
+        </div>`).join('');
+    show('menu-screen');
+}
+
+// התשובות מעורבבות, חוץ מ"כן/לא" ומהסימנים < = > שנשארים בסדר קבוע
+function makeItem(t) {
+    const it = { topicId: t.id, topicTitle: t.title, ...t.gen() };
+    if (it.opts && !it.fixedOrder) it.opts = shuffle(it.opts);
+    return it;
+}
+
+function startTopic(i) {
+    mode = 'topic'; currentTopic = i;
+    begin(Array.from({ length: PER_TOPIC }, () => makeItem(TOPICS[i])));
+}
+function startExam() {
+    mode = 'exam';
+    const items = [];
+    TOPICS.forEach(t => { items.push(makeItem(t)); items.push(makeItem(t)); });
+    begin(shuffle(items));
+}
+function startRetry() {
+    mode = 'retry';
+    // אותה שאלה בדיוק, עם סדר תשובות חדש
+    begin(shuffle(wrongList).map(it => ({ ...it, opts: it.opts && !it.fixedOrder ? shuffle(it.opts) : it.opts })));
+}
+function begin(items) {
+    quiz = items; qIndex = 0; score = 0; wrongList = []; perTopic = {};
+    show('quiz-screen');
+    renderQuestion();
+}
+
+// ============================================================
+// Question
+// ============================================================
+function renderQuestion() {
+    const it = quiz[qIndex];
+    answered = false;
+    $('q-counter').textContent = `שאלה ${qIndex + 1} מתוך ${quiz.length}`;
+    $('q-topic').textContent = it.topicTitle;
+    $('q-score').textContent = `✅ ${score}`;
+    $('progress-bar').style.width = (qIndex / quiz.length * 100) + '%';
+
+    const qEl = $('q-text');
+    if (it.qIsHTML) qEl.innerHTML = it.q.replace(/\n/g, '<br>');   // טקסט שכתבנו בעצמנו
+    else { qEl.textContent = it.q; if (it.qHTML) qEl.insertAdjacentHTML('beforeend', ' ' + it.qHTML); qEl.style.whiteSpace = 'pre-line'; }
+    $('q-tip').textContent = it.tip || '';
+    $('feedback').className = 'feedback';
+    $('feedback').innerHTML = '';
+    $('next-btn').classList.add('hidden');
+
+    const figEl = $('figure'), opts = $('options');
+    figEl.classList.remove('paint');
+    opts.innerHTML = '';
+    opts.className = 'options' + (it.layout === 'row' ? ' row-opts' : '') + (it.ltr ? ' ltr' : '');
+
+    if (it.kind === 'paint') {
+        const { n, kind } = it.paint;
+        figEl.innerHTML = equalShape(n, colorsFor(n, []), kind);
+        figEl.classList.add('paint');
+        figEl.querySelectorAll('.part').forEach(p => p.addEventListener('click', () => {
+            if (answered) return;
+            p.setAttribute('fill', p.getAttribute('fill') === PAINT ? EMPTY : PAINT);
+        }));
+        $('paint-actions').classList.remove('hidden');
+        return;
+    }
+    $('paint-actions').classList.add('hidden');
+    figEl.innerHTML = it.fig || '';
+    it.opts.forEach(o => {
+        const b = document.createElement('button');
+        b.className = 'option' + (o.cls ? ' ' + o.cls : '');
+        b.innerHTML = o.html;                 // HTML שכתבנו בעצמנו (שברים וציורים)
+        b.onclick = () => answer(b, o);
+        opts.appendChild(b);
+    });
+}
+
+function record(ok) {
+    const it = quiz[qIndex];
+    if (!perTopic[it.topicId]) perTopic[it.topicId] = { title: it.topicTitle, ok: 0, total: 0 };
+    perTopic[it.topicId].total++;
+    if (ok) { score++; perTopic[it.topicId].ok++; } else wrongList.push(it);
+    $('q-score').textContent = `✅ ${score}`;
+}
+
+function showFeedback(ok, extra) {
+    const it = quiz[qIndex];
+    const fb = $('feedback');
+    fb.className = 'feedback show ' + (ok ? 'good' : 'bad');
+    fb.innerHTML = `<b>${ok ? '✅ נכון!' : '❌ לא בדיוק.'}</b> ${extra || ''}${it.explain}`;
+    const next = $('next-btn');
+    next.textContent = qIndex + 1 < quiz.length ? 'לשאלה הבאה ←' : 'לסיכום התוצאות 🏁';
+    next.classList.remove('hidden');
+}
+
+function answer(btn, o) {
+    if (answered) return;
+    answered = true;
+    const it = quiz[qIndex];
+    [...$('options').children].forEach((b, i) => {
+        b.disabled = true;
+        if (it.opts[i].ok) b.classList.add('correct');
+    });
+    if (!o.ok) btn.classList.add('wrong');
+    if (o.sign) { const box = $('cmp-box'); if (box) box.textContent = it.opts.find(x => x.ok).html; }
+    record(o.ok);
+    showFeedback(o.ok);
+}
+
+function checkPaint() {
+    if (answered) return;
+    const it = quiz[qIndex];
+    const painted = [...$('figure').querySelectorAll('.part')].filter(p => p.getAttribute('fill') === PAINT).length;
+    if (painted === 0) {
+        $('feedback').className = 'feedback show bad';
+        $('feedback').innerHTML = '🖌️ עוד לא צבעת אף חלק. לחצי על החלקים כדי לצבוע.';
+        return;
+    }
+    answered = true;
+    $('paint-actions').classList.add('hidden');
+    const ok = painted === it.paint.k;
+    record(ok);
+    showFeedback(ok, ok ? '' : `צבעת ${painted} חלקים, וצריך ${it.paint.k}. `);
+}
+
+function nextQuestion() {
+    qIndex++;
+    if (qIndex < quiz.length) renderQuestion();
+    else showResult();
+}
+
+// ============================================================
+// Result
+// ============================================================
+function showResult() {
+    const total = quiz.length, pct = Math.round(score / total * 100);
+    let emoji = '💪', msg = 'כדאי לקרוא את התזכורת ולנסות שוב!';
+    if (pct >= 90) { emoji = '🏆'; msg = 'מצוין! את מוכנה למבחן בשברים!'; }
+    else if (pct >= 75) { emoji = '🌟'; msg = 'כל הכבוד! עוד קצת תרגול בנושאים שסומנו.'; }
+    else if (pct >= 55) { emoji = '👍'; msg = 'בכיוון הנכון! כדאי לתרגל את הנושאים שסומנו.'; }
+
+    if (mode === 'topic') saveBest(TOPICS[currentTopic].id, pct);
+    if (mode === 'exam') {
+        saveBest('exam', pct);
+        if (typeof saveAppScore === 'function') saveAppScore(APP_ID, score, total);
+    }
+
+    let breakdown = '';
+    if (mode === 'exam') {
+        const rows = Object.values(perTopic).sort((a, b) => (a.ok / a.total) - (b.ok / b.total));
+        breakdown = `<h3 style="margin-top:18px;">לפי נושא:</h3><div class="breakdown">` +
+            rows.map(r => `<div class="breakdown-row ${r.ok < r.total ? 'weak' : ''}"><span>${r.title}</span><span>${r.ok}/${r.total} ${r.ok === r.total ? '✅' : '🔁'}</span></div>`).join('') + `</div>`;
+    }
+    const retryBtn = wrongList.length ? `<button class="btn btn-orange" onclick="startRetry()">🔁 לתרגל שוב את הטעויות (${wrongList.length})</button>` : '';
+    const again = mode === 'exam' ? `<button class="btn btn-primary" onclick="startExam()">📝 מבחן מסכם חדש</button>`
+        : mode === 'topic' ? `<button class="btn btn-primary" onclick="startTopic(${currentTopic})">🔄 עוד שאלות בנושא</button>` : '';
+
+    $('result-panel').innerHTML = `
+        <div class="result-big">${emoji}</div>
+        <div class="result-score">${score} מתוך ${total} (${pct}%)</div>
+        <div class="result-msg">${msg}</div>
+        ${breakdown}
+        <div class="row">${retryBtn}${again}<button class="btn btn-light" onclick="showMenu()">🏠 לתפריט</button></div>`;
+    show('result-screen');
+}
+
+showMenu();
+</script>
+<script src="../../app-tracker.js"></script>
+</body>
+</html>
